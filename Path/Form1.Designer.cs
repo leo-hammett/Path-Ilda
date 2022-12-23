@@ -37,10 +37,10 @@
             this.label4 = new System.Windows.Forms.Label();
             this.OptionsFPSLabel = new System.Windows.Forms.Label();
             this.TimeLinePanel = new System.Windows.Forms.Panel();
-            this.textBox2 = new System.Windows.Forms.TextBox();
-            this.textBox1 = new System.Windows.Forms.TextBox();
-            this.label2 = new System.Windows.Forms.Label();
-            this.label1 = new System.Windows.Forms.Label();
+            this.TimeLineFramesInput = new System.Windows.Forms.TextBox();
+            this.TimeLineSecondsInput = new System.Windows.Forms.TextBox();
+            this.TimeLineFramesLabel = new System.Windows.Forms.Label();
+            this.TimeLineSecondsLabel = new System.Windows.Forms.Label();
             this.TimeLinePlay = new System.Windows.Forms.CheckBox();
             this.TimeLineNextFrame = new System.Windows.Forms.Button();
             this.TimeLineBackFrame = new System.Windows.Forms.Button();
@@ -147,10 +147,10 @@
             // TimeLinePanel
             // 
             this.TimeLinePanel.BorderStyle = System.Windows.Forms.BorderStyle.Fixed3D;
-            this.TimeLinePanel.Controls.Add(this.textBox2);
-            this.TimeLinePanel.Controls.Add(this.textBox1);
-            this.TimeLinePanel.Controls.Add(this.label2);
-            this.TimeLinePanel.Controls.Add(this.label1);
+            this.TimeLinePanel.Controls.Add(this.TimeLineFramesInput);
+            this.TimeLinePanel.Controls.Add(this.TimeLineSecondsInput);
+            this.TimeLinePanel.Controls.Add(this.TimeLineFramesLabel);
+            this.TimeLinePanel.Controls.Add(this.TimeLineSecondsLabel);
             this.TimeLinePanel.Controls.Add(this.TimeLinePlay);
             this.TimeLinePanel.Controls.Add(this.TimeLineNextFrame);
             this.TimeLinePanel.Controls.Add(this.TimeLineBackFrame);
@@ -160,45 +160,45 @@
             this.TimeLinePanel.Size = new System.Drawing.Size(512, 114);
             this.TimeLinePanel.TabIndex = 2;
             // 
-            // textBox2
+            // TimeLineFramesInput
             // 
-            this.textBox2.Location = new System.Drawing.Point(305, 79);
-            this.textBox2.Name = "textBox2";
-            this.textBox2.Size = new System.Drawing.Size(145, 23);
-            this.textBox2.TabIndex = 8;
+            this.TimeLineFramesInput.Location = new System.Drawing.Point(305, 79);
+            this.TimeLineFramesInput.Name = "TimeLineFramesInput";
+            this.TimeLineFramesInput.Size = new System.Drawing.Size(145, 23);
+            this.TimeLineFramesInput.TabIndex = 8;
             // 
-            // textBox1
+            // TimeLineSecondsInput
             // 
-            this.textBox1.Location = new System.Drawing.Point(305, 48);
-            this.textBox1.Name = "textBox1";
-            this.textBox1.Size = new System.Drawing.Size(145, 23);
-            this.textBox1.TabIndex = 7;
+            this.TimeLineSecondsInput.Location = new System.Drawing.Point(305, 48);
+            this.TimeLineSecondsInput.Name = "TimeLineSecondsInput";
+            this.TimeLineSecondsInput.Size = new System.Drawing.Size(145, 23);
+            this.TimeLineSecondsInput.TabIndex = 7;
             // 
-            // label2
+            // TimeLineFramesLabel
             // 
-            this.label2.AutoSize = true;
-            this.label2.ForeColor = System.Drawing.SystemColors.Control;
-            this.label2.Location = new System.Drawing.Point(211, 82);
-            this.label2.Name = "label2";
-            this.label2.Size = new System.Drawing.Size(82, 15);
-            this.label2.TabIndex = 6;
-            this.label2.Text = "Time (Frames)";
+            this.TimeLineFramesLabel.AutoSize = true;
+            this.TimeLineFramesLabel.ForeColor = System.Drawing.SystemColors.Control;
+            this.TimeLineFramesLabel.Location = new System.Drawing.Point(211, 82);
+            this.TimeLineFramesLabel.Name = "TimeLineFramesLabel";
+            this.TimeLineFramesLabel.Size = new System.Drawing.Size(82, 15);
+            this.TimeLineFramesLabel.TabIndex = 6;
+            this.TimeLineFramesLabel.Text = "Time (Frames)";
             // 
-            // label1
+            // TimeLineSecondsLabel
             // 
-            this.label1.AutoSize = true;
-            this.label1.ForeColor = System.Drawing.SystemColors.Control;
-            this.label1.Location = new System.Drawing.Point(211, 57);
-            this.label1.Name = "label1";
-            this.label1.Size = new System.Drawing.Size(88, 15);
-            this.label1.TabIndex = 5;
-            this.label1.Text = "Time (Seconds)";
+            this.TimeLineSecondsLabel.AutoSize = true;
+            this.TimeLineSecondsLabel.ForeColor = System.Drawing.SystemColors.Control;
+            this.TimeLineSecondsLabel.Location = new System.Drawing.Point(211, 51);
+            this.TimeLineSecondsLabel.Name = "TimeLineSecondsLabel";
+            this.TimeLineSecondsLabel.Size = new System.Drawing.Size(88, 15);
+            this.TimeLineSecondsLabel.TabIndex = 5;
+            this.TimeLineSecondsLabel.Text = "Time (Seconds)";
             // 
             // TimeLinePlay
             // 
             this.TimeLinePlay.Appearance = System.Windows.Forms.Appearance.Button;
             this.TimeLinePlay.AutoSize = true;
-            this.TimeLinePlay.Location = new System.Drawing.Point(305, 17);
+            this.TimeLinePlay.Location = new System.Drawing.Point(305, 4);
             this.TimeLinePlay.Name = "TimeLinePlay";
             this.TimeLinePlay.Size = new System.Drawing.Size(39, 25);
             this.TimeLinePlay.TabIndex = 4;
@@ -209,7 +209,7 @@
             // 
             this.TimeLineNextFrame.Location = new System.Drawing.Point(350, 3);
             this.TimeLineNextFrame.Name = "TimeLineNextFrame";
-            this.TimeLineNextFrame.Size = new System.Drawing.Size(77, 39);
+            this.TimeLineNextFrame.Size = new System.Drawing.Size(77, 26);
             this.TimeLineNextFrame.TabIndex = 3;
             this.TimeLineNextFrame.Text = "Next";
             this.TimeLineNextFrame.UseVisualStyleBackColor = true;
@@ -351,10 +351,10 @@
         private Label OptionsKPPSLabel;
         private Label label4;
         private Label OptionsFPSLabel;
-        private TextBox textBox2;
-        private TextBox textBox1;
-        private Label label2;
-        private Label label1;
+        private TextBox TimeLineFramesInput;
+        private TextBox TimeLineSecondsInput;
+        private Label TimeLineFramesLabel;
+        private Label TimeLineSecondsLabel;
         private Button OptionsLoadPathFile;
         private Button OptionsSavePathFile;
         private CheckBox OptionsDrawLineMode;
