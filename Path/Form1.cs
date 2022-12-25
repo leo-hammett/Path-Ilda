@@ -60,7 +60,7 @@ namespace Path
                     //SET ALL PROPERTIES TO PROPERTIES IN BETWEEN THEM BOTH
                     float animationProgress = (time - frameBefore.Time) / (frameAfter.Time-frameBefore.Time); //If you set each property to beforeFrame value plus (afterFrame - beforeFrame) * difference  -- This assumes a linear animation hence the constant progress as time moves forward.
                     
-                    return newFrame;
+                    return new PathLineFrame(animationProgress,frameBefore,frameAfter);
                 }
             }   //The majourity of the animation code IF THIS PROJECT DOESNT WORK IMMA CRY
             public PathLine(string Name, PathLineFrame KeyFrame, int DynamicPathIndex)
@@ -69,9 +69,9 @@ namespace Path
                 keyFrames.Add(KeyFrame);
                 dynamicPathIndex = DynamicPathIndex;
             }
-            public PathLine(string Name, )
+
         }
-        class PathLineFrame
+        class PathLineFrame //SOMETIMES IS A KEYFRAME SOMETIMES ISNT
         {
             int time; //Note the time is in frames not seconds, i'd recommend 30 frames per second unless you have expensive gear
             public int Time { get; set; }
@@ -81,9 +81,9 @@ namespace Path
 
             List<Point> pathPoints;
             public List<Point> PathPoints { get; set; }
-            public void AddPoint(Point NewPoint) { pathPoints.Add(NewPoint) }
-            int listIndex;
-            public int ListIndex { get; set; };
+            public void AddPoint(Point NewPoint) { pathPoints.Add(NewPoint); }
+            int listIndex;                      //THE INDEX OF THE LIST VARIES DEPENDING ON IF THE OBJECT IS A KEYFRAME OR NOT
+            public int ListIndex { get; set; }
             public List<LinePoint> GenKeyPoints(bool middle = false)
             {
                 List<LinePoint> KeyPoints= new List<LinePoint>();
