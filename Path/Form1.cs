@@ -10,7 +10,7 @@ namespace Path
     {
         List<PathLine> dynamicPath;         //The highest level
         List<PathLineFrame> framePath;      //What individual frames should look like. Should hopefully be generateable from a for loop and get line at dynamicPath[i]
-        int framePathTime;                  //Gives the time the framePath is generated for
+        int framePathTime = -1;                  //Gives the time the framePath is generated for
 
         int time;       //The time in frames that the system is at
         int fps;        //The number of frames per second (to get time in seconds divide time by fps)
@@ -19,31 +19,46 @@ namespace Path
         Point newPoint1;   //If set to -1,-1 no line preview should be made - Saving where the mouse went down
         Point newPoint2;   //Should ideally be wherever the mouse is (is -1,-1 when mouse is outside the box)
 
-        String LinePropertiesTitleText;
+        int selectedLineDynamicIndex;
         public Form1()
         {
             InitializeComponent();
+            //Initialising Variables
             dynamicPath = new List<PathLine>();
             framePath = new List<PathLineFrame>();
             newPoint1 = new Point(-1, -1);
             time = 0;
+            DrawerColorDialog.Color = Color.White;
         }
         class PathLine
         {
             string name;
-            public string Name  { get; set; }
+            public string Name
+            {
+                get { return name; }
+                set { name = value; }
+            }
 
             List<PathLineFrame> keyFrames; //A list of all keyframes sorted by time
-            public List<PathLineFrame> KeyFrames    { get; set; }
+            public List<PathLineFrame> KeyFrames
+            {
+                get { return keyFrames; }
+                set { keyFrames = value; }
+            }
 
             int dynamicPathIndex;
-            public int DynamicPathIndex { get; set; }
+            public int DynamicPathIndex
+            {
+                get { return dynamicPathIndex;}
+                set { dynamicPathIndex = value; }
+            }
+
 
             bool isHidden = false;
-            public bool IsHidden { get; set; }
-            public void Select(EventArgs e)
+            public bool IsHidden
             {
-
+                get { return isHidden;}
+                set { isHidden = value;}
             }
             public PathLineFrame GenFrameAt(int time)
             {
@@ -85,7 +100,7 @@ namespace Path
             }   //The majourity of the animation code IF THIS PROJECT DOESNT WORK IMMA CRY
             public PathLine(string Name, PathLineFrame KeyFrame, int DynamicPathIndex)
             { //For ListIndex just do Path
-                name = Name;
+                name = Name; 
                 keyFrames = new List<PathLineFrame>();
                 keyFrames.Add(KeyFrame);
                 dynamicPathIndex = DynamicPathIndex;
@@ -95,16 +110,32 @@ namespace Path
         class PathLineFrame //SOMETIMES IS A KEYFRAME SOMETIMES ISNT
         {
             int time; //Note the time is in frames not seconds, i'd recommend 30 frames per second unless you have expensive gear
-            public int Time { get; set; }
+            public int Time
+            {
+                get { return time; }
+                set { time = value; }
+            }
 
             Color pathColor;
-            public Color PathColor { get; set; }
+            public Color PathColor
+            {
+                get { return pathColor; }
+                set { pathColor = value; }
+            }
 
             List<Point> pathPoints;
-            public List<Point> PathPoints { get; set; }
+            public List<Point> PathPoints
+            {
+                get { return pathPoints; }
+                set { pathPoints = value; }
+            }
             public void AddPoint(Point NewPoint) { pathPoints.Add(NewPoint); }
             int listIndex;                      //THE INDEX OF THE LIST VARIES DEPENDING ON IF THE OBJECT IS A KEYFRAME OR NOT
-            public int ListIndex { get; set; }
+            public int ListIndex
+            {
+                get { return listIndex; }
+                set { listIndex = value; }
+            }
             public List<LinePoint> GenKeyPoints(bool middle = false)
             {
                 List<LinePoint> KeyPoints= new List<LinePoint>();
@@ -183,8 +214,23 @@ namespace Path
         class LinePoint
         {
             int shapeListIndex;
+            public int ShapeListIndex
+            {
+                get { return shapeListIndex; }
+                set { shapeListIndex = value; }
+            }
             Point location;
+            public Point Location
+            {
+                get { return location; }
+                set { location = value; }
+            }
             bool isMiddle;
+            public bool IsMiddle
+            {
+                get { return isMiddle; }
+                set { isMiddle = value; }
+            }
             public PathLineFrame GetLineFrame()
             {
                 return new PathLineFrame(0, Color.Black, 0, 0, 0, 0, 0);    //Make this return a line with the keypoint as point1 and the non keypoint as point2
@@ -222,6 +268,7 @@ namespace Path
                     framePath.Add(dynamicPath[i].GenFrameAt(framePathTime));
                 }
             }
+            InformationFrameListCountInfo.Text = framePath.Count().ToString();
 
             //DrawFramePathTime
             Pen linePen;
@@ -247,18 +294,22 @@ namespace Path
         {
             newPoint2 = e.Location;
             this.PreviewGraphics.Invalidate();
+            //updateInformation
+            InformationPoint1Info.Text = newPoint1.ToString();
+            InformationPoint2Info.Text = newPoint2.ToString();
         }
 
         private void PreviewGraphics_MouseUp(object sender, MouseEventArgs e)
         {
             if (OptionsDrawLineMode.Checked)
             {
-                dynamicPath.Add(new PathLine((newPoint1.ToString() + "," + newPoint2.ToString()),
+                dynamicPath.Add(new PathLine(("(" + newPoint1.X.ToString() + "," + newPoint1.Y.ToString() + "),(" + newPoint2.X.ToString() + "," + newPoint2.Y.ToString() + ")"),
                     new PathLineFrame(time, DrawerColorDialog.Color, newPoint1, newPoint2, dynamicPath.Count()),
                     dynamicPath.Count() + 1));
                 newPoint1.X = -1;
                 newPoint1.Y = -1;
-                InformationPoint1Info.Text = dynamicPath.Last().ToString();
+                InformationDynamicListCountInfo.Text = dynamicPath.Count().ToString();
+                framePathTime = -1;     //The equilivant of framePath.invalidate() <- Would be more efficient to just add this onto the framepath but am testing the whole thing right now
             }
         }
 

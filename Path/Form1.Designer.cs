@@ -30,6 +30,7 @@
         {
             this.PreviewGraphics = new System.Windows.Forms.PictureBox();
             this.OptionsPanel = new System.Windows.Forms.Panel();
+            this.OptionsColorSelecterOpener = new System.Windows.Forms.Button();
             this.OptionsDrawLineMode = new System.Windows.Forms.CheckBox();
             this.OptionsSelectModeButton = new System.Windows.Forms.CheckBox();
             this.OptionsEmergencyLabel = new System.Windows.Forms.Label();
@@ -55,13 +56,16 @@
             this.LinePropertiesPanel = new System.Windows.Forms.Panel();
             this.LinePropertiesTitle = new System.Windows.Forms.Label();
             this.InformationPanel = new System.Windows.Forms.Panel();
-            this.InformationTitleLabel = new System.Windows.Forms.Label();
-            this.InformationPoint1TitleLablel = new System.Windows.Forms.Label();
-            this.InformationPoint2TitleLabel = new System.Windows.Forms.Label();
-            this.InformationPoint1Info = new System.Windows.Forms.Label();
+            this.InformationFrameListCountInfo = new System.Windows.Forms.Label();
+            this.InformationDynamicListCountInfo = new System.Windows.Forms.Label();
+            this.InformationFrameListCountLabel = new System.Windows.Forms.Label();
+            this.InformationDynamicListCountLabel = new System.Windows.Forms.Label();
             this.InformationPoint2Info = new System.Windows.Forms.Label();
+            this.InformationPoint1Info = new System.Windows.Forms.Label();
+            this.InformationPoint2TitleLabel = new System.Windows.Forms.Label();
+            this.InformationPoint1TitleLablel = new System.Windows.Forms.Label();
+            this.InformationTitleLabel = new System.Windows.Forms.Label();
             this.DrawerColorDialog = new System.Windows.Forms.ColorDialog();
-            this.OptionsColorSelecterOpener = new System.Windows.Forms.Button();
             ((System.ComponentModel.ISupportInitialize)(this.PreviewGraphics)).BeginInit();
             this.OptionsPanel.SuspendLayout();
             this.TimeLinePanel.SuspendLayout();
@@ -106,6 +110,16 @@
             this.OptionsPanel.Name = "OptionsPanel";
             this.OptionsPanel.Size = new System.Drawing.Size(394, 206);
             this.OptionsPanel.TabIndex = 1;
+            // 
+            // OptionsColorSelecterOpener
+            // 
+            this.OptionsColorSelecterOpener.Location = new System.Drawing.Point(312, 176);
+            this.OptionsColorSelecterOpener.Name = "OptionsColorSelecterOpener";
+            this.OptionsColorSelecterOpener.Size = new System.Drawing.Size(75, 23);
+            this.OptionsColorSelecterOpener.TabIndex = 18;
+            this.OptionsColorSelecterOpener.Text = "Color";
+            this.OptionsColorSelecterOpener.UseVisualStyleBackColor = true;
+            this.OptionsColorSelecterOpener.Click += new System.EventHandler(this.OptionsColorSelecterOpener_Click);
             // 
             // OptionsDrawLineMode
             // 
@@ -339,6 +353,10 @@
             // 
             this.InformationPanel.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
             this.InformationPanel.BorderStyle = System.Windows.Forms.BorderStyle.Fixed3D;
+            this.InformationPanel.Controls.Add(this.InformationFrameListCountInfo);
+            this.InformationPanel.Controls.Add(this.InformationDynamicListCountInfo);
+            this.InformationPanel.Controls.Add(this.InformationFrameListCountLabel);
+            this.InformationPanel.Controls.Add(this.InformationDynamicListCountLabel);
             this.InformationPanel.Controls.Add(this.InformationPoint2Info);
             this.InformationPanel.Controls.Add(this.InformationPoint1Info);
             this.InformationPanel.Controls.Add(this.InformationPoint2TitleLabel);
@@ -348,6 +366,86 @@
             this.InformationPanel.Name = "InformationPanel";
             this.InformationPanel.Size = new System.Drawing.Size(394, 118);
             this.InformationPanel.TabIndex = 19;
+            // 
+            // InformationFrameListCountInfo
+            // 
+            this.InformationFrameListCountInfo.AutoSize = true;
+            this.InformationFrameListCountInfo.ForeColor = System.Drawing.SystemColors.Control;
+            this.InformationFrameListCountInfo.Location = new System.Drawing.Point(134, 86);
+            this.InformationFrameListCountInfo.Name = "InformationFrameListCountInfo";
+            this.InformationFrameListCountInfo.Size = new System.Drawing.Size(13, 15);
+            this.InformationFrameListCountInfo.TabIndex = 26;
+            this.InformationFrameListCountInfo.Text = "0";
+            // 
+            // InformationDynamicListCountInfo
+            // 
+            this.InformationDynamicListCountInfo.AutoSize = true;
+            this.InformationDynamicListCountInfo.ForeColor = System.Drawing.SystemColors.Control;
+            this.InformationDynamicListCountInfo.Location = new System.Drawing.Point(134, 71);
+            this.InformationDynamicListCountInfo.Name = "InformationDynamicListCountInfo";
+            this.InformationDynamicListCountInfo.Size = new System.Drawing.Size(13, 15);
+            this.InformationDynamicListCountInfo.TabIndex = 25;
+            this.InformationDynamicListCountInfo.Text = "0";
+            // 
+            // InformationFrameListCountLabel
+            // 
+            this.InformationFrameListCountLabel.AutoSize = true;
+            this.InformationFrameListCountLabel.ForeColor = System.Drawing.SystemColors.Control;
+            this.InformationFrameListCountLabel.Location = new System.Drawing.Point(14, 86);
+            this.InformationFrameListCountLabel.Name = "InformationFrameListCountLabel";
+            this.InformationFrameListCountLabel.Size = new System.Drawing.Size(100, 15);
+            this.InformationFrameListCountLabel.TabIndex = 24;
+            this.InformationFrameListCountLabel.Text = "Frame List Count:";
+            // 
+            // InformationDynamicListCountLabel
+            // 
+            this.InformationDynamicListCountLabel.AutoSize = true;
+            this.InformationDynamicListCountLabel.ForeColor = System.Drawing.SystemColors.Control;
+            this.InformationDynamicListCountLabel.Location = new System.Drawing.Point(14, 71);
+            this.InformationDynamicListCountLabel.Name = "InformationDynamicListCountLabel";
+            this.InformationDynamicListCountLabel.Size = new System.Drawing.Size(114, 15);
+            this.InformationDynamicListCountLabel.TabIndex = 23;
+            this.InformationDynamicListCountLabel.Text = "Dynamic List Count:";
+            // 
+            // InformationPoint2Info
+            // 
+            this.InformationPoint2Info.AutoSize = true;
+            this.InformationPoint2Info.ForeColor = System.Drawing.SystemColors.Control;
+            this.InformationPoint2Info.Location = new System.Drawing.Point(57, 56);
+            this.InformationPoint2Info.Name = "InformationPoint2Info";
+            this.InformationPoint2Info.Size = new System.Drawing.Size(27, 15);
+            this.InformationPoint2Info.TabIndex = 22;
+            this.InformationPoint2Info.Text = "null";
+            // 
+            // InformationPoint1Info
+            // 
+            this.InformationPoint1Info.AutoSize = true;
+            this.InformationPoint1Info.ForeColor = System.Drawing.SystemColors.Control;
+            this.InformationPoint1Info.Location = new System.Drawing.Point(57, 41);
+            this.InformationPoint1Info.Name = "InformationPoint1Info";
+            this.InformationPoint1Info.Size = new System.Drawing.Size(27, 15);
+            this.InformationPoint1Info.TabIndex = 21;
+            this.InformationPoint1Info.Text = "null";
+            // 
+            // InformationPoint2TitleLabel
+            // 
+            this.InformationPoint2TitleLabel.AutoSize = true;
+            this.InformationPoint2TitleLabel.ForeColor = System.Drawing.SystemColors.Control;
+            this.InformationPoint2TitleLabel.Location = new System.Drawing.Point(14, 56);
+            this.InformationPoint2TitleLabel.Name = "InformationPoint2TitleLabel";
+            this.InformationPoint2TitleLabel.Size = new System.Drawing.Size(47, 15);
+            this.InformationPoint2TitleLabel.TabIndex = 20;
+            this.InformationPoint2TitleLabel.Text = "Point2: ";
+            // 
+            // InformationPoint1TitleLablel
+            // 
+            this.InformationPoint1TitleLablel.AutoSize = true;
+            this.InformationPoint1TitleLablel.ForeColor = System.Drawing.SystemColors.Control;
+            this.InformationPoint1TitleLablel.Location = new System.Drawing.Point(14, 41);
+            this.InformationPoint1TitleLablel.Name = "InformationPoint1TitleLablel";
+            this.InformationPoint1TitleLablel.Size = new System.Drawing.Size(47, 15);
+            this.InformationPoint1TitleLablel.TabIndex = 19;
+            this.InformationPoint1TitleLablel.Text = "Point1: ";
             // 
             // InformationTitleLabel
             // 
@@ -360,56 +458,6 @@
             this.InformationTitleLabel.Size = new System.Drawing.Size(122, 30);
             this.InformationTitleLabel.TabIndex = 18;
             this.InformationTitleLabel.Text = "Information";
-            // 
-            // InformationPoint1TitleLablel
-            // 
-            this.InformationPoint1TitleLablel.AutoSize = true;
-            this.InformationPoint1TitleLablel.ForeColor = System.Drawing.SystemColors.Control;
-            this.InformationPoint1TitleLablel.Location = new System.Drawing.Point(14, 41);
-            this.InformationPoint1TitleLablel.Name = "InformationPoint1TitleLablel";
-            this.InformationPoint1TitleLablel.Size = new System.Drawing.Size(47, 15);
-            this.InformationPoint1TitleLablel.TabIndex = 19;
-            this.InformationPoint1TitleLablel.Text = "Point1: ";
-            // 
-            // InformationPoint2TitleLabel
-            // 
-            this.InformationPoint2TitleLabel.AutoSize = true;
-            this.InformationPoint2TitleLabel.ForeColor = System.Drawing.SystemColors.Control;
-            this.InformationPoint2TitleLabel.Location = new System.Drawing.Point(14, 56);
-            this.InformationPoint2TitleLabel.Name = "InformationPoint2TitleLabel";
-            this.InformationPoint2TitleLabel.Size = new System.Drawing.Size(47, 15);
-            this.InformationPoint2TitleLabel.TabIndex = 20;
-            this.InformationPoint2TitleLabel.Text = "Point2: ";
-            // 
-            // InformationPoint1Info
-            // 
-            this.InformationPoint1Info.AutoSize = true;
-            this.InformationPoint1Info.ForeColor = System.Drawing.SystemColors.Control;
-            this.InformationPoint1Info.Location = new System.Drawing.Point(57, 41);
-            this.InformationPoint1Info.Name = "InformationPoint1Info";
-            this.InformationPoint1Info.Size = new System.Drawing.Size(27, 15);
-            this.InformationPoint1Info.TabIndex = 21;
-            this.InformationPoint1Info.Text = "null";
-            // 
-            // InformationPoint2Info
-            // 
-            this.InformationPoint2Info.AutoSize = true;
-            this.InformationPoint2Info.ForeColor = System.Drawing.SystemColors.Control;
-            this.InformationPoint2Info.Location = new System.Drawing.Point(57, 56);
-            this.InformationPoint2Info.Name = "InformationPoint2Info";
-            this.InformationPoint2Info.Size = new System.Drawing.Size(27, 15);
-            this.InformationPoint2Info.TabIndex = 22;
-            this.InformationPoint2Info.Text = "null";
-            // 
-            // OptionsColorSelecterOpener
-            // 
-            this.OptionsColorSelecterOpener.Location = new System.Drawing.Point(312, 176);
-            this.OptionsColorSelecterOpener.Name = "OptionsColorSelecterOpener";
-            this.OptionsColorSelecterOpener.Size = new System.Drawing.Size(75, 23);
-            this.OptionsColorSelecterOpener.TabIndex = 18;
-            this.OptionsColorSelecterOpener.Text = "Color";
-            this.OptionsColorSelecterOpener.UseVisualStyleBackColor = true;
-            this.OptionsColorSelecterOpener.Click += new System.EventHandler(this.OptionsColorSelecterOpener_Click);
             // 
             // Form1
             // 
@@ -474,5 +522,9 @@
         private Label InformationPoint1TitleLablel;
         private Button OptionsColorSelecterOpener;
         private ColorDialog DrawerColorDialog;
+        private Label InformationFrameListCountInfo;
+        private Label InformationDynamicListCountInfo;
+        private Label InformationFrameListCountLabel;
+        private Label InformationDynamicListCountLabel;
     }
 }
