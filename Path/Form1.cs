@@ -18,6 +18,8 @@ namespace Path
 
         Point newPoint1;   //If set to -1,-1 no line preview should be made - Saving where the mouse went down
         Point newPoint2;   //Should ideally be wherever the mouse is (is -1,-1 when mouse is outside the box)
+
+        String LinePropertiesTitleText;
         public Form1()
         {
             InitializeComponent();
@@ -39,7 +41,10 @@ namespace Path
 
             bool isHidden = false;
             public bool IsHidden { get; set; }
+            public void Select(EventArgs e)
+            {
 
+            }
             public PathLineFrame GenFrameAt(int time)
             {
                 int frameBeforeIndex = -1;
@@ -253,6 +258,7 @@ namespace Path
                     dynamicPath.Count() + 1));
                 newPoint1.X = -1;
                 newPoint1.Y = -1;
+                InformationPoint1Info.Text = dynamicPath.Last().ToString();
             }
         }
 
