@@ -2,13 +2,29 @@ using System.Collections.Generic;
 //dynamicPath = the file & whole animation
 //framePath = the PathLineFrame array for the individual frame
 
+//REMEMBER THAT ALL SHAPES SHOULD BE STORED IN A 4095 CO-OORDINATE RESOLUTION NOT THE RESOLUTION OF THE SCREEN.
+
 namespace Path
 {
     public partial class Form1 : Form
     {
+        List<PathLine> dynamicPath;         //The highest level
+        List<PathLineFrame> framePath;      //What individual frames should look like. Should hopefully be generateable from a for loop and get line at dynamicPath[i]
+        int framePathTime;                  //Gives the time the framePath is generated for
+
+        int time;       //The time in frames that the system is at
+        int fps;        //The number of frames per second (to get time in seconds divide time by fps)
+        int kpps;       //The maximum number of points we should be sending down the dac. Mine was rated at 40KPPS but that could be a false rating at this point.
+
+        Point newPoint1;   //If set to -1,-1 no line preview should be made - Saving where the mouse went down
+        Point newPoint2;   //Should ideally be wherever the mouse is (is -1,-1 when mouse is outside the box)
         public Form1()
         {
             InitializeComponent();
+            dynamicPath = new List<PathLine>();
+            framePath = new List<PathLineFrame>();
+            newPoint1 = new Point(-1, -1);
+            time = 0;
         }
         class PathLine
         {
@@ -24,7 +40,6 @@ namespace Path
             bool isHidden = false;
             public bool IsHidden { get; set; }
 
-            
             public PathLineFrame GenFrameAt(int time)
             {
                 int frameBeforeIndex = -1;
@@ -66,6 +81,7 @@ namespace Path
             public PathLine(string Name, PathLineFrame KeyFrame, int DynamicPathIndex)
             { //For ListIndex just do Path
                 name = Name;
+                keyFrames = new List<PathLineFrame>();
                 keyFrames.Add(KeyFrame);
                 dynamicPathIndex = DynamicPathIndex;
             }
@@ -181,6 +197,68 @@ namespace Path
                 this.isMiddle = IsMiddle;
             }
 
+        }
+
+        //THE GRAPHICS PANEL
+        private void PreviewGraphics_Paint(object sender, PaintEventArgs e)
+        {
+            if(newPoint1 != (new Point(-1, -1)))
+            {
+                e.Graphics.DrawLine(new Pen(DrawerColorDialog.Color), newPoint1, newPoint2);
+            }       //If pendown & within the preview panel show a preview line
+
+            //Gen framePath
+            if(framePathTime != time)
+            {
+                framePathTime = time;
+                framePath = new List<PathLineFrame>();
+                for(int i = 0; i < dynamicPath.Count(); i++)
+                {
+                    framePath.Add(dynamicPath[i].GenFrameAt(framePathTime));
+                }
+            }
+
+            //DrawFramePathTime
+            Pen linePen;
+            for(int i = 0; i < framePath.Count(); i++)
+            {
+                linePen = new Pen(framePath[i].PathColor);
+                for(int j = 0; j < framePath[i].PathPoints.Count() - 1; j++)
+                {
+                    e.Graphics.DrawLine(linePen, framePath[i].PathPoints[j], framePath[i].PathPoints[j + 1]);
+                }
+            }
+        }
+
+        private void PreviewGraphics_MouseDown(object sender, MouseEventArgs e)
+        {
+            //If mouse down, check which tool is selected
+            if (OptionsDrawLineMode.Checked)
+            {
+                newPoint1 = new Point(e.X, e.Y);
+            }
+        }
+        private void PreviewGraphics_MouseMove(object sender, MouseEventArgs e)
+        {
+            newPoint2 = e.Location;
+            this.PreviewGraphics.Invalidate();
+        }
+
+        private void PreviewGraphics_MouseUp(object sender, MouseEventArgs e)
+        {
+            if (OptionsDrawLineMode.Checked)
+            {
+                dynamicPath.Add(new PathLine((newPoint1.ToString() + "," + newPoint2.ToString()),
+                    new PathLineFrame(time, DrawerColorDialog.Color, newPoint1, newPoint2, dynamicPath.Count()),
+                    dynamicPath.Count() + 1));
+                newPoint1.X = -1;
+                newPoint1.Y = -1;
+            }
+        }
+
+        private void OptionsColorSelecterOpener_Click(object sender, EventArgs e)
+        {
+            DrawerColorDialog.ShowDialog();
         }
     }
 }

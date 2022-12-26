@@ -56,6 +56,12 @@
             this.LinePropertiesTitle = new System.Windows.Forms.Label();
             this.InformationPanel = new System.Windows.Forms.Panel();
             this.InformationTitleLabel = new System.Windows.Forms.Label();
+            this.InformationPoint1TitleLablel = new System.Windows.Forms.Label();
+            this.InformationPoint2TitleLabel = new System.Windows.Forms.Label();
+            this.InformationPoint1Info = new System.Windows.Forms.Label();
+            this.InformationPoint2Info = new System.Windows.Forms.Label();
+            this.DrawerColorDialog = new System.Windows.Forms.ColorDialog();
+            this.OptionsColorSelecterOpener = new System.Windows.Forms.Button();
             ((System.ComponentModel.ISupportInitialize)(this.PreviewGraphics)).BeginInit();
             this.OptionsPanel.SuspendLayout();
             this.TimeLinePanel.SuspendLayout();
@@ -65,17 +71,26 @@
             // 
             // PreviewGraphics
             // 
+            this.PreviewGraphics.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
+            | System.Windows.Forms.AnchorStyles.Left) 
+            | System.Windows.Forms.AnchorStyles.Right)));
             this.PreviewGraphics.BorderStyle = System.Windows.Forms.BorderStyle.Fixed3D;
             this.PreviewGraphics.Location = new System.Drawing.Point(12, 12);
             this.PreviewGraphics.Name = "PreviewGraphics";
-            this.PreviewGraphics.Size = new System.Drawing.Size(512, 512);
-            this.PreviewGraphics.SizeMode = System.Windows.Forms.PictureBoxSizeMode.AutoSize;
+            this.PreviewGraphics.Size = new System.Drawing.Size(509, 509);
+            this.PreviewGraphics.SizeMode = System.Windows.Forms.PictureBoxSizeMode.Zoom;
             this.PreviewGraphics.TabIndex = 0;
             this.PreviewGraphics.TabStop = false;
+            this.PreviewGraphics.Paint += new System.Windows.Forms.PaintEventHandler(this.PreviewGraphics_Paint);
+            this.PreviewGraphics.MouseDown += new System.Windows.Forms.MouseEventHandler(this.PreviewGraphics_MouseDown);
+            this.PreviewGraphics.MouseMove += new System.Windows.Forms.MouseEventHandler(this.PreviewGraphics_MouseMove);
+            this.PreviewGraphics.MouseUp += new System.Windows.Forms.MouseEventHandler(this.PreviewGraphics_MouseUp);
             // 
             // OptionsPanel
             // 
+            this.OptionsPanel.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
             this.OptionsPanel.BorderStyle = System.Windows.Forms.BorderStyle.Fixed3D;
+            this.OptionsPanel.Controls.Add(this.OptionsColorSelecterOpener);
             this.OptionsPanel.Controls.Add(this.OptionsDrawLineMode);
             this.OptionsPanel.Controls.Add(this.OptionsSelectModeButton);
             this.OptionsPanel.Controls.Add(this.OptionsEmergencyLabel);
@@ -201,6 +216,8 @@
             // 
             // TimeLinePanel
             // 
+            this.TimeLinePanel.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left) 
+            | System.Windows.Forms.AnchorStyles.Right)));
             this.TimeLinePanel.BorderStyle = System.Windows.Forms.BorderStyle.Fixed3D;
             this.TimeLinePanel.Controls.Add(this.TimeLineFramesInput);
             this.TimeLinePanel.Controls.Add(this.TimeLineSecondsInput);
@@ -296,11 +313,14 @@
             // 
             // LinePropertiesPanel
             // 
+            this.LinePropertiesPanel.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
+            | System.Windows.Forms.AnchorStyles.Right)));
+            this.LinePropertiesPanel.AutoScroll = true;
             this.LinePropertiesPanel.BorderStyle = System.Windows.Forms.BorderStyle.Fixed3D;
             this.LinePropertiesPanel.Controls.Add(this.LinePropertiesTitle);
             this.LinePropertiesPanel.Location = new System.Drawing.Point(530, 12);
             this.LinePropertiesPanel.Name = "LinePropertiesPanel";
-            this.LinePropertiesPanel.Size = new System.Drawing.Size(394, 208);
+            this.LinePropertiesPanel.Size = new System.Drawing.Size(394, 296);
             this.LinePropertiesPanel.TabIndex = 3;
             // 
             // LinePropertiesTitle
@@ -317,11 +337,16 @@
             // 
             // InformationPanel
             // 
+            this.InformationPanel.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
             this.InformationPanel.BorderStyle = System.Windows.Forms.BorderStyle.Fixed3D;
+            this.InformationPanel.Controls.Add(this.InformationPoint2Info);
+            this.InformationPanel.Controls.Add(this.InformationPoint1Info);
+            this.InformationPanel.Controls.Add(this.InformationPoint2TitleLabel);
+            this.InformationPanel.Controls.Add(this.InformationPoint1TitleLablel);
             this.InformationPanel.Controls.Add(this.InformationTitleLabel);
-            this.InformationPanel.Location = new System.Drawing.Point(530, 226);
+            this.InformationPanel.Location = new System.Drawing.Point(530, 314);
             this.InformationPanel.Name = "InformationPanel";
-            this.InformationPanel.Size = new System.Drawing.Size(394, 206);
+            this.InformationPanel.Size = new System.Drawing.Size(394, 118);
             this.InformationPanel.TabIndex = 19;
             // 
             // InformationTitleLabel
@@ -336,6 +361,56 @@
             this.InformationTitleLabel.TabIndex = 18;
             this.InformationTitleLabel.Text = "Information";
             // 
+            // InformationPoint1TitleLablel
+            // 
+            this.InformationPoint1TitleLablel.AutoSize = true;
+            this.InformationPoint1TitleLablel.ForeColor = System.Drawing.SystemColors.Control;
+            this.InformationPoint1TitleLablel.Location = new System.Drawing.Point(14, 41);
+            this.InformationPoint1TitleLablel.Name = "InformationPoint1TitleLablel";
+            this.InformationPoint1TitleLablel.Size = new System.Drawing.Size(47, 15);
+            this.InformationPoint1TitleLablel.TabIndex = 19;
+            this.InformationPoint1TitleLablel.Text = "Point1: ";
+            // 
+            // InformationPoint2TitleLabel
+            // 
+            this.InformationPoint2TitleLabel.AutoSize = true;
+            this.InformationPoint2TitleLabel.ForeColor = System.Drawing.SystemColors.Control;
+            this.InformationPoint2TitleLabel.Location = new System.Drawing.Point(14, 56);
+            this.InformationPoint2TitleLabel.Name = "InformationPoint2TitleLabel";
+            this.InformationPoint2TitleLabel.Size = new System.Drawing.Size(47, 15);
+            this.InformationPoint2TitleLabel.TabIndex = 20;
+            this.InformationPoint2TitleLabel.Text = "Point2: ";
+            // 
+            // InformationPoint1Info
+            // 
+            this.InformationPoint1Info.AutoSize = true;
+            this.InformationPoint1Info.ForeColor = System.Drawing.SystemColors.Control;
+            this.InformationPoint1Info.Location = new System.Drawing.Point(57, 41);
+            this.InformationPoint1Info.Name = "InformationPoint1Info";
+            this.InformationPoint1Info.Size = new System.Drawing.Size(27, 15);
+            this.InformationPoint1Info.TabIndex = 21;
+            this.InformationPoint1Info.Text = "null";
+            // 
+            // InformationPoint2Info
+            // 
+            this.InformationPoint2Info.AutoSize = true;
+            this.InformationPoint2Info.ForeColor = System.Drawing.SystemColors.Control;
+            this.InformationPoint2Info.Location = new System.Drawing.Point(57, 56);
+            this.InformationPoint2Info.Name = "InformationPoint2Info";
+            this.InformationPoint2Info.Size = new System.Drawing.Size(27, 15);
+            this.InformationPoint2Info.TabIndex = 22;
+            this.InformationPoint2Info.Text = "null";
+            // 
+            // OptionsColorSelecterOpener
+            // 
+            this.OptionsColorSelecterOpener.Location = new System.Drawing.Point(312, 176);
+            this.OptionsColorSelecterOpener.Name = "OptionsColorSelecterOpener";
+            this.OptionsColorSelecterOpener.Size = new System.Drawing.Size(75, 23);
+            this.OptionsColorSelecterOpener.TabIndex = 18;
+            this.OptionsColorSelecterOpener.Text = "Color";
+            this.OptionsColorSelecterOpener.UseVisualStyleBackColor = true;
+            this.OptionsColorSelecterOpener.Click += new System.EventHandler(this.OptionsColorSelecterOpener_Click);
+            // 
             // Form1
             // 
             this.AccessibleName = "Path Window";
@@ -343,11 +418,11 @@
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.BackColor = System.Drawing.SystemColors.Desktop;
             this.ClientSize = new System.Drawing.Size(936, 656);
+            this.Controls.Add(this.PreviewGraphics);
             this.Controls.Add(this.InformationPanel);
             this.Controls.Add(this.LinePropertiesPanel);
             this.Controls.Add(this.TimeLinePanel);
             this.Controls.Add(this.OptionsPanel);
-            this.Controls.Add(this.PreviewGraphics);
             this.Name = "Form1";
             this.Text = "Path";
             ((System.ComponentModel.ISupportInitialize)(this.PreviewGraphics)).EndInit();
@@ -360,7 +435,6 @@
             this.InformationPanel.ResumeLayout(false);
             this.InformationPanel.PerformLayout();
             this.ResumeLayout(false);
-            this.PerformLayout();
 
         }
 
@@ -394,5 +468,11 @@
         private Label LinePropertiesTitle;
         private Panel InformationPanel;
         private Label InformationTitleLabel;
+        private Label InformationPoint2Info;
+        private Label InformationPoint1Info;
+        private Label InformationPoint2TitleLabel;
+        private Label InformationPoint1TitleLablel;
+        private Button OptionsColorSelecterOpener;
+        private ColorDialog DrawerColorDialog;
     }
 }
