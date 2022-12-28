@@ -63,6 +63,8 @@
             this.LinePropertiesKeyFramesTextBox = new System.Windows.Forms.ListBox();
             this.LinePropertiesTitle = new System.Windows.Forms.Label();
             this.InformationPanel = new System.Windows.Forms.Panel();
+            this.InformationClosestPointData = new System.Windows.Forms.Label();
+            this.InformationClosestPointLabel = new System.Windows.Forms.Label();
             this.InformationFrameListCountInfo = new System.Windows.Forms.Label();
             this.InformationDynamicListCountInfo = new System.Windows.Forms.Label();
             this.InformationFrameListCountLabel = new System.Windows.Forms.Label();
@@ -84,7 +86,7 @@
             // PreviewGraphics
             // 
             this.PreviewGraphics.BorderStyle = System.Windows.Forms.BorderStyle.Fixed3D;
-            this.PreviewGraphics.Location = new System.Drawing.Point(12, 12);
+            this.PreviewGraphics.Location = new System.Drawing.Point(15, 15);
             this.PreviewGraphics.Name = "PreviewGraphics";
             this.PreviewGraphics.Size = new System.Drawing.Size(509, 509);
             this.PreviewGraphics.SizeMode = System.Windows.Forms.PictureBoxSizeMode.Zoom;
@@ -129,6 +131,7 @@
             this.OptionsSnapToPoint.TabIndex = 19;
             this.OptionsSnapToPoint.Text = "Snap To Point";
             this.OptionsSnapToPoint.UseVisualStyleBackColor = true;
+            this.OptionsSnapToPoint.CheckedChanged += new System.EventHandler(this.OptionsSnapToPoint_CheckedChanged);
             // 
             // OptionsColorSelecterOpener
             // 
@@ -162,6 +165,7 @@
             this.OptionsSelectModeButton.TabIndex = 16;
             this.OptionsSelectModeButton.Text = "Select Tool";
             this.OptionsSelectModeButton.UseVisualStyleBackColor = true;
+            this.OptionsSelectModeButton.CheckedChanged += new System.EventHandler(this.OptionsSelectModeButton_CheckedChanged);
             // 
             // OptionsEmergencyLabel
             // 
@@ -379,6 +383,7 @@
             this.LinePropertiesTimeData.Name = "LinePropertiesTimeData";
             this.LinePropertiesTimeData.Size = new System.Drawing.Size(145, 23);
             this.LinePropertiesTimeData.TabIndex = 9;
+            this.LinePropertiesTimeData.TextChanged += new System.EventHandler(this.LinePropertiesTimeData_TextChanged);
             // 
             // LinePropertiesTimeLabel
             // 
@@ -436,6 +441,8 @@
             this.InformationPanel.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left) 
             | System.Windows.Forms.AnchorStyles.Right)));
             this.InformationPanel.BorderStyle = System.Windows.Forms.BorderStyle.Fixed3D;
+            this.InformationPanel.Controls.Add(this.InformationClosestPointData);
+            this.InformationPanel.Controls.Add(this.InformationClosestPointLabel);
             this.InformationPanel.Controls.Add(this.InformationFrameListCountInfo);
             this.InformationPanel.Controls.Add(this.InformationDynamicListCountInfo);
             this.InformationPanel.Controls.Add(this.InformationFrameListCountLabel);
@@ -449,6 +456,26 @@
             this.InformationPanel.Name = "InformationPanel";
             this.InformationPanel.Size = new System.Drawing.Size(394, 118);
             this.InformationPanel.TabIndex = 19;
+            // 
+            // InformationClosestPointData
+            // 
+            this.InformationClosestPointData.AutoSize = true;
+            this.InformationClosestPointData.ForeColor = System.Drawing.SystemColors.Control;
+            this.InformationClosestPointData.Location = new System.Drawing.Point(279, 41);
+            this.InformationClosestPointData.Name = "InformationClosestPointData";
+            this.InformationClosestPointData.Size = new System.Drawing.Size(27, 15);
+            this.InformationClosestPointData.TabIndex = 28;
+            this.InformationClosestPointData.Text = "null";
+            // 
+            // InformationClosestPointLabel
+            // 
+            this.InformationClosestPointLabel.AutoSize = true;
+            this.InformationClosestPointLabel.ForeColor = System.Drawing.SystemColors.Control;
+            this.InformationClosestPointLabel.Location = new System.Drawing.Point(197, 41);
+            this.InformationClosestPointLabel.Name = "InformationClosestPointLabel";
+            this.InformationClosestPointLabel.Size = new System.Drawing.Size(76, 15);
+            this.InformationClosestPointLabel.TabIndex = 27;
+            this.InformationClosestPointLabel.Text = "ClosestPoint:";
             // 
             // InformationFrameListCountInfo
             // 
@@ -617,5 +644,7 @@
         private Button LinePropertiesChangeColor;
         private ColorDialog LinePropertiesColorDialog;
         private CheckBox OptionsSnapToPoint;
+        private Label InformationClosestPointLabel;
+        private Label InformationClosestPointData;
     }
 }

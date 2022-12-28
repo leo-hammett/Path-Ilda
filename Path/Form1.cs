@@ -19,8 +19,12 @@ namespace Path
         Point newPoint1;   //If set to -1,-1 no line preview should be made - Saving where the mouse went down
         Point newPoint2;   //Should ideally be wherever the mouse is (is -1,-1 when mouse is outside the box)
 
-        LinePoint closestPoint;
+        bool selectedPointsToBeUpdated = false;
 
+        List<LinePoint> closestPoints;
+        Point closestPoint;
+
+        int previewMode = 0;    //0 = no changes are about to happen, 1 = normal line will be created, 2 = snapped line will be created, 3 = line properties changed, 4 = line or point will be selected, 5 = just line will be selected
         int selectedLineDynamicIndex;
         public Form1()
         {
@@ -231,7 +235,6 @@ namespace Path
             public bool IsMiddle
             {
                 get { return isMiddle; }
-                set { isMiddle = value; }
             }
             public PathLineFrame GetLineFrame()
             {
@@ -265,16 +268,11 @@ namespace Path
         }
         public double getDistance(Point point1, Point point2)
         {
-            return Math.Sqrt((point1.X - point2.X) ^ 2 + (point1.Y - point2.Y) ^ 2);
+            return Math.Sqrt(Math.Pow(point1.X - point2.X, 2) + Math.Pow(point1.Y - point2.Y,2));
         }
         //THE GRAPHICS PANEL
         private void PreviewGraphics_Paint(object sender, PaintEventArgs e)
         {
-            if(newPoint1 != (new Point(-1, -1)))
-            {
-                e.Graphics.DrawLine(new Pen(DrawerColorDialog.Color), ConvertToHeliosCoords(newPoint1,true), ConvertToHeliosCoords(newPoint2,true));
-            }       //If pendown & within the preview panel show a preview line
-
             //Gen framePath
             if(framePathTime != time)
             {
@@ -289,41 +287,107 @@ namespace Path
 
             //DrawFramePathTime
             Pen linePen;
-            for(int i = 0; i < framePath.Count(); i++)
+            double closestPointDistance = 1000000;
+            for (int i = 0; i < framePath.Count(); i++)
             {
                 linePen = new Pen(framePath[i].PathColor);
                 for(int j = 0; j < framePath[i].PathPoints.Count() - 1; j++)
                 {
-                    e.Graphics.DrawLine(linePen, ConvertToHeliosCoords(framePath[i].PathPoints[j],true), ConvertToHeliosCoords(framePath[i].PathPoints[j + 1],true));
-                }
-                if (OptionsSelectModeButton.Checked || OptionsSnapToPoint.Checked)      //Also finds closest point to mouse
-                {
-                    List<LinePoint> keyPoints = new List<LinePoint>();
-                    keyPoints = framePath[i].GenKeyPoints();
-                    Pen bigCircle = new Pen(Color.Gray, 3);
-                    Pen smallCircle = new Pen(Color.DimGray, 2);
-                    LinePoint closestPoint;
-                    double closestPointDistance = 1000000;
-                    for (int j = 0; j < keyPoints.Count(); j++)
+                    if(OptionsSelectModeButton.Checked && newPoint1 == framePath[i].PathPoints[j])
                     {
-                        Point pointLocation = ConvertToHeliosCoords(keyPoints[j].Location, true);
-                        e.Graphics.FillCircle(new SolidBrush(Color.LightGray), pointLocation.X, pointLocation.Y, 3);
-                        e.Graphics.FillCircle(new SolidBrush(Color.DarkGray), pointLocation.X, pointLocation.Y, 2);
-                        if(getDistance(pointLocation,newPoint2) < closestPointDistance)
-                        {
-                            closestPoint = keyPoints[j];
-                            closestPointDistance = getDistance(pointLocation, newPoint2);
-                        }
+                        e.Graphics.DrawLine(linePen, ConvertToHeliosCoords(newPoint2, true), ConvertToHeliosCoords(framePath[i].PathPoints[j + 1], true));
+                    }
+                    else if(OptionsSelectModeButton.Checked && newPoint1 == framePath[i].PathPoints[j + 1])
+                    {
+                        e.Graphics.DrawLine(linePen, ConvertToHeliosCoords(framePath[i].PathPoints[j], true), ConvertToHeliosCoords(newPoint2, true));
+                    }
+                    else
+                    {
+                        e.Graphics.DrawLine(linePen, ConvertToHeliosCoords(framePath[i].PathPoints[j], true), ConvertToHeliosCoords(framePath[i].PathPoints[j + 1], true));
+                    }
+                }
+                
+                List<LinePoint> keyPoints = new List<LinePoint>();
+                keyPoints = framePath[i].GenKeyPoints(OptionsSelectModeButton.Checked);
+                Pen bigCircle = new Pen(Color.Gray, 3);
+                Pen smallCircle = new Pen(Color.DimGray, 2);
+                for (int j = 0; j < keyPoints.Count(); j++)
+                {
+                    Point pointLocation = keyPoints[j].Location;
+                    Point pointLocationGraphics = ConvertToHeliosCoords(pointLocation, true);
+                    if (OptionsSelectModeButton.Checked || OptionsSnapToPoint.Checked)      //Also finds closest point to mouse
+                    {
+                        e.Graphics.FillCircle(new SolidBrush(Color.LightGray), pointLocationGraphics.X, pointLocationGraphics.Y, 4);
+                        e.Graphics.FillCircle(new SolidBrush(Color.DarkGray), pointLocationGraphics.X, pointLocationGraphics.Y, 3);
+                    }
+                    if(getDistance(pointLocation,newPoint2) < closestPointDistance)
+                    {
+                        closestPoint = keyPoints[j].Location;
+                        closestPoints = new List<LinePoint>();
+                        closestPoints.Add(keyPoints[j]);
+                        InformationClosestPointData.Text = closestPoint.ToString();
+                        closestPointDistance = getDistance(pointLocation, newPoint2);
+                    }
+                    else if(getDistance(pointLocation, newPoint2) == closestPointDistance)
+                    {
+                        closestPoints.Add(keyPoints[j]);
                     }
                 }
             }
+            if(OptionsSelectModeButton.Checked || OptionsSnapToPoint.Checked)
+            {
+                if (closestPoints[0].IsMiddle && closestPoints.Count == 1)
+                {
+                    e.Graphics.DrawLine(new Pen(Color.Red, 2), ConvertToHeliosCoords(dynamicPath[closestPoints[0].ShapeListIndex].GenFrameAt(time).PathPoints[0],true),
+                        ConvertToHeliosCoords(dynamicPath[closestPoints[0].ShapeListIndex].GenFrameAt(time).PathPoints[1],true));
+                }
+                else
+                {
+                    e.Graphics.FillCircle(new SolidBrush(Color.Red), ConvertToHeliosCoords(closestPoint, true), 3);
+                }
+            }
+            if (newPoint1 != (new Point(-1, -1)))   //Preview of the forthcoming action
+            {
+                if (OptionsDrawLineMode.Checked && OptionsSnapToPoint.Checked && getDistance(closestPoint, newPoint2) < 100)
+                {
+                    e.Graphics.DrawLine(new Pen(DrawerColorDialog.Color), ConvertToHeliosCoords(newPoint1, true), ConvertToHeliosCoords(closestPoint, true));
+                }
+                else
+                {
+                    e.Graphics.DrawLine(new Pen(DrawerColorDialog.Color), ConvertToHeliosCoords(newPoint1, true), ConvertToHeliosCoords(newPoint2, true));
+                }
+            }       //If pendown & within the preview panel show a preview line
         }
         private void PreviewGraphics_MouseDown(object sender, MouseEventArgs e)
         {
             //If mouse down, check which tool is selected
             if (OptionsDrawLineMode.Checked)
             {
-                newPoint1 = ConvertToHeliosCoords(e.Location);
+                if (OptionsSnapToPoint.Checked && getDistance(closestPoint, newPoint2) < 100) //both conditions so the snap tool is useful
+                {
+                    newPoint1 = closestPoint;
+                }
+                else
+                {
+                    newPoint1 = ConvertToHeliosCoords(e.Location); //Closest point already a variable & is therefore converted.
+                }
+            }
+            else if (closestPoints[0].IsMiddle && closestPoints.Count == 1)
+            {
+                selectedLineDynamicIndex = closestPoints[0].ShapeListIndex;
+                LinePropertiesTitle.Text = "Line Properties: " + dynamicPath[closestPoints[0].ShapeListIndex].Name;
+                LinePropertiesPathIndexData.Text = selectedLineDynamicIndex.ToString();
+                LinePropertiesKeyFramesTextBox.Items.Clear();
+                for(int i = 0; i < dynamicPath[closestPoints[0].ShapeListIndex].KeyFrames.Count; i++)
+                {
+                    LinePropertiesKeyFramesTextBox.Items.Add(dynamicPath[closestPoints[0].ShapeListIndex].KeyFrames[i].Time);
+                }
+                LinePropertiesTimeData.Text = time.ToString();
+                LinePropertiesChangeColor.BackColor = dynamicPath[closestPoints[0].ShapeListIndex].GenFrameAt(time).PathColor;
+            }
+            else if (OptionsSelectModeButton.Checked)
+            {
+                newPoint1 = closestPoint;
             }
         }
         private void PreviewGraphics_MouseMove(object sender, MouseEventArgs e)
@@ -339,13 +403,26 @@ namespace Path
         {
             if (OptionsDrawLineMode.Checked)
             {
-                dynamicPath.Add(new PathLine(("(" + newPoint1.X.ToString() + "," + newPoint1.Y.ToString() + "),(" + newPoint2.X.ToString() + "," + newPoint2.Y.ToString() + ")"),
+                if (OptionsSnapToPoint.Checked && getDistance(closestPoint,newPoint2) < 100)
+                {
+                    dynamicPath.Add(new PathLine(("(" + newPoint1.X.ToString() + "," + newPoint1.Y.ToString() + "),(" + closestPoint.X.ToString() + "," + closestPoint.Y.ToString() + ")"),
+                    new PathLineFrame(time, DrawerColorDialog.Color, newPoint1, closestPoint, dynamicPath.Count()),
+                    dynamicPath.Count() + 1));
+                }
+                else
+                {
+                    dynamicPath.Add(new PathLine(("(" + newPoint1.X.ToString() + "," + newPoint1.Y.ToString() + "),(" + newPoint2.X.ToString() + "," + newPoint2.Y.ToString() + ")"),
                     new PathLineFrame(time, DrawerColorDialog.Color, newPoint1, newPoint2, dynamicPath.Count()),
                     dynamicPath.Count() + 1));
+                }
                 newPoint1.X = -1;
                 newPoint1.Y = -1;
                 InformationDynamicListCountInfo.Text = dynamicPath.Count().ToString();
                 framePathTime = -1;     //The equilivant of framePath.invalidate() <- Would be more efficient to just add this onto the framepath but am testing the whole thing right now
+            }
+            else if (OptionsSelectModeButton.Checked)
+            {
+
             }
         }
 
@@ -382,11 +459,58 @@ namespace Path
                 MessageBox.Show(ex.Message, "Error: cannot convert text to number: " + TimeLineFramesInput.Text);
             }
         }
-
+        private void LinePropertiesTimeData_TextChanged(object sender, EventArgs e)
+        {
+            try
+            {
+                if (TimeLineFramesInput.Text != "")
+                {
+                    time = Convert.ToInt32(TimeLineFramesInput.Text);
+                }
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show(ex.Message, "Error: cannot convert text to number: " + TimeLineFramesInput.Text);
+            }
+        }
         private void OptionsDrawLineMode_CheckedChanged(object sender, EventArgs e)
         {
             OptionsSelectModeButton.Checked = !OptionsDrawLineMode.Checked;
+            if (OptionsDrawLineMode.Checked)
+            {
+                OptionsDrawLineMode.BackColor = Color.Green;
+            }
+            else
+            {
+                OptionsDrawLineMode.BackColor = Color.Red;
+            }
         }
+
+        private void OptionsSelectModeButton_CheckedChanged(object sender, EventArgs e)
+        {
+            OptionsDrawLineMode.Checked = !OptionsSelectModeButton.Checked;
+            if (OptionsSelectModeButton.Checked)
+            {
+                OptionsSelectModeButton.BackColor = Color.Green;
+            }
+            else
+            {
+                OptionsSelectModeButton.BackColor = Color.Red;
+            }
+        }
+
+        private void OptionsSnapToPoint_CheckedChanged(object sender, EventArgs e)
+        {
+            if (OptionsSnapToPoint.Checked)
+            {
+                OptionsSnapToPoint.BackColor = Color.Green;
+            }
+            else
+            {
+                OptionsSnapToPoint.BackColor = Color.Red;
+            }
+        }
+
     }
     public static class GraphicsExtensions      //This code (the graphics extensions) was someoene elses but worked really well so i am keeping it
     {
@@ -402,6 +526,12 @@ namespace Path
         {
             g.FillEllipse(brush, centerX - radius, centerY - radius,
                           radius + radius, radius + radius);
+        }//End of someone elses code.
+        public static void FillCircle(this Graphics g, Brush brush,
+                                      Point center, float radius)
+        {
+            g.FillEllipse(brush, center.X - radius, center.Y - radius,
+                          radius + radius, radius + radius);
         }
-    }                   //End of someone elses code.
+    }                   
 }
