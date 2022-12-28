@@ -72,11 +72,11 @@ namespace Path
                     }
                     else if (keyFrames[i].Time < time)      //Finds the latest KeyFrame before the time
                     {
-                        PathLineFrame frameBefore = keyFrames[i];
+                        frameBeforeIndex = i;
                     }
                     else if (frameAfterIndex == -1)         //Finds the first keyframe after the time. Gonna be real theres bound to be a logic error here.
                     {
-                        PathLineFrame frameAfter = keyFrames[i];
+                        frameAfterIndex = i;
                     }
                 }
                 if (frameBeforeIndex == -1)                  //If before all frames then newframe is the same as the frame after or first frame
@@ -249,13 +249,25 @@ namespace Path
             }
 
         }
+        public Point ConvertToHeliosCoords(Point Original, bool backwards = false)
+        {
+            float Scale = 4095 / PreviewGraphics.Size.Width;
+            if (!backwards)
+            {
+                return new Point((int)(Original.X * Scale),(int)(Original.Y * Scale));
+            }
+            else
+            {
+                return new Point((int)(Original.X / Scale), (int)(Original.Y / Scale));
+            }
+        }
 
         //THE GRAPHICS PANEL
         private void PreviewGraphics_Paint(object sender, PaintEventArgs e)
         {
             if(newPoint1 != (new Point(-1, -1)))
             {
-                e.Graphics.DrawLine(new Pen(DrawerColorDialog.Color), newPoint1, newPoint2);
+                e.Graphics.DrawLine(new Pen(DrawerColorDialog.Color), ConvertToHeliosCoords(newPoint1,true), ConvertToHeliosCoords(newPoint2,true));
             }       //If pendown & within the preview panel show a preview line
 
             //Gen framePath
@@ -277,22 +289,21 @@ namespace Path
                 linePen = new Pen(framePath[i].PathColor);
                 for(int j = 0; j < framePath[i].PathPoints.Count() - 1; j++)
                 {
-                    e.Graphics.DrawLine(linePen, framePath[i].PathPoints[j], framePath[i].PathPoints[j + 1]);
+                    e.Graphics.DrawLine(linePen, ConvertToHeliosCoords(framePath[i].PathPoints[j],true), ConvertToHeliosCoords(framePath[i].PathPoints[j + 1],true));
                 }
             }
         }
-
         private void PreviewGraphics_MouseDown(object sender, MouseEventArgs e)
         {
             //If mouse down, check which tool is selected
             if (OptionsDrawLineMode.Checked)
             {
-                newPoint1 = new Point(e.X, e.Y);
+                newPoint1 = ConvertToHeliosCoords(e.Location);
             }
         }
         private void PreviewGraphics_MouseMove(object sender, MouseEventArgs e)
         {
-            newPoint2 = e.Location;
+            newPoint2 = ConvertToHeliosCoords(e.Location);
             this.PreviewGraphics.Invalidate();
             //updateInformation
             InformationPoint1Info.Text = newPoint1.ToString();
@@ -316,6 +327,35 @@ namespace Path
         private void OptionsColorSelecterOpener_Click(object sender, EventArgs e)
         {
             DrawerColorDialog.ShowDialog();
+        }
+
+        private void PreviewGraphics_Resize(object sender, EventArgs e)
+        {
+            if (PreviewGraphics.Width == PreviewGraphics.Height) return;
+
+            if (PreviewGraphics.Width > PreviewGraphics.Height)
+            {
+                PreviewGraphics.Height = PreviewGraphics.Width;
+            }
+            else
+            {
+                PreviewGraphics.Width = PreviewGraphics.Height;
+            }
+        }
+
+        private void TimeLineFramesInput_TextChanged(object sender, EventArgs e)
+        {
+            try
+            {
+                if(TimeLineFramesInput.Text != "")
+                {
+                time = Convert.ToInt32(TimeLineFramesInput.Text);
+                }
+            }
+            catch(Exception ex)
+            {
+                MessageBox.Show(ex.Message, "Error: cannot convert text to number: " + TimeLineFramesInput.Text);
+            }
         }
     }
 }

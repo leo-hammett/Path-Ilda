@@ -75,9 +75,6 @@
             // 
             // PreviewGraphics
             // 
-            this.PreviewGraphics.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
-            | System.Windows.Forms.AnchorStyles.Left) 
-            | System.Windows.Forms.AnchorStyles.Right)));
             this.PreviewGraphics.BorderStyle = System.Windows.Forms.BorderStyle.Fixed3D;
             this.PreviewGraphics.Location = new System.Drawing.Point(12, 12);
             this.PreviewGraphics.Name = "PreviewGraphics";
@@ -89,10 +86,12 @@
             this.PreviewGraphics.MouseDown += new System.Windows.Forms.MouseEventHandler(this.PreviewGraphics_MouseDown);
             this.PreviewGraphics.MouseMove += new System.Windows.Forms.MouseEventHandler(this.PreviewGraphics_MouseMove);
             this.PreviewGraphics.MouseUp += new System.Windows.Forms.MouseEventHandler(this.PreviewGraphics_MouseUp);
+            this.PreviewGraphics.Resize += new System.EventHandler(this.PreviewGraphics_Resize);
             // 
             // OptionsPanel
             // 
-            this.OptionsPanel.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
+            this.OptionsPanel.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left) 
+            | System.Windows.Forms.AnchorStyles.Right)));
             this.OptionsPanel.BorderStyle = System.Windows.Forms.BorderStyle.Fixed3D;
             this.OptionsPanel.Controls.Add(this.OptionsColorSelecterOpener);
             this.OptionsPanel.Controls.Add(this.OptionsDrawLineMode);
@@ -230,8 +229,7 @@
             // 
             // TimeLinePanel
             // 
-            this.TimeLinePanel.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left) 
-            | System.Windows.Forms.AnchorStyles.Right)));
+            this.TimeLinePanel.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)));
             this.TimeLinePanel.BorderStyle = System.Windows.Forms.BorderStyle.Fixed3D;
             this.TimeLinePanel.Controls.Add(this.TimeLineFramesInput);
             this.TimeLinePanel.Controls.Add(this.TimeLineSecondsInput);
@@ -252,6 +250,7 @@
             this.TimeLineFramesInput.Name = "TimeLineFramesInput";
             this.TimeLineFramesInput.Size = new System.Drawing.Size(145, 23);
             this.TimeLineFramesInput.TabIndex = 8;
+            this.TimeLineFramesInput.TextChanged += new System.EventHandler(this.TimeLineFramesInput_TextChanged);
             // 
             // TimeLineSecondsInput
             // 
@@ -327,7 +326,8 @@
             // 
             // LinePropertiesPanel
             // 
-            this.LinePropertiesPanel.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
+            this.LinePropertiesPanel.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
+            | System.Windows.Forms.AnchorStyles.Left) 
             | System.Windows.Forms.AnchorStyles.Right)));
             this.LinePropertiesPanel.AutoScroll = true;
             this.LinePropertiesPanel.BorderStyle = System.Windows.Forms.BorderStyle.Fixed3D;
@@ -351,7 +351,8 @@
             // 
             // InformationPanel
             // 
-            this.InformationPanel.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
+            this.InformationPanel.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left) 
+            | System.Windows.Forms.AnchorStyles.Right)));
             this.InformationPanel.BorderStyle = System.Windows.Forms.BorderStyle.Fixed3D;
             this.InformationPanel.Controls.Add(this.InformationFrameListCountInfo);
             this.InformationPanel.Controls.Add(this.InformationDynamicListCountInfo);
