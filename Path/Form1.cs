@@ -19,6 +19,8 @@ namespace Path
         Point newPoint1;   //If set to -1,-1 no line preview should be made - Saving where the mouse went down
         Point newPoint2;   //Should ideally be wherever the mouse is (is -1,-1 when mouse is outside the box)
 
+        LinePoint closestPoint;
+
         int selectedLineDynamicIndex;
         public Form1()
         {
@@ -29,6 +31,7 @@ namespace Path
             newPoint1 = new Point(-1, -1);
             time = 0;
             DrawerColorDialog.Color = Color.White;
+            OptionsDrawLineMode.Checked = true;
         }
         class PathLine
         {
@@ -50,7 +53,6 @@ namespace Path
             public int DynamicPathIndex
             {
                 get { return dynamicPathIndex;}
-                set { dynamicPathIndex = value; }
             }
 
 
@@ -292,6 +294,17 @@ namespace Path
                     e.Graphics.DrawLine(linePen, ConvertToHeliosCoords(framePath[i].PathPoints[j],true), ConvertToHeliosCoords(framePath[i].PathPoints[j + 1],true));
                 }
             }
+
+            //Draw Select Co-ordinates
+            List<LinePoint> linePoints = new List<LinePoint>();
+            for(int i = 0; i <= framePath.Count(); i++)
+            {
+                linePoints.AddRange(framePath[i].GenKeyPoints());
+            }
+            for(int i = 0; i <= linePoints.Count(); i++)
+            {
+                
+            }
         }
         private void PreviewGraphics_MouseDown(object sender, MouseEventArgs e)
         {
@@ -356,6 +369,11 @@ namespace Path
             {
                 MessageBox.Show(ex.Message, "Error: cannot convert text to number: " + TimeLineFramesInput.Text);
             }
+        }
+
+        private void OptionsDrawLineMode_CheckedChanged(object sender, EventArgs e)
+        {
+            OptionsSelectModeButton.Checked = !OptionsDrawLineMode.Checked;
         }
     }
 }

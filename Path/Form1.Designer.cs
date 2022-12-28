@@ -54,6 +54,7 @@
             this.openFileDialog1 = new System.Windows.Forms.OpenFileDialog();
             this.saveFileDialog1 = new System.Windows.Forms.SaveFileDialog();
             this.LinePropertiesPanel = new System.Windows.Forms.Panel();
+            this.LinePropertiesKeyFramesTextBox = new System.Windows.Forms.ListBox();
             this.LinePropertiesTitle = new System.Windows.Forms.Label();
             this.InformationPanel = new System.Windows.Forms.Panel();
             this.InformationFrameListCountInfo = new System.Windows.Forms.Label();
@@ -66,6 +67,12 @@
             this.InformationPoint1TitleLablel = new System.Windows.Forms.Label();
             this.InformationTitleLabel = new System.Windows.Forms.Label();
             this.DrawerColorDialog = new System.Windows.Forms.ColorDialog();
+            this.LinePropertiesPathIndexLabel = new System.Windows.Forms.Label();
+            this.LinePropertiesPathIndexData = new System.Windows.Forms.Label();
+            this.LinePropertiesTimeLabel = new System.Windows.Forms.Label();
+            this.LinePropertiesTimeData = new System.Windows.Forms.TextBox();
+            this.LinePropertiesColorDialog = new System.Windows.Forms.ColorDialog();
+            this.LinePropertiesChangeColor = new System.Windows.Forms.Button();
             ((System.ComponentModel.ISupportInitialize)(this.PreviewGraphics)).BeginInit();
             this.OptionsPanel.SuspendLayout();
             this.TimeLinePanel.SuspendLayout();
@@ -130,6 +137,7 @@
             this.OptionsDrawLineMode.TabIndex = 17;
             this.OptionsDrawLineMode.Text = "Draw Line";
             this.OptionsDrawLineMode.UseVisualStyleBackColor = true;
+            this.OptionsDrawLineMode.CheckedChanged += new System.EventHandler(this.OptionsDrawLineMode_CheckedChanged);
             // 
             // OptionsSelectModeButton
             // 
@@ -331,11 +339,26 @@
             | System.Windows.Forms.AnchorStyles.Right)));
             this.LinePropertiesPanel.AutoScroll = true;
             this.LinePropertiesPanel.BorderStyle = System.Windows.Forms.BorderStyle.Fixed3D;
+            this.LinePropertiesPanel.Controls.Add(this.LinePropertiesChangeColor);
+            this.LinePropertiesPanel.Controls.Add(this.LinePropertiesTimeData);
+            this.LinePropertiesPanel.Controls.Add(this.LinePropertiesTimeLabel);
+            this.LinePropertiesPanel.Controls.Add(this.LinePropertiesPathIndexData);
+            this.LinePropertiesPanel.Controls.Add(this.LinePropertiesPathIndexLabel);
+            this.LinePropertiesPanel.Controls.Add(this.LinePropertiesKeyFramesTextBox);
             this.LinePropertiesPanel.Controls.Add(this.LinePropertiesTitle);
             this.LinePropertiesPanel.Location = new System.Drawing.Point(530, 12);
             this.LinePropertiesPanel.Name = "LinePropertiesPanel";
             this.LinePropertiesPanel.Size = new System.Drawing.Size(394, 296);
             this.LinePropertiesPanel.TabIndex = 3;
+            // 
+            // LinePropertiesKeyFramesTextBox
+            // 
+            this.LinePropertiesKeyFramesTextBox.FormattingEnabled = true;
+            this.LinePropertiesKeyFramesTextBox.ItemHeight = 15;
+            this.LinePropertiesKeyFramesTextBox.Location = new System.Drawing.Point(3, 48);
+            this.LinePropertiesKeyFramesTextBox.Name = "LinePropertiesKeyFramesTextBox";
+            this.LinePropertiesKeyFramesTextBox.Size = new System.Drawing.Size(384, 94);
+            this.LinePropertiesKeyFramesTextBox.TabIndex = 19;
             // 
             // LinePropertiesTitle
             // 
@@ -460,6 +483,52 @@
             this.InformationTitleLabel.TabIndex = 18;
             this.InformationTitleLabel.Text = "Information";
             // 
+            // LinePropertiesPathIndexLabel
+            // 
+            this.LinePropertiesPathIndexLabel.AutoSize = true;
+            this.LinePropertiesPathIndexLabel.ForeColor = System.Drawing.SystemColors.Control;
+            this.LinePropertiesPathIndexLabel.Location = new System.Drawing.Point(7, 30);
+            this.LinePropertiesPathIndexLabel.Name = "LinePropertiesPathIndexLabel";
+            this.LinePropertiesPathIndexLabel.Size = new System.Drawing.Size(69, 15);
+            this.LinePropertiesPathIndexLabel.TabIndex = 27;
+            this.LinePropertiesPathIndexLabel.Text = "Path Index: ";
+            // 
+            // LinePropertiesPathIndexData
+            // 
+            this.LinePropertiesPathIndexData.AutoSize = true;
+            this.LinePropertiesPathIndexData.ForeColor = System.Drawing.SystemColors.Control;
+            this.LinePropertiesPathIndexData.Location = new System.Drawing.Point(74, 30);
+            this.LinePropertiesPathIndexData.Name = "LinePropertiesPathIndexData";
+            this.LinePropertiesPathIndexData.Size = new System.Drawing.Size(114, 15);
+            this.LinePropertiesPathIndexData.TabIndex = 28;
+            this.LinePropertiesPathIndexData.Text = "No Line Selected Yet";
+            // 
+            // LinePropertiesTimeLabel
+            // 
+            this.LinePropertiesTimeLabel.AutoSize = true;
+            this.LinePropertiesTimeLabel.ForeColor = System.Drawing.SystemColors.Control;
+            this.LinePropertiesTimeLabel.Location = new System.Drawing.Point(3, 151);
+            this.LinePropertiesTimeLabel.Name = "LinePropertiesTimeLabel";
+            this.LinePropertiesTimeLabel.Size = new System.Drawing.Size(39, 15);
+            this.LinePropertiesTimeLabel.TabIndex = 29;
+            this.LinePropertiesTimeLabel.Text = "Time: ";
+            // 
+            // LinePropertiesTimeData
+            // 
+            this.LinePropertiesTimeData.Location = new System.Drawing.Point(43, 148);
+            this.LinePropertiesTimeData.Name = "LinePropertiesTimeData";
+            this.LinePropertiesTimeData.Size = new System.Drawing.Size(145, 23);
+            this.LinePropertiesTimeData.TabIndex = 9;
+            // 
+            // LinePropertiesChangeColor
+            // 
+            this.LinePropertiesChangeColor.Location = new System.Drawing.Point(194, 148);
+            this.LinePropertiesChangeColor.Name = "LinePropertiesChangeColor";
+            this.LinePropertiesChangeColor.Size = new System.Drawing.Size(193, 23);
+            this.LinePropertiesChangeColor.TabIndex = 30;
+            this.LinePropertiesChangeColor.Text = "Color";
+            this.LinePropertiesChangeColor.UseVisualStyleBackColor = true;
+            // 
             // Form1
             // 
             this.AccessibleName = "Path Window";
@@ -527,5 +596,12 @@
         private Label InformationDynamicListCountInfo;
         private Label InformationFrameListCountLabel;
         private Label InformationDynamicListCountLabel;
+        private ListBox LinePropertiesKeyFramesTextBox;
+        private Label LinePropertiesPathIndexData;
+        private Label LinePropertiesPathIndexLabel;
+        private TextBox LinePropertiesTimeData;
+        private Label LinePropertiesTimeLabel;
+        private Button LinePropertiesChangeColor;
+        private ColorDialog LinePropertiesColorDialog;
     }
 }
