@@ -30,6 +30,7 @@
         {
             this.PreviewGraphics = new System.Windows.Forms.PictureBox();
             this.OptionsPanel = new System.Windows.Forms.Panel();
+            this.OptionsSnapToPoint = new System.Windows.Forms.CheckBox();
             this.OptionsColorSelecterOpener = new System.Windows.Forms.Button();
             this.OptionsDrawLineMode = new System.Windows.Forms.CheckBox();
             this.OptionsSelectModeButton = new System.Windows.Forms.CheckBox();
@@ -54,6 +55,11 @@
             this.openFileDialog1 = new System.Windows.Forms.OpenFileDialog();
             this.saveFileDialog1 = new System.Windows.Forms.SaveFileDialog();
             this.LinePropertiesPanel = new System.Windows.Forms.Panel();
+            this.LinePropertiesChangeColor = new System.Windows.Forms.Button();
+            this.LinePropertiesTimeData = new System.Windows.Forms.TextBox();
+            this.LinePropertiesTimeLabel = new System.Windows.Forms.Label();
+            this.LinePropertiesPathIndexData = new System.Windows.Forms.Label();
+            this.LinePropertiesPathIndexLabel = new System.Windows.Forms.Label();
             this.LinePropertiesKeyFramesTextBox = new System.Windows.Forms.ListBox();
             this.LinePropertiesTitle = new System.Windows.Forms.Label();
             this.InformationPanel = new System.Windows.Forms.Panel();
@@ -67,12 +73,7 @@
             this.InformationPoint1TitleLablel = new System.Windows.Forms.Label();
             this.InformationTitleLabel = new System.Windows.Forms.Label();
             this.DrawerColorDialog = new System.Windows.Forms.ColorDialog();
-            this.LinePropertiesPathIndexLabel = new System.Windows.Forms.Label();
-            this.LinePropertiesPathIndexData = new System.Windows.Forms.Label();
-            this.LinePropertiesTimeLabel = new System.Windows.Forms.Label();
-            this.LinePropertiesTimeData = new System.Windows.Forms.TextBox();
             this.LinePropertiesColorDialog = new System.Windows.Forms.ColorDialog();
-            this.LinePropertiesChangeColor = new System.Windows.Forms.Button();
             ((System.ComponentModel.ISupportInitialize)(this.PreviewGraphics)).BeginInit();
             this.OptionsPanel.SuspendLayout();
             this.TimeLinePanel.SuspendLayout();
@@ -100,6 +101,7 @@
             this.OptionsPanel.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left) 
             | System.Windows.Forms.AnchorStyles.Right)));
             this.OptionsPanel.BorderStyle = System.Windows.Forms.BorderStyle.Fixed3D;
+            this.OptionsPanel.Controls.Add(this.OptionsSnapToPoint);
             this.OptionsPanel.Controls.Add(this.OptionsColorSelecterOpener);
             this.OptionsPanel.Controls.Add(this.OptionsDrawLineMode);
             this.OptionsPanel.Controls.Add(this.OptionsSelectModeButton);
@@ -116,6 +118,17 @@
             this.OptionsPanel.Name = "OptionsPanel";
             this.OptionsPanel.Size = new System.Drawing.Size(394, 206);
             this.OptionsPanel.TabIndex = 1;
+            // 
+            // OptionsSnapToPoint
+            // 
+            this.OptionsSnapToPoint.Appearance = System.Windows.Forms.Appearance.Button;
+            this.OptionsSnapToPoint.AutoSize = true;
+            this.OptionsSnapToPoint.Location = new System.Drawing.Point(217, 175);
+            this.OptionsSnapToPoint.Name = "OptionsSnapToPoint";
+            this.OptionsSnapToPoint.Size = new System.Drawing.Size(89, 25);
+            this.OptionsSnapToPoint.TabIndex = 19;
+            this.OptionsSnapToPoint.Text = "Snap To Point";
+            this.OptionsSnapToPoint.UseVisualStyleBackColor = true;
             // 
             // OptionsColorSelecterOpener
             // 
@@ -351,6 +364,52 @@
             this.LinePropertiesPanel.Size = new System.Drawing.Size(394, 296);
             this.LinePropertiesPanel.TabIndex = 3;
             // 
+            // LinePropertiesChangeColor
+            // 
+            this.LinePropertiesChangeColor.Location = new System.Drawing.Point(194, 148);
+            this.LinePropertiesChangeColor.Name = "LinePropertiesChangeColor";
+            this.LinePropertiesChangeColor.Size = new System.Drawing.Size(193, 23);
+            this.LinePropertiesChangeColor.TabIndex = 30;
+            this.LinePropertiesChangeColor.Text = "Color";
+            this.LinePropertiesChangeColor.UseVisualStyleBackColor = true;
+            // 
+            // LinePropertiesTimeData
+            // 
+            this.LinePropertiesTimeData.Location = new System.Drawing.Point(43, 148);
+            this.LinePropertiesTimeData.Name = "LinePropertiesTimeData";
+            this.LinePropertiesTimeData.Size = new System.Drawing.Size(145, 23);
+            this.LinePropertiesTimeData.TabIndex = 9;
+            // 
+            // LinePropertiesTimeLabel
+            // 
+            this.LinePropertiesTimeLabel.AutoSize = true;
+            this.LinePropertiesTimeLabel.ForeColor = System.Drawing.SystemColors.Control;
+            this.LinePropertiesTimeLabel.Location = new System.Drawing.Point(3, 151);
+            this.LinePropertiesTimeLabel.Name = "LinePropertiesTimeLabel";
+            this.LinePropertiesTimeLabel.Size = new System.Drawing.Size(39, 15);
+            this.LinePropertiesTimeLabel.TabIndex = 29;
+            this.LinePropertiesTimeLabel.Text = "Time: ";
+            // 
+            // LinePropertiesPathIndexData
+            // 
+            this.LinePropertiesPathIndexData.AutoSize = true;
+            this.LinePropertiesPathIndexData.ForeColor = System.Drawing.SystemColors.Control;
+            this.LinePropertiesPathIndexData.Location = new System.Drawing.Point(74, 30);
+            this.LinePropertiesPathIndexData.Name = "LinePropertiesPathIndexData";
+            this.LinePropertiesPathIndexData.Size = new System.Drawing.Size(114, 15);
+            this.LinePropertiesPathIndexData.TabIndex = 28;
+            this.LinePropertiesPathIndexData.Text = "No Line Selected Yet";
+            // 
+            // LinePropertiesPathIndexLabel
+            // 
+            this.LinePropertiesPathIndexLabel.AutoSize = true;
+            this.LinePropertiesPathIndexLabel.ForeColor = System.Drawing.SystemColors.Control;
+            this.LinePropertiesPathIndexLabel.Location = new System.Drawing.Point(7, 30);
+            this.LinePropertiesPathIndexLabel.Name = "LinePropertiesPathIndexLabel";
+            this.LinePropertiesPathIndexLabel.Size = new System.Drawing.Size(69, 15);
+            this.LinePropertiesPathIndexLabel.TabIndex = 27;
+            this.LinePropertiesPathIndexLabel.Text = "Path Index: ";
+            // 
             // LinePropertiesKeyFramesTextBox
             // 
             this.LinePropertiesKeyFramesTextBox.FormattingEnabled = true;
@@ -483,52 +542,6 @@
             this.InformationTitleLabel.TabIndex = 18;
             this.InformationTitleLabel.Text = "Information";
             // 
-            // LinePropertiesPathIndexLabel
-            // 
-            this.LinePropertiesPathIndexLabel.AutoSize = true;
-            this.LinePropertiesPathIndexLabel.ForeColor = System.Drawing.SystemColors.Control;
-            this.LinePropertiesPathIndexLabel.Location = new System.Drawing.Point(7, 30);
-            this.LinePropertiesPathIndexLabel.Name = "LinePropertiesPathIndexLabel";
-            this.LinePropertiesPathIndexLabel.Size = new System.Drawing.Size(69, 15);
-            this.LinePropertiesPathIndexLabel.TabIndex = 27;
-            this.LinePropertiesPathIndexLabel.Text = "Path Index: ";
-            // 
-            // LinePropertiesPathIndexData
-            // 
-            this.LinePropertiesPathIndexData.AutoSize = true;
-            this.LinePropertiesPathIndexData.ForeColor = System.Drawing.SystemColors.Control;
-            this.LinePropertiesPathIndexData.Location = new System.Drawing.Point(74, 30);
-            this.LinePropertiesPathIndexData.Name = "LinePropertiesPathIndexData";
-            this.LinePropertiesPathIndexData.Size = new System.Drawing.Size(114, 15);
-            this.LinePropertiesPathIndexData.TabIndex = 28;
-            this.LinePropertiesPathIndexData.Text = "No Line Selected Yet";
-            // 
-            // LinePropertiesTimeLabel
-            // 
-            this.LinePropertiesTimeLabel.AutoSize = true;
-            this.LinePropertiesTimeLabel.ForeColor = System.Drawing.SystemColors.Control;
-            this.LinePropertiesTimeLabel.Location = new System.Drawing.Point(3, 151);
-            this.LinePropertiesTimeLabel.Name = "LinePropertiesTimeLabel";
-            this.LinePropertiesTimeLabel.Size = new System.Drawing.Size(39, 15);
-            this.LinePropertiesTimeLabel.TabIndex = 29;
-            this.LinePropertiesTimeLabel.Text = "Time: ";
-            // 
-            // LinePropertiesTimeData
-            // 
-            this.LinePropertiesTimeData.Location = new System.Drawing.Point(43, 148);
-            this.LinePropertiesTimeData.Name = "LinePropertiesTimeData";
-            this.LinePropertiesTimeData.Size = new System.Drawing.Size(145, 23);
-            this.LinePropertiesTimeData.TabIndex = 9;
-            // 
-            // LinePropertiesChangeColor
-            // 
-            this.LinePropertiesChangeColor.Location = new System.Drawing.Point(194, 148);
-            this.LinePropertiesChangeColor.Name = "LinePropertiesChangeColor";
-            this.LinePropertiesChangeColor.Size = new System.Drawing.Size(193, 23);
-            this.LinePropertiesChangeColor.TabIndex = 30;
-            this.LinePropertiesChangeColor.Text = "Color";
-            this.LinePropertiesChangeColor.UseVisualStyleBackColor = true;
-            // 
             // Form1
             // 
             this.AccessibleName = "Path Window";
@@ -603,5 +616,6 @@
         private Label LinePropertiesTimeLabel;
         private Button LinePropertiesChangeColor;
         private ColorDialog LinePropertiesColorDialog;
+        private CheckBox OptionsSnapToPoint;
     }
 }

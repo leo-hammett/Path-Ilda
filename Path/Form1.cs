@@ -263,7 +263,10 @@ namespace Path
                 return new Point((int)(Original.X / Scale), (int)(Original.Y / Scale));
             }
         }
-
+        public double getDistance(Point point1, Point point2)
+        {
+            return Math.Sqrt((point1.X - point2.X) ^ 2 + (point1.Y - point2.Y) ^ 2);
+        }
         //THE GRAPHICS PANEL
         private void PreviewGraphics_Paint(object sender, PaintEventArgs e)
         {
@@ -293,17 +296,26 @@ namespace Path
                 {
                     e.Graphics.DrawLine(linePen, ConvertToHeliosCoords(framePath[i].PathPoints[j],true), ConvertToHeliosCoords(framePath[i].PathPoints[j + 1],true));
                 }
-            }
-
-            //Draw Select Co-ordinates
-            List<LinePoint> linePoints = new List<LinePoint>();
-            for(int i = 0; i <= framePath.Count(); i++)
-            {
-                linePoints.AddRange(framePath[i].GenKeyPoints());
-            }
-            for(int i = 0; i <= linePoints.Count(); i++)
-            {
-                
+                if (OptionsSelectModeButton.Checked || OptionsSnapToPoint.Checked)      //Also finds closest point to mouse
+                {
+                    List<LinePoint> keyPoints = new List<LinePoint>();
+                    keyPoints = framePath[i].GenKeyPoints();
+                    Pen bigCircle = new Pen(Color.Gray, 3);
+                    Pen smallCircle = new Pen(Color.DimGray, 2);
+                    LinePoint closestPoint;
+                    double closestPointDistance = 1000000;
+                    for (int j = 0; j < keyPoints.Count(); j++)
+                    {
+                        Point pointLocation = ConvertToHeliosCoords(keyPoints[j].Location, true);
+                        e.Graphics.FillCircle(new SolidBrush(Color.LightGray), pointLocation.X, pointLocation.Y, 3);
+                        e.Graphics.FillCircle(new SolidBrush(Color.DarkGray), pointLocation.X, pointLocation.Y, 2);
+                        if(getDistance(pointLocation,newPoint2) < closestPointDistance)
+                        {
+                            closestPoint = keyPoints[j];
+                            closestPointDistance = getDistance(pointLocation, newPoint2);
+                        }
+                    }
+                }
             }
         }
         private void PreviewGraphics_MouseDown(object sender, MouseEventArgs e)
@@ -376,4 +388,20 @@ namespace Path
             OptionsSelectModeButton.Checked = !OptionsDrawLineMode.Checked;
         }
     }
+    public static class GraphicsExtensions      //This code (the graphics extensions) was someoene elses but worked really well so i am keeping it
+    {
+        public static void DrawCircle(this Graphics g, Pen pen,
+                                      float centerX, float centerY, float radius)
+        {
+            g.DrawEllipse(pen, centerX - radius, centerY - radius,
+                          radius + radius, radius + radius);
+        }
+
+        public static void FillCircle(this Graphics g, Brush brush,
+                                      float centerX, float centerY, float radius)
+        {
+            g.FillEllipse(brush, centerX - radius, centerY - radius,
+                          radius + radius, radius + radius);
+        }
+    }                   //End of someone elses code.
 }
