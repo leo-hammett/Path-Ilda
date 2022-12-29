@@ -76,6 +76,8 @@
             this.InformationTitleLabel = new System.Windows.Forms.Label();
             this.DrawerColorDialog = new System.Windows.Forms.ColorDialog();
             this.LinePropertiesColorDialog = new System.Windows.Forms.ColorDialog();
+            this.InformationPreviewModeLabel = new System.Windows.Forms.Label();
+            this.InformationPreviewModeData = new System.Windows.Forms.Label();
             ((System.ComponentModel.ISupportInitialize)(this.PreviewGraphics)).BeginInit();
             this.OptionsPanel.SuspendLayout();
             this.TimeLinePanel.SuspendLayout();
@@ -441,6 +443,8 @@
             this.InformationPanel.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left) 
             | System.Windows.Forms.AnchorStyles.Right)));
             this.InformationPanel.BorderStyle = System.Windows.Forms.BorderStyle.Fixed3D;
+            this.InformationPanel.Controls.Add(this.InformationPreviewModeData);
+            this.InformationPanel.Controls.Add(this.InformationPreviewModeLabel);
             this.InformationPanel.Controls.Add(this.InformationClosestPointData);
             this.InformationPanel.Controls.Add(this.InformationClosestPointLabel);
             this.InformationPanel.Controls.Add(this.InformationFrameListCountInfo);
@@ -569,6 +573,26 @@
             this.InformationTitleLabel.TabIndex = 18;
             this.InformationTitleLabel.Text = "Information";
             // 
+            // InformationPreviewModeLabel
+            // 
+            this.InformationPreviewModeLabel.AutoSize = true;
+            this.InformationPreviewModeLabel.ForeColor = System.Drawing.SystemColors.Control;
+            this.InformationPreviewModeLabel.Location = new System.Drawing.Point(197, 56);
+            this.InformationPreviewModeLabel.Name = "InformationPreviewModeLabel";
+            this.InformationPreviewModeLabel.Size = new System.Drawing.Size(85, 15);
+            this.InformationPreviewModeLabel.TabIndex = 29;
+            this.InformationPreviewModeLabel.Text = "Preview mode:";
+            // 
+            // InformationPreviewModeData
+            // 
+            this.InformationPreviewModeData.AutoSize = true;
+            this.InformationPreviewModeData.ForeColor = System.Drawing.SystemColors.Control;
+            this.InformationPreviewModeData.Location = new System.Drawing.Point(288, 56);
+            this.InformationPreviewModeData.Name = "InformationPreviewModeData";
+            this.InformationPreviewModeData.Size = new System.Drawing.Size(27, 15);
+            this.InformationPreviewModeData.TabIndex = 30;
+            this.InformationPreviewModeData.Text = "null";
+            // 
             // Form1
             // 
             this.AccessibleName = "Path Window";
@@ -646,5 +670,7 @@
         private CheckBox OptionsSnapToPoint;
         private Label InformationClosestPointLabel;
         private Label InformationClosestPointData;
+        private Label InformationPreviewModeData;
+        private Label InformationPreviewModeLabel;
     }
 }
