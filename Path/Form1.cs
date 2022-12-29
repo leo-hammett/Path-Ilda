@@ -169,6 +169,7 @@ namespace Path
             public int Time
             {
                 get { return time; }
+                set { time = value; }
             }
 
             private Color pathColor;
@@ -184,7 +185,10 @@ namespace Path
                 get { return pathPoints; }
                 set { pathPoints = value; }
             }
-            public void AddPoint(Point NewPoint) { pathPoints.Add(NewPoint); }
+            public void AddPoint(Point NewPoint) 
+            { 
+                pathPoints.Add(NewPoint); 
+            }
             private int listIndex;                      //THE INDEX OF THE LIST VARIES DEPENDING ON IF THE OBJECT IS A KEYFRAME OR NOT
             public int ListIndex
             {
