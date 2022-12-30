@@ -330,7 +330,16 @@ namespace Path
         {
             return Math.Sqrt(Math.Pow(point1.X - point2.X, 2) + Math.Pow(point1.Y - point2.Y,2));
         }
-        
+        public void updateKeyPointInfo()
+        {
+            for(int i = 0; i < dynamicPath.Count, i++)
+            {
+                for(int j = 0; j < dynamicPath[i].KeyFrames.Count; j++)
+                {
+                    MessageBox.Show(dynamicPath[i].KeyFrames[j].Time.ToString());
+                }
+            }
+        }
         //THE GRAPHICS PANEL
         private void PreviewGraphics_Paint(object sender, PaintEventArgs e)
         {
@@ -538,7 +547,6 @@ namespace Path
                 }
             }
         }
-
         private void OptionsColorSelecterOpener_Click(object sender, EventArgs e)
         {
             DrawerColorDialog.ShowDialog();
