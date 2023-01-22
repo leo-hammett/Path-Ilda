@@ -56,13 +56,13 @@
             this.saveFileDialog1 = new System.Windows.Forms.SaveFileDialog();
             this.LinePropertiesPanel = new System.Windows.Forms.Panel();
             this.LinePropertiesChangeColor = new System.Windows.Forms.Button();
-            this.LinePropertiesTimeData = new System.Windows.Forms.TextBox();
-            this.LinePropertiesTimeLabel = new System.Windows.Forms.Label();
             this.LinePropertiesPathIndexData = new System.Windows.Forms.Label();
             this.LinePropertiesPathIndexLabel = new System.Windows.Forms.Label();
             this.LinePropertiesKeyFramesTextBox = new System.Windows.Forms.ListBox();
             this.LinePropertiesTitle = new System.Windows.Forms.Label();
             this.InformationPanel = new System.Windows.Forms.Panel();
+            this.InformationPreviewModeData = new System.Windows.Forms.Label();
+            this.InformationPreviewModeLabel = new System.Windows.Forms.Label();
             this.InformationClosestPointData = new System.Windows.Forms.Label();
             this.InformationClosestPointLabel = new System.Windows.Forms.Label();
             this.InformationFrameListCountInfo = new System.Windows.Forms.Label();
@@ -76,8 +76,6 @@
             this.InformationTitleLabel = new System.Windows.Forms.Label();
             this.DrawerColorDialog = new System.Windows.Forms.ColorDialog();
             this.LinePropertiesColorDialog = new System.Windows.Forms.ColorDialog();
-            this.InformationPreviewModeLabel = new System.Windows.Forms.Label();
-            this.InformationPreviewModeData = new System.Windows.Forms.Label();
             ((System.ComponentModel.ISupportInitialize)(this.PreviewGraphics)).BeginInit();
             this.OptionsPanel.SuspendLayout();
             this.TimeLinePanel.SuspendLayout();
@@ -214,6 +212,7 @@
             this.OptionsKPPSTextBox.Name = "OptionsKPPSTextBox";
             this.OptionsKPPSTextBox.Size = new System.Drawing.Size(145, 23);
             this.OptionsKPPSTextBox.TabIndex = 11;
+            this.OptionsKPPSTextBox.Text = "40000";
             // 
             // OptionsFPSTextBox
             // 
@@ -221,6 +220,7 @@
             this.OptionsFPSTextBox.Name = "OptionsFPSTextBox";
             this.OptionsFPSTextBox.Size = new System.Drawing.Size(145, 23);
             this.OptionsFPSTextBox.TabIndex = 9;
+            this.OptionsFPSTextBox.Text = "30";
             // 
             // OptionsKPPSLabel
             // 
@@ -273,24 +273,27 @@
             // 
             // TimeLineFramesInput
             // 
-            this.TimeLineFramesInput.Location = new System.Drawing.Point(305, 79);
+            this.TimeLineFramesInput.Location = new System.Drawing.Point(97, 77);
             this.TimeLineFramesInput.Name = "TimeLineFramesInput";
             this.TimeLineFramesInput.Size = new System.Drawing.Size(145, 23);
             this.TimeLineFramesInput.TabIndex = 8;
+            this.TimeLineFramesInput.Text = "0";
             this.TimeLineFramesInput.TextChanged += new System.EventHandler(this.TimeLineFramesInput_TextChanged);
             // 
             // TimeLineSecondsInput
             // 
-            this.TimeLineSecondsInput.Location = new System.Drawing.Point(305, 48);
+            this.TimeLineSecondsInput.Location = new System.Drawing.Point(97, 48);
             this.TimeLineSecondsInput.Name = "TimeLineSecondsInput";
             this.TimeLineSecondsInput.Size = new System.Drawing.Size(145, 23);
             this.TimeLineSecondsInput.TabIndex = 7;
+            this.TimeLineSecondsInput.Text = "0";
+            this.TimeLineSecondsInput.TextChanged += new System.EventHandler(this.TimeLineSecondsInput_TextChanged);
             // 
             // TimeLineFramesLabel
             // 
             this.TimeLineFramesLabel.AutoSize = true;
             this.TimeLineFramesLabel.ForeColor = System.Drawing.SystemColors.Control;
-            this.TimeLineFramesLabel.Location = new System.Drawing.Point(211, 82);
+            this.TimeLineFramesLabel.Location = new System.Drawing.Point(9, 82);
             this.TimeLineFramesLabel.Name = "TimeLineFramesLabel";
             this.TimeLineFramesLabel.Size = new System.Drawing.Size(82, 15);
             this.TimeLineFramesLabel.TabIndex = 6;
@@ -300,7 +303,7 @@
             // 
             this.TimeLineSecondsLabel.AutoSize = true;
             this.TimeLineSecondsLabel.ForeColor = System.Drawing.SystemColors.Control;
-            this.TimeLineSecondsLabel.Location = new System.Drawing.Point(211, 51);
+            this.TimeLineSecondsLabel.Location = new System.Drawing.Point(3, 51);
             this.TimeLineSecondsLabel.Name = "TimeLineSecondsLabel";
             this.TimeLineSecondsLabel.Size = new System.Drawing.Size(88, 15);
             this.TimeLineSecondsLabel.TabIndex = 5;
@@ -359,8 +362,6 @@
             this.LinePropertiesPanel.AutoScroll = true;
             this.LinePropertiesPanel.BorderStyle = System.Windows.Forms.BorderStyle.Fixed3D;
             this.LinePropertiesPanel.Controls.Add(this.LinePropertiesChangeColor);
-            this.LinePropertiesPanel.Controls.Add(this.LinePropertiesTimeData);
-            this.LinePropertiesPanel.Controls.Add(this.LinePropertiesTimeLabel);
             this.LinePropertiesPanel.Controls.Add(this.LinePropertiesPathIndexData);
             this.LinePropertiesPanel.Controls.Add(this.LinePropertiesPathIndexLabel);
             this.LinePropertiesPanel.Controls.Add(this.LinePropertiesKeyFramesTextBox);
@@ -372,30 +373,12 @@
             // 
             // LinePropertiesChangeColor
             // 
-            this.LinePropertiesChangeColor.Location = new System.Drawing.Point(194, 148);
+            this.LinePropertiesChangeColor.Location = new System.Drawing.Point(3, 148);
             this.LinePropertiesChangeColor.Name = "LinePropertiesChangeColor";
-            this.LinePropertiesChangeColor.Size = new System.Drawing.Size(193, 23);
+            this.LinePropertiesChangeColor.Size = new System.Drawing.Size(384, 23);
             this.LinePropertiesChangeColor.TabIndex = 30;
             this.LinePropertiesChangeColor.Text = "Color";
             this.LinePropertiesChangeColor.UseVisualStyleBackColor = true;
-            // 
-            // LinePropertiesTimeData
-            // 
-            this.LinePropertiesTimeData.Location = new System.Drawing.Point(43, 148);
-            this.LinePropertiesTimeData.Name = "LinePropertiesTimeData";
-            this.LinePropertiesTimeData.Size = new System.Drawing.Size(145, 23);
-            this.LinePropertiesTimeData.TabIndex = 9;
-            this.LinePropertiesTimeData.TextChanged += new System.EventHandler(this.LinePropertiesTimeData_TextChanged);
-            // 
-            // LinePropertiesTimeLabel
-            // 
-            this.LinePropertiesTimeLabel.AutoSize = true;
-            this.LinePropertiesTimeLabel.ForeColor = System.Drawing.SystemColors.Control;
-            this.LinePropertiesTimeLabel.Location = new System.Drawing.Point(3, 151);
-            this.LinePropertiesTimeLabel.Name = "LinePropertiesTimeLabel";
-            this.LinePropertiesTimeLabel.Size = new System.Drawing.Size(39, 15);
-            this.LinePropertiesTimeLabel.TabIndex = 29;
-            this.LinePropertiesTimeLabel.Text = "Time: ";
             // 
             // LinePropertiesPathIndexData
             // 
@@ -425,6 +408,7 @@
             this.LinePropertiesKeyFramesTextBox.Name = "LinePropertiesKeyFramesTextBox";
             this.LinePropertiesKeyFramesTextBox.Size = new System.Drawing.Size(384, 94);
             this.LinePropertiesKeyFramesTextBox.TabIndex = 19;
+            this.LinePropertiesKeyFramesTextBox.SelectedIndexChanged += new System.EventHandler(this.LinePropertiesKeyFramesTextBox_SelectedIndexChanged);
             // 
             // LinePropertiesTitle
             // 
@@ -460,6 +444,26 @@
             this.InformationPanel.Name = "InformationPanel";
             this.InformationPanel.Size = new System.Drawing.Size(394, 118);
             this.InformationPanel.TabIndex = 19;
+            // 
+            // InformationPreviewModeData
+            // 
+            this.InformationPreviewModeData.AutoSize = true;
+            this.InformationPreviewModeData.ForeColor = System.Drawing.SystemColors.Control;
+            this.InformationPreviewModeData.Location = new System.Drawing.Point(288, 56);
+            this.InformationPreviewModeData.Name = "InformationPreviewModeData";
+            this.InformationPreviewModeData.Size = new System.Drawing.Size(27, 15);
+            this.InformationPreviewModeData.TabIndex = 30;
+            this.InformationPreviewModeData.Text = "null";
+            // 
+            // InformationPreviewModeLabel
+            // 
+            this.InformationPreviewModeLabel.AutoSize = true;
+            this.InformationPreviewModeLabel.ForeColor = System.Drawing.SystemColors.Control;
+            this.InformationPreviewModeLabel.Location = new System.Drawing.Point(197, 56);
+            this.InformationPreviewModeLabel.Name = "InformationPreviewModeLabel";
+            this.InformationPreviewModeLabel.Size = new System.Drawing.Size(85, 15);
+            this.InformationPreviewModeLabel.TabIndex = 29;
+            this.InformationPreviewModeLabel.Text = "Preview mode:";
             // 
             // InformationClosestPointData
             // 
@@ -573,26 +577,6 @@
             this.InformationTitleLabel.TabIndex = 18;
             this.InformationTitleLabel.Text = "Information";
             // 
-            // InformationPreviewModeLabel
-            // 
-            this.InformationPreviewModeLabel.AutoSize = true;
-            this.InformationPreviewModeLabel.ForeColor = System.Drawing.SystemColors.Control;
-            this.InformationPreviewModeLabel.Location = new System.Drawing.Point(197, 56);
-            this.InformationPreviewModeLabel.Name = "InformationPreviewModeLabel";
-            this.InformationPreviewModeLabel.Size = new System.Drawing.Size(85, 15);
-            this.InformationPreviewModeLabel.TabIndex = 29;
-            this.InformationPreviewModeLabel.Text = "Preview mode:";
-            // 
-            // InformationPreviewModeData
-            // 
-            this.InformationPreviewModeData.AutoSize = true;
-            this.InformationPreviewModeData.ForeColor = System.Drawing.SystemColors.Control;
-            this.InformationPreviewModeData.Location = new System.Drawing.Point(288, 56);
-            this.InformationPreviewModeData.Name = "InformationPreviewModeData";
-            this.InformationPreviewModeData.Size = new System.Drawing.Size(27, 15);
-            this.InformationPreviewModeData.TabIndex = 30;
-            this.InformationPreviewModeData.Text = "null";
-            // 
             // Form1
             // 
             this.AccessibleName = "Path Window";
@@ -663,8 +647,6 @@
         private ListBox LinePropertiesKeyFramesTextBox;
         private Label LinePropertiesPathIndexData;
         private Label LinePropertiesPathIndexLabel;
-        private TextBox LinePropertiesTimeData;
-        private Label LinePropertiesTimeLabel;
         private Button LinePropertiesChangeColor;
         private ColorDialog LinePropertiesColorDialog;
         private CheckBox OptionsSnapToPoint;

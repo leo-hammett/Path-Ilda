@@ -13,9 +13,9 @@ namespace Path
         List<PathLineFrame> framePath;      //What individual frames should look like. Should hopefully be generateable from a for loop and get line at dynamicPath[i]
         int framePathTime = -1;                  //Gives the time the framePath is generated for
 
-        int mainTime;       //The time in frames that the system is at
-        int fps;        //The number of frames per second (to get time in seconds divide time by fps)
-        int kpps;       //The maximum number of points we should be sending down the dac. Mine was rated at 40KPPS but that could be a false rating at this point.
+        int mainTime = 0;       //The time in frames that the system is at
+        int fps = 30;        //The number of frames per second (to get time in seconds divide time by fps)
+        int kpps = 40000;       //The maximum number of points we should be sending down the dac. Mine was rated at 40KPPS but that could be a false rating at this point.
 
         Point newPoint1;   //If set to -1,-1 no line preview should be made - Saving where the mouse went down
         Point newPoint2;   //Should ideally be wherever the mouse is (is -1,-1 when mouse is outside the box)
@@ -74,7 +74,7 @@ namespace Path
                 {
                     if (keyFrames[i].Time == frameTime)          //Checks to see if the time lands on a keyframe - This is merely a performance thing
                     {
-                        newFrame = keyFrames[i];
+                        newFrame = new PathLineFrame(keyFrames[i]);
                         newFrame.Time = frameTime;
                         return newFrame;
                     }
@@ -89,13 +89,13 @@ namespace Path
                 }
                 if (frameBeforeIndex == -1)                  //If before all frames then newframe is the same as the frame after or first frame
                 {
-                    newFrame = keyFrames[frameAfterIndex];
+                    newFrame = new PathLineFrame(keyFrames[frameAfterIndex]);
                     newFrame.Time = frameTime;
                     return newFrame;
                 }
                 else if (frameAfterIndex == -1)                   //Literally the same situation as the above if
                 {
-                    newFrame = keyFrames[frameBeforeIndex];
+                    newFrame = new PathLineFrame(keyFrames[frameBeforeIndex]);
                     newFrame.Time = frameTime;
                     return newFrame;
                 }
@@ -179,7 +179,7 @@ namespace Path
                 set { pathColor = value; }
             }
 
-            private List<Point> pathPoints;
+            private List<Point> pathPoints = new List<Point>();
             public List<Point> PathPoints
             {
                 get { return pathPoints; }
@@ -276,6 +276,13 @@ namespace Path
                 pathPoints = frame.pathPoints;
 
             }
+            public PathLineFrame(PathLineFrame frame)
+            {
+                time = frame.Time;
+                listIndex = frame.ListIndex;
+                pathColor = frame.PathColor;
+                pathPoints = frame.PathPoints;
+            }
         }
         class LinePoint
         {
@@ -332,7 +339,7 @@ namespace Path
         }
         public void updateKeyPointInfo()
         {
-            for(int i = 0; i < dynamicPath.Count, i++)
+            for(int i = 0; i < dynamicPath.Count; i++)
             {
                 for(int j = 0; j < dynamicPath[i].KeyFrames.Count; j++)
                 {
@@ -459,7 +466,6 @@ namespace Path
                 {
                     LinePropertiesKeyFramesTextBox.Items.Add(dynamicPath[closestPoints[0].ShapeListIndex].KeyFrames[i].Time);
                 }
-                LinePropertiesTimeData.Text = mainTime.ToString();
                 LinePropertiesChangeColor.BackColor = dynamicPath[closestPoints[0].ShapeListIndex].GenFrameAt(mainTime).PathColor;
                 previewMode = 0;
             }
@@ -525,7 +531,7 @@ namespace Path
                                 replaceIndex = j;
                             }
                         }
-                        PathLineFrame currentFrame = dynamicPath[closestPoints[i].ShapeListIndex].GenFrameAt(mainTime);
+                        PathLineFrame currentFrame = new PathLineFrame(dynamicPath[closestPoints[i].ShapeListIndex].GenFrameAt(mainTime));
                         for(int j = 0; j < currentFrame.PathPoints.Count(); j++)
                         {
                             if (currentFrame.PathPoints[j] == newPoint1)
@@ -540,7 +546,7 @@ namespace Path
                         else
                         {
                             dynamicPath[closestPoints[i].ShapeListIndex].KeyFrames.Add(currentFrame);
-                            //dynamicPath[closestPoints[i].ShapeListIndex].SortKeyFramesByTime();
+                            dynamicPath[closestPoints[i].ShapeListIndex].SortKeyFramesByTime();
                         }
                     }
                     previewMode = 0;
@@ -565,35 +571,7 @@ namespace Path
                 PreviewGraphics.Width = PreviewGraphics.Height;
             }
         }
-
-        private void TimeLineFramesInput_TextChanged(object sender, EventArgs e)
-        {
-            try
-            {
-                if(TimeLineFramesInput.Text != "")
-                {
-                    mainTime = Convert.ToInt32(TimeLineFramesInput.Text);
-                }
-            }
-            catch(Exception ex)
-            {
-                MessageBox.Show(ex.Message, "Error: cannot convert text to number: " + TimeLineFramesInput.Text);
-            }
-        }
-        private void LinePropertiesTimeData_TextChanged(object sender, EventArgs e)
-        {
-            try
-            {
-                if (TimeLineFramesInput.Text != "")
-                {
-                    mainTime = Convert.ToInt32(TimeLineFramesInput.Text);
-                }
-            }
-            catch (Exception ex)
-            {
-                MessageBox.Show(ex.Message, "Error: cannot convert text to number: " + TimeLineFramesInput.Text);
-            }
-        }
+        
         private void OptionsDrawLineMode_CheckedChanged(object sender, EventArgs e)
         {
             OptionsSelectModeButton.Checked = !OptionsDrawLineMode.Checked;
@@ -632,6 +610,39 @@ namespace Path
             }
         }
 
+        private void TimeLineSecondsInput_TextChanged(object sender, EventArgs e)
+        {
+            try
+            {
+                if (TimeLineFramesInput.Text != "")
+                {
+                    mainTime = Convert.ToInt32(TimeLineFramesInput.Text)*fps;
+                }
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show(ex.Message, "Error: cannot convert text to number: " + TimeLineFramesInput.Text);
+            }
+        }
+        private void TimeLineFramesInput_TextChanged(object sender, EventArgs e)
+        {
+            try
+            {
+                if (TimeLineFramesInput.Text != "")
+                {
+                    mainTime = Convert.ToInt32(TimeLineFramesInput.Text);
+                }
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show(ex.Message, "Error: cannot convert text to number: " + TimeLineFramesInput.Text);
+            }
+        }
+
+        private void LinePropertiesKeyFramesTextBox_SelectedIndexChanged(object sender, EventArgs e)
+        {
+            //Select PathLineFrame
+        }
     }
     public static class GraphicsExtensions      //This code (the graphics extensions) was someoene elses but worked really well so i am keeping it
     {
