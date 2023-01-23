@@ -55,6 +55,7 @@
             this.openFileDialog1 = new System.Windows.Forms.OpenFileDialog();
             this.saveFileDialog1 = new System.Windows.Forms.SaveFileDialog();
             this.LinePropertiesPanel = new System.Windows.Forms.Panel();
+            this.PathLinePointsListBox = new System.Windows.Forms.ListBox();
             this.LinePropertiesChangeColor = new System.Windows.Forms.Button();
             this.LinePropertiesPathIndexData = new System.Windows.Forms.Label();
             this.LinePropertiesPathIndexLabel = new System.Windows.Forms.Label();
@@ -361,6 +362,7 @@
             | System.Windows.Forms.AnchorStyles.Right)));
             this.LinePropertiesPanel.AutoScroll = true;
             this.LinePropertiesPanel.BorderStyle = System.Windows.Forms.BorderStyle.Fixed3D;
+            this.LinePropertiesPanel.Controls.Add(this.PathLinePointsListBox);
             this.LinePropertiesPanel.Controls.Add(this.LinePropertiesChangeColor);
             this.LinePropertiesPanel.Controls.Add(this.LinePropertiesPathIndexData);
             this.LinePropertiesPanel.Controls.Add(this.LinePropertiesPathIndexLabel);
@@ -370,6 +372,15 @@
             this.LinePropertiesPanel.Name = "LinePropertiesPanel";
             this.LinePropertiesPanel.Size = new System.Drawing.Size(394, 296);
             this.LinePropertiesPanel.TabIndex = 3;
+            // 
+            // PathLinePointsListBox
+            // 
+            this.PathLinePointsListBox.FormattingEnabled = true;
+            this.PathLinePointsListBox.ItemHeight = 15;
+            this.PathLinePointsListBox.Location = new System.Drawing.Point(3, 177);
+            this.PathLinePointsListBox.Name = "PathLinePointsListBox";
+            this.PathLinePointsListBox.Size = new System.Drawing.Size(384, 49);
+            this.PathLinePointsListBox.TabIndex = 31;
             // 
             // LinePropertiesChangeColor
             // 
@@ -654,5 +665,6 @@
         private Label InformationClosestPointData;
         private Label InformationPreviewModeData;
         private Label InformationPreviewModeLabel;
+        private ListBox PathLinePointsListBox;
     }
 }

@@ -24,7 +24,8 @@ namespace Path
         Point closestPoint;
 
         int previewMode = 0;    //0 = no changes are about to happen, 1 = normal line will be created, 2 = snapped line will be created, 3 = line properties changed, 4 = line or point will be selected, 5 = just line will be selected
-        int selectedLineDynamicIndex;
+        int selectedLineDynamicIndex = 0;
+        int selectedFrameDynamicIndex = 0;
         public Form1()
         {
             InitializeComponent();
@@ -75,7 +76,6 @@ namespace Path
                     if (keyFrames[i].Time == frameTime)          //Checks to see if the time lands on a keyframe - This is merely a performance thing
                     {
                         newFrame = new PathLineFrame(keyFrames[i]);
-                        newFrame.Time = frameTime;
                         return newFrame;
                     }
                     else if (keyFrames[i].Time < frameTime)      //Finds the latest KeyFrame before the time
@@ -101,8 +101,8 @@ namespace Path
                 }
                 else
                 {
-                    PathLineFrame frameAfter = keyFrames[frameAfterIndex];
-                    PathLineFrame frameBefore = keyFrames[frameBeforeIndex];
+                    PathLineFrame frameAfter = new PathLineFrame(keyFrames[frameAfterIndex]);
+                    PathLineFrame frameBefore = new PathLineFrame(keyFrames[frameBeforeIndex]);
                     
                     //SET ALL PROPERTIES TO PROPERTIES IN BETWEEN THEM BOTH
                     float animationProgress = (frameTime - frameBefore.Time) / (frameAfter.Time - frameBefore.Time); //If you set each property to beforeFrame value plus (afterFrame - beforeFrame) * difference  -- This assumes a linear animation hence the constant progress as time moves forward.
@@ -124,7 +124,6 @@ namespace Path
             }
             public List<PathLineFrame> QuicksortByTime(List<PathLineFrame> list)
             {
-                MessageBox.Show(list.Count.ToString());
                 if(list.Count() == 0)
                 {
                     return new List<PathLineFrame>();       //Gotta have something end the recursive routine
@@ -159,7 +158,6 @@ namespace Path
                 {
                     list.Add(rightSorted[i]);
                 }
-                MessageBox.Show(list.Count.ToString());
                 return list;
             }
         }
@@ -459,14 +457,7 @@ namespace Path
             else if (closestPoints[0].IsMiddle && closestPoints.Count == 1)
             {
                 selectedLineDynamicIndex = closestPoints[0].ShapeListIndex;
-                LinePropertiesTitle.Text = "Line Properties: " + dynamicPath[closestPoints[0].ShapeListIndex].Name;
-                LinePropertiesPathIndexData.Text = selectedLineDynamicIndex.ToString();
-                LinePropertiesKeyFramesTextBox.Items.Clear();
-                for(int i = 0; i < dynamicPath[closestPoints[0].ShapeListIndex].KeyFrames.Count; i++)
-                {
-                    LinePropertiesKeyFramesTextBox.Items.Add(dynamicPath[closestPoints[0].ShapeListIndex].KeyFrames[i].Time);
-                }
-                LinePropertiesChangeColor.BackColor = dynamicPath[closestPoints[0].ShapeListIndex].GenFrameAt(mainTime).PathColor;
+                UpdateLineProperties();
                 previewMode = 0;
             }
             else if (OptionsSelectModeButton.Checked)
@@ -474,6 +465,7 @@ namespace Path
                 previewMode = 3;
                 newPoint1 = closestPoint;
             }
+            UpdateLineProperties();
         }
         private void PreviewGraphics_MouseMove(object sender, MouseEventArgs e)
         {
@@ -493,6 +485,7 @@ namespace Path
                     previewMode = 5;
                 }
             }
+            UpdateLineProperties();
         }
 
         private void PreviewGraphics_MouseUp(object sender, MouseEventArgs e)
@@ -531,7 +524,7 @@ namespace Path
                                 replaceIndex = j;
                             }
                         }
-                        PathLineFrame currentFrame = new PathLineFrame(dynamicPath[closestPoints[i].ShapeListIndex].GenFrameAt(mainTime));
+                        PathLineFrame currentFrame = dynamicPath[closestPoints[i].ShapeListIndex].GenFrameAt(mainTime);
                         for(int j = 0; j < currentFrame.PathPoints.Count(); j++)
                         {
                             if (currentFrame.PathPoints[j] == newPoint1)
@@ -638,10 +631,31 @@ namespace Path
                 MessageBox.Show(ex.Message, "Error: cannot convert text to number: " + TimeLineFramesInput.Text);
             }
         }
-
-        private void LinePropertiesKeyFramesTextBox_SelectedIndexChanged(object sender, EventArgs e)
+        public void UpdateLineProperties()
         {
             //Select PathLineFrame
+            if (dynamicPath.Count != 0)
+            {
+                PathLinePointsListBox.Items.Clear();
+                for (int i = 0; i < dynamicPath[selectedLineDynamicIndex].KeyFrames[LinePropertiesKeyFramesTextBox.SelectedIndex].PathPoints.Count; i++)
+                {
+                    PathLinePointsListBox.Items.Add(dynamicPath[selectedLineDynamicIndex].KeyFrames[LinePropertiesKeyFramesTextBox.SelectedIndex].PathPoints[i].ToString());
+                }
+                LinePropertiesTitle.Text = "Line Properties: " + dynamicPath[selectedLineDynamicIndex].Name;
+                LinePropertiesPathIndexData.Text = selectedLineDynamicIndex.ToString();
+                LinePropertiesKeyFramesTextBox.Items.Clear();
+
+                for (int i = 0; i < dynamicPath[closestPoints[0].ShapeListIndex].KeyFrames.Count; i++)
+                {
+                    LinePropertiesKeyFramesTextBox.Items.Add(dynamicPath[selectedLineDynamicIndex].KeyFrames[i].Time);
+                }
+                LinePropertiesChangeColor.BackColor = dynamicPath[selectedLineDynamicIndex].GenFrameAt(mainTime).PathColor;
+            }
+        }
+        private void LinePropertiesKeyFramesTextBox_SelectedIndexChanged(object sender, EventArgs e)
+        {
+            selectedFrameDynamicIndex = LinePropertiesKeyFramesTextBox.SelectedIndex;
+            UpdateLineProperties();
         }
     }
     public static class GraphicsExtensions      //This code (the graphics extensions) was someoene elses but worked really well so i am keeping it
