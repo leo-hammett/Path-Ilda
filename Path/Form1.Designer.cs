@@ -77,11 +77,19 @@
             this.InformationTitleLabel = new System.Windows.Forms.Label();
             this.DrawerColorDialog = new System.Windows.Forms.ColorDialog();
             this.LinePropertiesColorDialog = new System.Windows.Forms.ColorDialog();
+            this.LinePropertiesYCoordinate = new System.Windows.Forms.TextBox();
+            this.LinePropertiesXCoordinate = new System.Windows.Forms.TextBox();
+            this.LinePropertiesYCoordinateLabel = new System.Windows.Forms.Label();
+            this.LinePropertiesXCoordinateLabel = new System.Windows.Forms.Label();
+            this.tabControl1 = new System.Windows.Forms.TabControl();
+            this.tabPage1 = new System.Windows.Forms.TabPage();
+            this.tabPage2 = new System.Windows.Forms.TabPage();
             ((System.ComponentModel.ISupportInitialize)(this.PreviewGraphics)).BeginInit();
             this.OptionsPanel.SuspendLayout();
             this.TimeLinePanel.SuspendLayout();
             this.LinePropertiesPanel.SuspendLayout();
             this.InformationPanel.SuspendLayout();
+            this.tabControl1.SuspendLayout();
             this.SuspendLayout();
             // 
             // PreviewGraphics
@@ -362,9 +370,14 @@
             | System.Windows.Forms.AnchorStyles.Right)));
             this.LinePropertiesPanel.AutoScroll = true;
             this.LinePropertiesPanel.BorderStyle = System.Windows.Forms.BorderStyle.Fixed3D;
+            this.LinePropertiesPanel.Controls.Add(this.tabControl1);
+            this.LinePropertiesPanel.Controls.Add(this.LinePropertiesYCoordinate);
             this.LinePropertiesPanel.Controls.Add(this.PathLinePointsListBox);
+            this.LinePropertiesPanel.Controls.Add(this.LinePropertiesXCoordinate);
             this.LinePropertiesPanel.Controls.Add(this.LinePropertiesChangeColor);
+            this.LinePropertiesPanel.Controls.Add(this.LinePropertiesYCoordinateLabel);
             this.LinePropertiesPanel.Controls.Add(this.LinePropertiesPathIndexData);
+            this.LinePropertiesPanel.Controls.Add(this.LinePropertiesXCoordinateLabel);
             this.LinePropertiesPanel.Controls.Add(this.LinePropertiesPathIndexLabel);
             this.LinePropertiesPanel.Controls.Add(this.LinePropertiesKeyFramesTextBox);
             this.LinePropertiesPanel.Controls.Add(this.LinePropertiesTitle);
@@ -377,16 +390,16 @@
             // 
             this.PathLinePointsListBox.FormattingEnabled = true;
             this.PathLinePointsListBox.ItemHeight = 15;
-            this.PathLinePointsListBox.Location = new System.Drawing.Point(3, 177);
+            this.PathLinePointsListBox.Location = new System.Drawing.Point(222, 48);
             this.PathLinePointsListBox.Name = "PathLinePointsListBox";
-            this.PathLinePointsListBox.Size = new System.Drawing.Size(384, 49);
+            this.PathLinePointsListBox.Size = new System.Drawing.Size(165, 94);
             this.PathLinePointsListBox.TabIndex = 31;
             // 
             // LinePropertiesChangeColor
             // 
-            this.LinePropertiesChangeColor.Location = new System.Drawing.Point(3, 148);
+            this.LinePropertiesChangeColor.Location = new System.Drawing.Point(197, 148);
             this.LinePropertiesChangeColor.Name = "LinePropertiesChangeColor";
-            this.LinePropertiesChangeColor.Size = new System.Drawing.Size(384, 23);
+            this.LinePropertiesChangeColor.Size = new System.Drawing.Size(190, 23);
             this.LinePropertiesChangeColor.TabIndex = 30;
             this.LinePropertiesChangeColor.Text = "Color";
             this.LinePropertiesChangeColor.UseVisualStyleBackColor = true;
@@ -417,7 +430,7 @@
             this.LinePropertiesKeyFramesTextBox.ItemHeight = 15;
             this.LinePropertiesKeyFramesTextBox.Location = new System.Drawing.Point(3, 48);
             this.LinePropertiesKeyFramesTextBox.Name = "LinePropertiesKeyFramesTextBox";
-            this.LinePropertiesKeyFramesTextBox.Size = new System.Drawing.Size(384, 94);
+            this.LinePropertiesKeyFramesTextBox.Size = new System.Drawing.Size(213, 94);
             this.LinePropertiesKeyFramesTextBox.TabIndex = 19;
             this.LinePropertiesKeyFramesTextBox.SelectedIndexChanged += new System.EventHandler(this.LinePropertiesKeyFramesTextBox_SelectedIndexChanged);
             // 
@@ -588,6 +601,71 @@
             this.InformationTitleLabel.TabIndex = 18;
             this.InformationTitleLabel.Text = "Information";
             // 
+            // LinePropertiesYCoordinate
+            // 
+            this.LinePropertiesYCoordinate.Location = new System.Drawing.Point(120, 149);
+            this.LinePropertiesYCoordinate.Name = "LinePropertiesYCoordinate";
+            this.LinePropertiesYCoordinate.Size = new System.Drawing.Size(68, 23);
+            this.LinePropertiesYCoordinate.TabIndex = 23;
+            // 
+            // LinePropertiesXCoordinate
+            // 
+            this.LinePropertiesXCoordinate.Location = new System.Drawing.Point(30, 149);
+            this.LinePropertiesXCoordinate.Name = "LinePropertiesXCoordinate";
+            this.LinePropertiesXCoordinate.Size = new System.Drawing.Size(54, 23);
+            this.LinePropertiesXCoordinate.TabIndex = 20;
+            this.LinePropertiesXCoordinate.Leave += new System.EventHandler(this.LinePropertiesXCoordinate_Leave);
+            // 
+            // LinePropertiesYCoordinateLabel
+            // 
+            this.LinePropertiesYCoordinateLabel.AutoSize = true;
+            this.LinePropertiesYCoordinateLabel.ForeColor = System.Drawing.SystemColors.Control;
+            this.LinePropertiesYCoordinateLabel.Location = new System.Drawing.Point(97, 152);
+            this.LinePropertiesYCoordinateLabel.Name = "LinePropertiesYCoordinateLabel";
+            this.LinePropertiesYCoordinateLabel.Size = new System.Drawing.Size(17, 15);
+            this.LinePropertiesYCoordinateLabel.TabIndex = 22;
+            this.LinePropertiesYCoordinateLabel.Text = "Y:";
+            // 
+            // LinePropertiesXCoordinateLabel
+            // 
+            this.LinePropertiesXCoordinateLabel.AutoSize = true;
+            this.LinePropertiesXCoordinateLabel.ForeColor = System.Drawing.SystemColors.Control;
+            this.LinePropertiesXCoordinateLabel.Location = new System.Drawing.Point(7, 152);
+            this.LinePropertiesXCoordinateLabel.Name = "LinePropertiesXCoordinateLabel";
+            this.LinePropertiesXCoordinateLabel.Size = new System.Drawing.Size(17, 15);
+            this.LinePropertiesXCoordinateLabel.TabIndex = 21;
+            this.LinePropertiesXCoordinateLabel.Text = "X:";
+            // 
+            // tabControl1
+            // 
+            this.tabControl1.Controls.Add(this.tabPage1);
+            this.tabControl1.Controls.Add(this.tabPage2);
+            this.tabControl1.Location = new System.Drawing.Point(3, 177);
+            this.tabControl1.Name = "tabControl1";
+            this.tabControl1.SelectedIndex = 0;
+            this.tabControl1.Size = new System.Drawing.Size(384, 112);
+            this.tabControl1.TabIndex = 32;
+            // 
+            // tabPage1
+            // 
+            this.tabPage1.Location = new System.Drawing.Point(4, 24);
+            this.tabPage1.Name = "tabPage1";
+            this.tabPage1.Padding = new System.Windows.Forms.Padding(3);
+            this.tabPage1.Size = new System.Drawing.Size(376, 84);
+            this.tabPage1.TabIndex = 0;
+            this.tabPage1.Text = "tabPage1";
+            this.tabPage1.UseVisualStyleBackColor = true;
+            // 
+            // tabPage2
+            // 
+            this.tabPage2.Location = new System.Drawing.Point(4, 24);
+            this.tabPage2.Name = "tabPage2";
+            this.tabPage2.Padding = new System.Windows.Forms.Padding(3);
+            this.tabPage2.Size = new System.Drawing.Size(376, 84);
+            this.tabPage2.TabIndex = 1;
+            this.tabPage2.Text = "tabPage2";
+            this.tabPage2.UseVisualStyleBackColor = true;
+            // 
             // Form1
             // 
             this.AccessibleName = "Path Window";
@@ -611,6 +689,7 @@
             this.LinePropertiesPanel.PerformLayout();
             this.InformationPanel.ResumeLayout(false);
             this.InformationPanel.PerformLayout();
+            this.tabControl1.ResumeLayout(false);
             this.ResumeLayout(false);
 
         }
@@ -666,5 +745,12 @@
         private Label InformationPreviewModeData;
         private Label InformationPreviewModeLabel;
         private ListBox PathLinePointsListBox;
+        private TabControl tabControl1;
+        private TabPage tabPage1;
+        private TabPage tabPage2;
+        private TextBox LinePropertiesYCoordinate;
+        private TextBox LinePropertiesXCoordinate;
+        private Label LinePropertiesYCoordinateLabel;
+        private Label LinePropertiesXCoordinateLabel;
     }
 }

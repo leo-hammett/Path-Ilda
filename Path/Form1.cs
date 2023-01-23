@@ -26,6 +26,7 @@ namespace Path
         int previewMode = 0;    //0 = no changes are about to happen, 1 = normal line will be created, 2 = snapped line will be created, 3 = line properties changed, 4 = line or point will be selected, 5 = just line will be selected
         int selectedLineDynamicIndex = 0;
         int selectedFrameDynamicIndex = 0;
+        int selectedPointDynamicIndex = 0;
         public Form1()
         {
             InitializeComponent();
@@ -348,6 +349,10 @@ namespace Path
         //THE GRAPHICS PANEL
         private void PreviewGraphics_Paint(object sender, PaintEventArgs e)
         {
+            //Update line properties
+            UpdateLineProperties();
+
+
             InformationPreviewModeData.Text = Convert.ToString(previewMode);
             //Gen framePath
             if(framePathTime != mainTime)
@@ -457,7 +462,6 @@ namespace Path
             else if (closestPoints[0].IsMiddle && closestPoints.Count == 1)
             {
                 selectedLineDynamicIndex = closestPoints[0].ShapeListIndex;
-                UpdateLineProperties();
                 previewMode = 0;
             }
             else if (OptionsSelectModeButton.Checked)
@@ -637,15 +641,15 @@ namespace Path
             if (dynamicPath.Count != 0)
             {
                 PathLinePointsListBox.Items.Clear();
-                for (int i = 0; i < dynamicPath[selectedLineDynamicIndex].KeyFrames[LinePropertiesKeyFramesTextBox.SelectedIndex].PathPoints.Count; i++)
+                for (int i = 0; i < dynamicPath[selectedLineDynamicIndex].KeyFrames[selectedFrameDynamicIndex].PathPoints.Count; i++)
                 {
-                    PathLinePointsListBox.Items.Add(dynamicPath[selectedLineDynamicIndex].KeyFrames[LinePropertiesKeyFramesTextBox.SelectedIndex].PathPoints[i].ToString());
+                    PathLinePointsListBox.Items.Add(dynamicPath[selectedLineDynamicIndex].KeyFrames[selectedFrameDynamicIndex].PathPoints[i].ToString());
                 }
                 LinePropertiesTitle.Text = "Line Properties: " + dynamicPath[selectedLineDynamicIndex].Name;
                 LinePropertiesPathIndexData.Text = selectedLineDynamicIndex.ToString();
                 LinePropertiesKeyFramesTextBox.Items.Clear();
 
-                for (int i = 0; i < dynamicPath[closestPoints[0].ShapeListIndex].KeyFrames.Count; i++)
+                for (int i = 0; i < dynamicPath[selectedLineDynamicIndex].KeyFrames.Count; i++)
                 {
                     LinePropertiesKeyFramesTextBox.Items.Add(dynamicPath[selectedLineDynamicIndex].KeyFrames[i].Time);
                 }
@@ -654,7 +658,15 @@ namespace Path
         }
         private void LinePropertiesKeyFramesTextBox_SelectedIndexChanged(object sender, EventArgs e)
         {
-            selectedFrameDynamicIndex = LinePropertiesKeyFramesTextBox.SelectedIndex;
+            if (LinePropertiesKeyFramesTextBox.SelectedIndex != -1)
+            {
+                selectedFrameDynamicIndex = LinePropertiesKeyFramesTextBox.SelectedIndex;
+                UpdateLineProperties();
+            }
+        }
+
+        private void LinePropertiesXCoordinate_Leave(object sender, EventArgs e)
+        {
             UpdateLineProperties();
         }
     }
