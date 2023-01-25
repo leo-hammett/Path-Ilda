@@ -26,7 +26,7 @@ namespace Path
         int previewMode = 0;    //0 = no changes are about to happen, 1 = normal line will be created, 2 = snapped line will be created, 3 = line properties changed, 4 = line or point will be selected, 5 = just line will be selected
         int selectedLineDynamicIndex = 0;
         int selectedFrameDynamicIndex = 0;
-        int selectedPointDynamicIndex = 0;
+        int selectedPointDynamicIndex = -1;
         public Form1()
         {
             InitializeComponent();
@@ -66,6 +66,17 @@ namespace Path
             {
                 get { return isHidden;}
                 set { isHidden = value;}
+            }
+            public PathLineFrame GetFrameAt(int FrameTime)
+            {
+                foreach(PathLineFrame frame in keyFrames)
+                {
+                    if(frame.Time == FrameTime)
+                    {
+                        return frame;
+                    }
+                }
+                return GenFrameAt(FrameTime);
             }
             public PathLineFrame GenFrameAt(int frameTime)
             {
@@ -640,20 +651,30 @@ namespace Path
             //Select PathLineFrame
             if (dynamicPath.Count != 0)
             {
+                //Add to the points textbox
                 PathLinePointsListBox.Items.Clear();
                 for (int i = 0; i < dynamicPath[selectedLineDynamicIndex].KeyFrames[selectedFrameDynamicIndex].PathPoints.Count; i++)
                 {
                     PathLinePointsListBox.Items.Add(dynamicPath[selectedLineDynamicIndex].KeyFrames[selectedFrameDynamicIndex].PathPoints[i].ToString());
                 }
+                //Line properties title
                 LinePropertiesTitle.Text = "Line Properties: " + dynamicPath[selectedLineDynamicIndex].Name;
                 LinePropertiesPathIndexData.Text = selectedLineDynamicIndex.ToString();
-                LinePropertiesKeyFramesTextBox.Items.Clear();
 
+                //Update the colors and coordinates
+                if (selectedPointDynamicIndex != -1) 
+                {
+                    LinePropertiesXCoordinate.Text = dynamicPath[selectedLineDynamicIndex].KeyFrames[selectedFrameDynamicIndex].PathPoints[selectedPointDynamicIndex].X.ToString();
+                    LinePropertiesYCoordinate.Text = dynamicPath[selectedLineDynamicIndex].KeyFrames[selectedFrameDynamicIndex].PathPoints[selectedPointDynamicIndex].Y.ToString();
+                }
+
+                //Add the keyframes to the keyframe textbox
+                LinePropertiesKeyFramesTextBox.Items.Clear();
                 for (int i = 0; i < dynamicPath[selectedLineDynamicIndex].KeyFrames.Count; i++)
                 {
                     LinePropertiesKeyFramesTextBox.Items.Add(dynamicPath[selectedLineDynamicIndex].KeyFrames[i].Time);
                 }
-                LinePropertiesChangeColor.BackColor = dynamicPath[selectedLineDynamicIndex].GenFrameAt(mainTime).PathColor;
+                LinePropertiesChangeColor.BackColor = dynamicPath[selectedLineDynamicIndex].KeyFrames[selectedFrameDynamicIndex].PathColor;
             }
         }
         private void LinePropertiesKeyFramesTextBox_SelectedIndexChanged(object sender, EventArgs e)
@@ -667,7 +688,25 @@ namespace Path
 
         private void LinePropertiesXCoordinate_Leave(object sender, EventArgs e)
         {
+            try
+            {
+                dynamicPath[selectedLineDynamicIndex].KeyFrames[selectedFrameDynamicIndex].PathPoints[selectedPointDynamicIndex] = new Point(Convert.ToInt32(LinePropertiesXCoordinate.Text), Convert.ToInt32(LinePropertiesYCoordinate.Text));
+                this.PreviewGraphics.Invalidate();
+            }
+            catch
+            {
+
+            }
             UpdateLineProperties();
+        }
+
+        private void PathLinePointsListBox_SelectedIndexChanged(object sender, EventArgs e)
+        {
+            if (PathLinePointsListBox.SelectedIndex != -1)
+            {
+                selectedPointDynamicIndex = PathLinePointsListBox.SelectedIndex;
+                UpdateLineProperties();
+            }
         }
     }
     public static class GraphicsExtensions      //This code (the graphics extensions) was someoene elses but worked really well so i am keeping it
