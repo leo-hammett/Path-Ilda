@@ -27,6 +27,10 @@ namespace Path
         int selectedLineDynamicIndex = 0;
         int selectedFrameDynamicIndex = 0;
         int selectedPointDynamicIndex = -1;
+
+        bool showCircles = false;
+        bool showLines = false;
+        int selectedLineIndex;
         public Form1()
         {
             InitializeComponent();
@@ -399,6 +403,7 @@ namespace Path
                     }
                 }
                 
+                //Im pretty sure this is the function that provides closest points.
                 List<LinePoint> keyPoints = new List<LinePoint>();
                 keyPoints = framePath[i].GenKeyPoints(OptionsSelectModeButton.Checked);
                 Pen bigCircle = new Pen(Color.Gray, 3);
@@ -407,7 +412,7 @@ namespace Path
                 {
                     Point pointLocation = keyPoints[j].Location;
                     Point pointLocationGraphics = ConvertToHeliosCoords(pointLocation, true);
-                    if (previewMode is 3 or 4 or 5)     //Also finds closest point to mouse
+                    if (showCircles)     //Also finds closest point to mouse
                     {
                         e.Graphics.FillCircle(new SolidBrush(Color.LightGray), pointLocationGraphics.X, pointLocationGraphics.Y, 4);
                         e.Graphics.FillCircle(new SolidBrush(Color.DarkGray), pointLocationGraphics.X, pointLocationGraphics.Y, 3);
@@ -426,11 +431,11 @@ namespace Path
                     }
                 }
             }
-            if(previewMode is 2 or 3 or 4 or 5)
+            if(showLines)
             {
                 try
                 {
-                    if (closestPoints[0].IsMiddle && closestPoints.Count == 1 && previewMode is 3)
+                    if (closestPoints[0].IsMiddle)
                     {
                         e.Graphics.DrawLine(new Pen(Color.Red, 2), ConvertToHeliosCoords(dynamicPath[closestPoints[0].ShapeListIndex].GenFrameAt(mainTime).PathPoints[0], true),
                             ConvertToHeliosCoords(dynamicPath[closestPoints[0].ShapeListIndex].GenFrameAt(mainTime).PathPoints[1], true));
@@ -456,29 +461,12 @@ namespace Path
         }
         private void PreviewGraphics_MouseDown(object sender, MouseEventArgs e)
         {
-            //If mouse down, check which tool is selected
+            //If mouse down, create a new line or frame.
             if (OptionsDrawLineMode.Checked)
             {
-                if (OptionsSnapToPoint.Checked && getDistance(closestPoint, newPoint2) < 100) //both conditions so the snap tool is useful
-                {
-                    newPoint1 = closestPoint;
-                    previewMode = 2;
-                }
-                else
-                {
-                    previewMode = 1;
-                    newPoint1 = ConvertToHeliosCoords(e.Location); //Closest point already a variable & is therefore converted.
-                }
-            }
-            else if (closestPoints[0].IsMiddle && closestPoints.Count == 1)
-            {
-                selectedLineDynamicIndex = closestPoints[0].ShapeListIndex;
-                previewMode = 0;
-            }
-            else if (OptionsSelectModeButton.Checked)
-            {
-                previewMode = 3;
-                newPoint1 = closestPoint;
+                dynamicPath.Add(new PathLine("(" + e.Location.X + "," + e.Location.Y + ")", new PathLineFrame(mainTime, DrawerColorDialog.Color, new List<Point>(), dynamicPath.Count), dynamicPath.Count);
+                selectedLineIndex = dynamicPath.Count-1;
+                
             }
             UpdateLineProperties();
         }
