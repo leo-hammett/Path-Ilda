@@ -668,6 +668,14 @@
             this.InformationTitleLabel.TabIndex = 18;
             this.InformationTitleLabel.Text = "Information";
             // 
+            // DrawerColorDialog
+            // 
+            this.DrawerColorDialog.Color = System.Drawing.Color.White;
+            // 
+            // LinePropertiesColorDialog
+            // 
+            this.LinePropertiesColorDialog.Color = System.Drawing.Color.White;
+            // 
             // Form1
             // 
             this.AccessibleName = "Path Window";
