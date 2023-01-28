@@ -30,9 +30,13 @@
         {
             this.PreviewGraphics = new System.Windows.Forms.PictureBox();
             this.OptionsPanel = new System.Windows.Forms.Panel();
+            this.TimeLineFramesInput = new System.Windows.Forms.TextBox();
             this.OptionsSnapToPoint = new System.Windows.Forms.CheckBox();
+            this.TimeLineFramesLabel = new System.Windows.Forms.Label();
+            this.TimeLineSecondsInput = new System.Windows.Forms.TextBox();
             this.OptionsColorSelecterOpener = new System.Windows.Forms.Button();
             this.OptionsDrawLineMode = new System.Windows.Forms.CheckBox();
+            this.TimeLineSecondsLabel = new System.Windows.Forms.Label();
             this.OptionsSelectModeButton = new System.Windows.Forms.CheckBox();
             this.OptionsEmergencyLabel = new System.Windows.Forms.Label();
             this.OptionsToggleProject = new System.Windows.Forms.CheckBox();
@@ -44,10 +48,8 @@
             this.OptionsTitleLabel = new System.Windows.Forms.Label();
             this.OptionsFPSLabel = new System.Windows.Forms.Label();
             this.TimeLinePanel = new System.Windows.Forms.Panel();
-            this.TimeLineFramesInput = new System.Windows.Forms.TextBox();
-            this.TimeLineSecondsInput = new System.Windows.Forms.TextBox();
-            this.TimeLineFramesLabel = new System.Windows.Forms.Label();
-            this.TimeLineSecondsLabel = new System.Windows.Forms.Label();
+            this.progressBar1 = new System.Windows.Forms.ProgressBar();
+            this.timelineGUI = new System.Windows.Forms.PictureBox();
             this.TimeLinePlay = new System.Windows.Forms.CheckBox();
             this.TimeLineNextFrame = new System.Windows.Forms.Button();
             this.TimeLineBackFrame = new System.Windows.Forms.Button();
@@ -87,6 +89,7 @@
             ((System.ComponentModel.ISupportInitialize)(this.PreviewGraphics)).BeginInit();
             this.OptionsPanel.SuspendLayout();
             this.TimeLinePanel.SuspendLayout();
+            ((System.ComponentModel.ISupportInitialize)(this.timelineGUI)).BeginInit();
             this.LinePropertiesPanel.SuspendLayout();
             this.tabControl1.SuspendLayout();
             this.InformationPanel.SuspendLayout();
@@ -95,7 +98,7 @@
             // PreviewGraphics
             // 
             this.PreviewGraphics.BorderStyle = System.Windows.Forms.BorderStyle.Fixed3D;
-            this.PreviewGraphics.Location = new System.Drawing.Point(15, 15);
+            this.PreviewGraphics.Location = new System.Drawing.Point(12, 12);
             this.PreviewGraphics.Name = "PreviewGraphics";
             this.PreviewGraphics.Size = new System.Drawing.Size(509, 509);
             this.PreviewGraphics.SizeMode = System.Windows.Forms.PictureBoxSizeMode.Zoom;
@@ -112,9 +115,13 @@
             this.OptionsPanel.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left) 
             | System.Windows.Forms.AnchorStyles.Right)));
             this.OptionsPanel.BorderStyle = System.Windows.Forms.BorderStyle.Fixed3D;
+            this.OptionsPanel.Controls.Add(this.TimeLineFramesInput);
             this.OptionsPanel.Controls.Add(this.OptionsSnapToPoint);
+            this.OptionsPanel.Controls.Add(this.TimeLineFramesLabel);
+            this.OptionsPanel.Controls.Add(this.TimeLineSecondsInput);
             this.OptionsPanel.Controls.Add(this.OptionsColorSelecterOpener);
             this.OptionsPanel.Controls.Add(this.OptionsDrawLineMode);
+            this.OptionsPanel.Controls.Add(this.TimeLineSecondsLabel);
             this.OptionsPanel.Controls.Add(this.OptionsSelectModeButton);
             this.OptionsPanel.Controls.Add(this.OptionsEmergencyLabel);
             this.OptionsPanel.Controls.Add(this.OptionsToggleProject);
@@ -125,10 +132,19 @@
             this.OptionsPanel.Controls.Add(this.OptionsKPPSLabel);
             this.OptionsPanel.Controls.Add(this.OptionsTitleLabel);
             this.OptionsPanel.Controls.Add(this.OptionsFPSLabel);
-            this.OptionsPanel.Location = new System.Drawing.Point(530, 438);
+            this.OptionsPanel.Location = new System.Drawing.Point(530, 507);
             this.OptionsPanel.Name = "OptionsPanel";
             this.OptionsPanel.Size = new System.Drawing.Size(394, 206);
             this.OptionsPanel.TabIndex = 1;
+            // 
+            // TimeLineFramesInput
+            // 
+            this.TimeLineFramesInput.Location = new System.Drawing.Point(341, 135);
+            this.TimeLineFramesInput.Name = "TimeLineFramesInput";
+            this.TimeLineFramesInput.Size = new System.Drawing.Size(51, 23);
+            this.TimeLineFramesInput.TabIndex = 8;
+            this.TimeLineFramesInput.Text = "0";
+            this.TimeLineFramesInput.TextChanged += new System.EventHandler(this.TimeLineFramesInput_TextChanged);
             // 
             // OptionsSnapToPoint
             // 
@@ -141,6 +157,25 @@
             this.OptionsSnapToPoint.Text = "Snap To Point";
             this.OptionsSnapToPoint.UseVisualStyleBackColor = true;
             this.OptionsSnapToPoint.CheckedChanged += new System.EventHandler(this.OptionsSnapToPoint_CheckedChanged);
+            // 
+            // TimeLineFramesLabel
+            // 
+            this.TimeLineFramesLabel.AutoSize = true;
+            this.TimeLineFramesLabel.ForeColor = System.Drawing.SystemColors.Control;
+            this.TimeLineFramesLabel.Location = new System.Drawing.Point(253, 138);
+            this.TimeLineFramesLabel.Name = "TimeLineFramesLabel";
+            this.TimeLineFramesLabel.Size = new System.Drawing.Size(82, 15);
+            this.TimeLineFramesLabel.TabIndex = 6;
+            this.TimeLineFramesLabel.Text = "Time (Frames)";
+            // 
+            // TimeLineSecondsInput
+            // 
+            this.TimeLineSecondsInput.Location = new System.Drawing.Point(341, 104);
+            this.TimeLineSecondsInput.Name = "TimeLineSecondsInput";
+            this.TimeLineSecondsInput.Size = new System.Drawing.Size(51, 23);
+            this.TimeLineSecondsInput.TabIndex = 7;
+            this.TimeLineSecondsInput.Text = "0";
+            this.TimeLineSecondsInput.TextChanged += new System.EventHandler(this.TimeLineSecondsInput_TextChanged);
             // 
             // OptionsColorSelecterOpener
             // 
@@ -163,6 +198,16 @@
             this.OptionsDrawLineMode.Text = "Draw Line";
             this.OptionsDrawLineMode.UseVisualStyleBackColor = true;
             this.OptionsDrawLineMode.CheckedChanged += new System.EventHandler(this.OptionsDrawLineMode_CheckedChanged);
+            // 
+            // TimeLineSecondsLabel
+            // 
+            this.TimeLineSecondsLabel.AutoSize = true;
+            this.TimeLineSecondsLabel.ForeColor = System.Drawing.SystemColors.Control;
+            this.TimeLineSecondsLabel.Location = new System.Drawing.Point(247, 107);
+            this.TimeLineSecondsLabel.Name = "TimeLineSecondsLabel";
+            this.TimeLineSecondsLabel.Size = new System.Drawing.Size(88, 15);
+            this.TimeLineSecondsLabel.TabIndex = 5;
+            this.TimeLineSecondsLabel.Text = "Time (Seconds)";
             // 
             // OptionsSelectModeButton
             // 
@@ -267,56 +312,34 @@
             // 
             this.TimeLinePanel.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)));
             this.TimeLinePanel.BorderStyle = System.Windows.Forms.BorderStyle.Fixed3D;
-            this.TimeLinePanel.Controls.Add(this.TimeLineFramesInput);
-            this.TimeLinePanel.Controls.Add(this.TimeLineSecondsInput);
-            this.TimeLinePanel.Controls.Add(this.TimeLineFramesLabel);
-            this.TimeLinePanel.Controls.Add(this.TimeLineSecondsLabel);
+            this.TimeLinePanel.Controls.Add(this.progressBar1);
+            this.TimeLinePanel.Controls.Add(this.timelineGUI);
             this.TimeLinePanel.Controls.Add(this.TimeLinePlay);
             this.TimeLinePanel.Controls.Add(this.TimeLineNextFrame);
             this.TimeLinePanel.Controls.Add(this.TimeLineBackFrame);
             this.TimeLinePanel.Controls.Add(this.TimeLineTitleLabel);
-            this.TimeLinePanel.Location = new System.Drawing.Point(12, 530);
+            this.TimeLinePanel.Location = new System.Drawing.Point(12, 527);
             this.TimeLinePanel.Name = "TimeLinePanel";
-            this.TimeLinePanel.Size = new System.Drawing.Size(512, 114);
+            this.TimeLinePanel.Size = new System.Drawing.Size(512, 186);
             this.TimeLinePanel.TabIndex = 2;
             // 
-            // TimeLineFramesInput
+            // progressBar1
             // 
-            this.TimeLineFramesInput.Location = new System.Drawing.Point(97, 77);
-            this.TimeLineFramesInput.Name = "TimeLineFramesInput";
-            this.TimeLineFramesInput.Size = new System.Drawing.Size(145, 23);
-            this.TimeLineFramesInput.TabIndex = 8;
-            this.TimeLineFramesInput.Text = "0";
-            this.TimeLineFramesInput.TextChanged += new System.EventHandler(this.TimeLineFramesInput_TextChanged);
+            this.progressBar1.Location = new System.Drawing.Point(3, 164);
+            this.progressBar1.Name = "progressBar1";
+            this.progressBar1.Size = new System.Drawing.Size(502, 16);
+            this.progressBar1.TabIndex = 6;
             // 
-            // TimeLineSecondsInput
+            // timelineGUI
             // 
-            this.TimeLineSecondsInput.Location = new System.Drawing.Point(97, 48);
-            this.TimeLineSecondsInput.Name = "TimeLineSecondsInput";
-            this.TimeLineSecondsInput.Size = new System.Drawing.Size(145, 23);
-            this.TimeLineSecondsInput.TabIndex = 7;
-            this.TimeLineSecondsInput.Text = "0";
-            this.TimeLineSecondsInput.TextChanged += new System.EventHandler(this.TimeLineSecondsInput_TextChanged);
-            // 
-            // TimeLineFramesLabel
-            // 
-            this.TimeLineFramesLabel.AutoSize = true;
-            this.TimeLineFramesLabel.ForeColor = System.Drawing.SystemColors.Control;
-            this.TimeLineFramesLabel.Location = new System.Drawing.Point(9, 82);
-            this.TimeLineFramesLabel.Name = "TimeLineFramesLabel";
-            this.TimeLineFramesLabel.Size = new System.Drawing.Size(82, 15);
-            this.TimeLineFramesLabel.TabIndex = 6;
-            this.TimeLineFramesLabel.Text = "Time (Frames)";
-            // 
-            // TimeLineSecondsLabel
-            // 
-            this.TimeLineSecondsLabel.AutoSize = true;
-            this.TimeLineSecondsLabel.ForeColor = System.Drawing.SystemColors.Control;
-            this.TimeLineSecondsLabel.Location = new System.Drawing.Point(3, 51);
-            this.TimeLineSecondsLabel.Name = "TimeLineSecondsLabel";
-            this.TimeLineSecondsLabel.Size = new System.Drawing.Size(88, 15);
-            this.TimeLineSecondsLabel.TabIndex = 5;
-            this.TimeLineSecondsLabel.Text = "Time (Seconds)";
+            this.timelineGUI.Location = new System.Drawing.Point(3, 36);
+            this.timelineGUI.Name = "timelineGUI";
+            this.timelineGUI.Size = new System.Drawing.Size(502, 122);
+            this.timelineGUI.TabIndex = 5;
+            this.timelineGUI.TabStop = false;
+            this.timelineGUI.Paint += new System.Windows.Forms.PaintEventHandler(this.timeline_GUI_updater);
+            this.timelineGUI.MouseDown += new System.Windows.Forms.MouseEventHandler(this.timelineGUI_MouseDown);
+            this.timelineGUI.MouseMove += new System.Windows.Forms.MouseEventHandler(this.timelineGUI_MouseMove);
             // 
             // TimeLinePlay
             // 
@@ -383,14 +406,14 @@
             this.LinePropertiesPanel.Controls.Add(this.LinePropertiesTitle);
             this.LinePropertiesPanel.Location = new System.Drawing.Point(530, 12);
             this.LinePropertiesPanel.Name = "LinePropertiesPanel";
-            this.LinePropertiesPanel.Size = new System.Drawing.Size(394, 296);
+            this.LinePropertiesPanel.Size = new System.Drawing.Size(394, 365);
             this.LinePropertiesPanel.TabIndex = 3;
             // 
             // tabControl1
             // 
             this.tabControl1.Controls.Add(this.tabPage1);
             this.tabControl1.Controls.Add(this.tabPage2);
-            this.tabControl1.Location = new System.Drawing.Point(3, 177);
+            this.tabControl1.Location = new System.Drawing.Point(3, 246);
             this.tabControl1.Name = "tabControl1";
             this.tabControl1.SelectedIndex = 0;
             this.tabControl1.Size = new System.Drawing.Size(384, 112);
@@ -531,7 +554,7 @@
             this.InformationPanel.Controls.Add(this.InformationPoint2TitleLabel);
             this.InformationPanel.Controls.Add(this.InformationPoint1TitleLablel);
             this.InformationPanel.Controls.Add(this.InformationTitleLabel);
-            this.InformationPanel.Location = new System.Drawing.Point(530, 314);
+            this.InformationPanel.Location = new System.Drawing.Point(530, 383);
             this.InformationPanel.Name = "InformationPanel";
             this.InformationPanel.Size = new System.Drawing.Size(394, 118);
             this.InformationPanel.TabIndex = 19;
@@ -682,7 +705,7 @@
             this.AutoScaleDimensions = new System.Drawing.SizeF(7F, 15F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.BackColor = System.Drawing.SystemColors.Desktop;
-            this.ClientSize = new System.Drawing.Size(936, 656);
+            this.ClientSize = new System.Drawing.Size(936, 725);
             this.Controls.Add(this.PreviewGraphics);
             this.Controls.Add(this.InformationPanel);
             this.Controls.Add(this.LinePropertiesPanel);
@@ -695,6 +718,7 @@
             this.OptionsPanel.PerformLayout();
             this.TimeLinePanel.ResumeLayout(false);
             this.TimeLinePanel.PerformLayout();
+            ((System.ComponentModel.ISupportInitialize)(this.timelineGUI)).EndInit();
             this.LinePropertiesPanel.ResumeLayout(false);
             this.LinePropertiesPanel.PerformLayout();
             this.tabControl1.ResumeLayout(false);
@@ -762,5 +786,7 @@
         private TextBox LinePropertiesXCoordinate;
         private Label LinePropertiesYCoordinateLabel;
         private Label LinePropertiesXCoordinateLabel;
+        private ProgressBar progressBar1;
+        private PictureBox timelineGUI;
     }
 }

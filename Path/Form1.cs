@@ -18,6 +18,7 @@ namespace Path
         int kpps = 40000;       //The maximum number of points we should be sending down the dac. Mine was rated at 40KPPS but that could be a false rating at this point.
 
         Point mouseLastLocation;   //If set to -1,-1 no line preview should be made - Saving where the mouse went down
+        Point timelineMouseLastLocation;
 
         List<LinePoint> closestPoints = new List<LinePoint>();
         List<LinePoint> closestPointsFrozen = new List<LinePoint>();
@@ -32,6 +33,11 @@ namespace Path
         bool showCircles = false;
         bool showLines = false;
         bool mouseDown = false;
+
+        //Timeline GUI variables
+        TimelineSettings currentTimelineSettings;
+        LinePoint timelineClosestPoint;
+        List<LinePoint> TimelineDots = new List<LinePoint>();
         public Form1()
         {
             InitializeComponent();
@@ -41,6 +47,7 @@ namespace Path
             mainTime = 0;
             DrawerColorDialog.Color = Color.White;
             OptionsDrawLineMode.Checked = true;
+            currentTimelineSettings = new TimelineSettings();
         }
         class PathLine
         {
@@ -81,7 +88,6 @@ namespace Path
                     }
                 }
                 KeyFrames.Add(new PathLineFrame(GenFrameAt(FrameTime)));
-                MessageBox.Show(keyFrames.ToString());
                 this.SortKeyFramesByTime();
                 return GetFrameAt(FrameTime);
             }
@@ -124,7 +130,7 @@ namespace Path
                     PathLineFrame frameBefore = new PathLineFrame(keyFrames[frameBeforeIndex]);
                     
                     //SET ALL PROPERTIES TO PROPERTIES IN BETWEEN THEM BOTH
-                    float animationProgress = (frameTime - frameBefore.Time) / (frameAfter.Time - frameBefore.Time); //If you set each property to beforeFrame value plus (afterFrame - beforeFrame) * difference  -- This assumes a linear animation hence the constant progress as time moves forward.
+                    float animationProgress = ((float) (frameTime - frameBefore.Time) / (float) (frameAfter.Time - frameBefore.Time)); //If you set each property to beforeFrame value plus (afterFrame - beforeFrame) * difference  -- This assumes a linear animation hence the constant progress as time moves forward.
                     return new PathLineFrame(animationProgress,frameBefore,frameAfter);
                 }
             }   //The majourity of the animation code IF THIS PROJECT DOESNT WORK IMMA CRY
@@ -278,7 +284,7 @@ namespace Path
                         FrameBefore.pathPoints.Add(FrameAfter.PathPoints.Last());
                     }
                 }   //Makes all extra detail grow out the end of the line --im proud of myself for the attention to detail, might be buggy tho
-                for (int i = 0; i < pathPoints.Count; i++)
+                for (int i = 0; i < FrameAfter.PathPoints.Count; i++)
                 {
                     pathPoints.Add(new Point(
                         getValueXWayBetweenTwoPoints(FrameBefore.pathPoints[i].X, FrameAfter.pathPoints[i].X, AnimationProgress),
@@ -298,7 +304,7 @@ namespace Path
                 time = frame.Time;
                 listIndex = frame.ListIndex;
                 pathColor = frame.PathColor;
-                pathPoints = frame.PathPoints;
+                pathPoints = new List<Point>(frame.PathPoints);
             }
         }
         public class LinePoint
@@ -403,8 +409,6 @@ namespace Path
                 //Im pretty sure this is the function that provides closest points.
                 List<LinePoint> keyPoints = new List<LinePoint>();
                 keyPoints = framePath[i].GenKeyPoints(OptionsSelectModeButton.Checked);
-                Pen bigCircle = new Pen(Color.Gray, 3);
-                Pen smallCircle = new Pen(Color.DimGray, 2);
                 for (int j = 0; j < keyPoints.Count(); j++)
                 {
                     Point pointLocation = keyPoints[j].Location;
@@ -637,6 +641,7 @@ namespace Path
         }
         public void UpdateLineProperties()
         {
+            timelineGUI.Invalidate();
             //Select PathLineFrame
             if (dynamicPath.Count != 0)
             {
@@ -690,6 +695,7 @@ namespace Path
         {
             mainTime = newTime;
             UpdateLineProperties();
+            timelineGUI.Invalidate();
             PreviewGraphics.Invalidate();
         }
         private void LinePropertiesKeyFramesTextBox_SelectedIndexChanged(object sender, EventArgs e)
@@ -703,16 +709,16 @@ namespace Path
 
         private void LinePropertiesXCoordinate_Leave(object sender, EventArgs e)
         {
-            try
-            {
-                GetSelectedFrameWrite().PathPoints[selectedPointDynamicIndex] = new Point(Convert.ToInt32(LinePropertiesXCoordinate.Text), Convert.ToInt32(LinePropertiesYCoordinate.Text));
-                this.PreviewGraphics.Invalidate();
-            }
-            catch
-            {
-
-            }
-            UpdateLineProperties();
+            //try
+            //{
+            //    GetSelectedFrameWrite().PathPoints[selectedPointDynamicIndex] = new Point(Convert.ToInt32(LinePropertiesXCoordinate.Text), Convert.ToInt32(LinePropertiesYCoordinate.Text));
+            //    this.PreviewGraphics.Invalidate();
+            //}
+            //catch
+            //{
+            //
+            //}
+            //UpdateLineProperties();
         }
 
         private void PathLinePointsListBox_SelectedIndexChanged(object sender, EventArgs e)
@@ -721,6 +727,106 @@ namespace Path
             {
                 selectedPointDynamicIndex = PathLinePointsListBox.SelectedIndex;
                 UpdateLineProperties();
+            }
+        }
+        class TimelineSettings
+        {
+            public float PixelsPerSecond = 20;
+            public float LeftMargin = 10;
+            public float TopMargin = 10;
+            public float PixelsPerShape = 20;
+            public float TimelineDotSize = 5;
+            public Font SecondsFont = new Font("Arial", 4, FontStyle.Bold);
+            public TimelineSettings(int pixelsPerSecond = 20, int pixelsPerShape = 20, Font secondsFont = null)
+            {
+                this.PixelsPerSecond = pixelsPerSecond;
+                this.PixelsPerShape = pixelsPerShape;
+                if(secondsFont != null)
+                {
+                    this.SecondsFont = secondsFont;
+                }
+                this.LeftMargin = pixelsPerSecond / 2;
+                this.TopMargin = pixelsPerShape / 2;
+            }
+            public float getFloatXOfFrameTime(int frameTime, int fps)
+            {
+                return this.LeftMargin + frameTime * (this.PixelsPerSecond / fps);
+            }
+        }
+
+        private void timeline_GUI_updater(object sender, PaintEventArgs e)
+        {
+            int seconds = 0;
+            Pen thinWhitePen = new Pen(Color.White);
+            float currentTimeX = currentTimelineSettings.LeftMargin + mainTime * (currentTimelineSettings.PixelsPerSecond / fps);
+            e.Graphics.DrawLine(thinWhitePen, new PointF(currentTimeX, currentTimelineSettings.PixelsPerShape), new PointF(currentTimeX, timelineGUI.Size.Height));
+            for (float horizontalPixelsUsed = currentTimelineSettings.LeftMargin; horizontalPixelsUsed < timelineGUI.Size.Width; horizontalPixelsUsed += currentTimelineSettings.PixelsPerSecond)
+            {
+                e.Graphics.DrawString(seconds.ToString(), currentTimelineSettings.SecondsFont, new SolidBrush(Color.White), new PointF(horizontalPixelsUsed - ((int)(currentTimelineSettings.SecondsFont.Size / 2)),currentTimelineSettings.LeftMargin));
+                seconds++;
+            }
+            int dynamicPathTempIndex = 0;
+            TimelineDots.Clear();
+            for(float verticalSpaceUsed = currentTimelineSettings.TopMargin; verticalSpaceUsed < timelineGUI.Size.Height;verticalSpaceUsed += currentTimelineSettings.PixelsPerShape)
+            {
+                if (dynamicPath.Count != 0 && dynamicPath.Count > dynamicPathTempIndex)
+                {
+                    foreach (PathLineFrame frame in dynamicPath[dynamicPathTempIndex].KeyFrames)
+                    {
+                        TimelineDots.Add(new LinePoint(dynamicPathTempIndex, frame.Time, new Point((int)currentTimelineSettings.getFloatXOfFrameTime(frame.Time, fps), (int)(
+                            currentTimelineSettings.TopMargin + (dynamicPathTempIndex + 1) * currentTimelineSettings.PixelsPerShape)), false));
+
+                        e.Graphics.FillCircle(new SolidBrush(Color.LightGray), (int)currentTimelineSettings.getFloatXOfFrameTime(frame.Time,fps), (int)(
+                            currentTimelineSettings.TopMargin + (dynamicPathTempIndex + 1) * currentTimelineSettings.PixelsPerShape), 4);
+
+                        e.Graphics.FillCircle(new SolidBrush(Color.DarkGray), (int)currentTimelineSettings.getFloatXOfFrameTime(frame.Time, fps), (int)(
+                            currentTimelineSettings.TopMargin + (dynamicPathTempIndex + 1) * currentTimelineSettings.PixelsPerShape), 3);
+                    }
+                    dynamicPathTempIndex++;
+                }
+            }
+            if (timelineClosestPoint != null)
+            {
+                if (getDistance(timelineClosestPoint.Location, timelineMouseLastLocation) < 5)
+                {
+                    e.Graphics.FillCircle(new SolidBrush(Color.Red), timelineClosestPoint.Location, 3);
+                }
+            }
+        }
+
+        private void timelineGUI_MouseMove(object sender, MouseEventArgs e)
+        {
+            if(e.Button == MouseButtons.Left)
+            {
+                int newTimeFrame = (int)((e.Location.X - currentTimelineSettings.LeftMargin) / (currentTimelineSettings.PixelsPerSecond / fps));
+                if (newTimeFrame > 0)
+                {
+                    ChangeTime(newTimeFrame);
+                }
+            }
+            double closestPointDistance = 100000;
+            for(int j = 0; j < TimelineDots.Count(); j++)
+            {
+                Point pointLocation = TimelineDots[j].Location;
+                if (getDistance(pointLocation, e.Location) < closestPointDistance) //Finds closest point
+                {
+                    timelineClosestPoint = TimelineDots[j];
+                    closestPointDistance = getDistance(timelineClosestPoint.Location, e.Location);
+                }
+            }
+            timelineMouseLastLocation = e.Location;
+            timelineGUI.Invalidate();
+        }
+
+        private void timelineGUI_MouseDown(object sender, MouseEventArgs e)
+        {
+            if (timelineClosestPoint != null)
+            {
+                if (getDistance(timelineClosestPoint.Location, timelineMouseLastLocation) < 5)
+                {
+                    selectedLineDynamicIndex = timelineClosestPoint.ShapeListIndex;
+                    ChangeTime(timelineClosestPoint.PathPointsListIndex);
+                }
             }
         }
     }
