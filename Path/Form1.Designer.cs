@@ -342,14 +342,14 @@
             // 
             this.progressBar1.Location = new System.Drawing.Point(3, 175);
             this.progressBar1.Name = "progressBar1";
-            this.progressBar1.Size = new System.Drawing.Size(493, 10);
+            this.progressBar1.Size = new System.Drawing.Size(533, 10);
             this.progressBar1.TabIndex = 6;
             // 
             // timelineGUI
             // 
             this.timelineGUI.Location = new System.Drawing.Point(3, 36);
             this.timelineGUI.Name = "timelineGUI";
-            this.timelineGUI.Size = new System.Drawing.Size(493, 133);
+            this.timelineGUI.Size = new System.Drawing.Size(534, 133);
             this.timelineGUI.TabIndex = 5;
             this.timelineGUI.TabStop = false;
             this.timelineGUI.Paint += new System.Windows.Forms.PaintEventHandler(this.timeline_GUI_updater);

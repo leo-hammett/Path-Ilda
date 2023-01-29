@@ -43,6 +43,7 @@ namespace Path
         //Helios Laser management variables
         public HeliosDac helios = new HeliosDac();
         List<HeliosPoint> heliosLaserPoints = new List<HeliosPoint>();
+        LaserSettings currentLaserSettings = new LaserSettings();
 
 
         public Form1()
@@ -73,9 +74,11 @@ namespace Path
             public int maxAcceleration = 5;
             public int bufferLength = 10;
         }
-        int projectToHelios()
+        List<HeliosPoint> projectToHelios(List<PathLine> dynamicPath)
         {
-            return 0;
+            List<HeliosPoint> heliosLaserPoints = dynamicPath[0].GenFrameAt(mainTime).GenLaserPoints(currentLaserSettings);
+
+            return heliosLaserPoints;
         }
 
         Point ConvertToHeliosCoords(Point Original, bool backwards = false)
@@ -90,7 +93,7 @@ namespace Path
                 return new Point((int)(Original.X / Scale), (int)(Original.Y / Scale));
             }
         }
-        double getDistance(Point point1, Point point2)
+        static double getDistance(Point point1, Point point2)
         {
             return Math.Sqrt(Math.Pow(point1.X - point2.X, 2) + Math.Pow(point1.Y - point2.Y,2));
         }
@@ -136,10 +139,51 @@ namespace Path
                 get { return listIndex; }
                 set { listIndex = value; }
             }
-            public List<Point> GenLaserPoints(bool AddEdges = false)
+            public List<HeliosPoint> GenLaserPoints(LaserSettings currentLaserSettings)
             {
-
-                return new List<Point>();
+                List<HeliosPoint> points = new List<HeliosPoint>();
+                for(int i = 0; i < pathPoints.Count-1; i++)
+                {
+                    double lineFrameLength = getDistance(pathPoints[i], pathPoints[i+1]);
+                    double lineFrameProcessed = (double)(currentLaserSettings.maxAcceleration - currentLaserSettings.bufferLength);
+                    HeliosPoint currentPoint;
+                    double deltaY = pathPoints[i+1].Y - pathPoints[i].Y;
+                    double deltaX = pathPoints[i + 1].X - pathPoints[i].X;
+                    int velocity = currentLaserSettings.maxAcceleration;
+                    while (lineFrameProcessed < (lineFrameLength / 2))
+                    {
+                        currentPoint.x = (ushort) (pathPoints[i].X + (lineFrameProcessed * deltaX));
+                        currentPoint.y = (ushort) (pathPoints[i].Y + (lineFrameProcessed * deltaY));
+                        currentPoint.r = pathColor.R;
+                        currentPoint.g = pathColor.G;
+                        currentPoint.b = pathColor.B;
+                        currentPoint.i = pathColor.A;
+                        points.Add(currentPoint);
+                        if (velocity + currentLaserSettings.maxAcceleration < currentLaserSettings.maxVelocity)
+                        {
+                            velocity += currentLaserSettings.maxAcceleration;
+                        }
+                        lineFrameProcessed += velocity;
+                    }
+                    lineFrameProcessed -= velocity;
+                    lineFrameProcessed = lineFrameLength - lineFrameProcessed;
+                    while (lineFrameProcessed < (lineFrameLength + currentLaserSettings.bufferLength))
+                    {
+                        currentPoint.x = (ushort)(pathPoints[i].X + (lineFrameProcessed * deltaX));
+                        currentPoint.y = (ushort)(pathPoints[i].Y + (lineFrameProcessed * deltaY));
+                        currentPoint.r = pathColor.R;
+                        currentPoint.g = pathColor.G;
+                        currentPoint.b = pathColor.B;
+                        currentPoint.i = pathColor.A;
+                        points.Add(currentPoint);
+                        if (velocity + currentLaserSettings.maxAcceleration < currentLaserSettings.maxVelocity)
+                        {
+                            velocity += currentLaserSettings.maxAcceleration;
+                        }
+                        lineFrameProcessed += velocity;
+                    }
+                }
+                return points;
             }
 
             public List<LinePoint> GenKeyPoints(bool middle = false)
@@ -496,7 +540,10 @@ namespace Path
 
                 }
             }
-            projectToHelios();
+            if(project.dynamicPath.Count == 1)
+            {
+                helios.writeFrame(0, currentLaserSettings.kpps, 0, projectToHelios(project.dynamicPath).ToArray(), projectToHelios(project.dynamicPath).Count);
+            }
         }
         private void PreviewGraphics_MouseDown(object sender, MouseEventArgs e)                         //MOUSE MOVEMENT
         {
