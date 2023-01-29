@@ -33,6 +33,8 @@ namespace Path
         bool showLines = false;
         bool mouseDown = false;
 
+        bool showLaser = false; //THIS IS ACTUALLY A SAFETY THINGYMIGGY SO DONT SET THIS TO TRUE UNLESS YOU ACC MEAN IT. CHILDRENS EYES ARE AT STEAK.
+
         //Timeline GUI variables
         TimelineSettings currentTimelineSettings;
         LinePoint timelineClosestPoint;
@@ -60,11 +62,23 @@ namespace Path
         {
             public List<PathLine> dynamicPath = new List<PathLine>();         //The highest level
 
+            bool showLaser = false; //THIS IS ACTUALLY A SAFETY THINGYMIGGY SO DONT SET THIS TO TRUE UNLESS YOU ACC MEAN IT. CHILDRENS EYES ARE AT STEAK.
+
             public int fps = 30;        //The number of frames per second (to get time in seconds divide time by fps)
+        }
+        class LaserSettings
+        {
             public int kpps = 40000;       //The maximum number of points we should be sending down the dac. Mine was rated at 40KPPS but that could be a false rating at this point.
+            public int maxVelocity = 100;
+            public int maxAcceleration = 5;
+            public int bufferLength = 10;
+        }
+        int projectToHelios()
+        {
+            return 0;
         }
 
-        public Point ConvertToHeliosCoords(Point Original, bool backwards = false)
+        Point ConvertToHeliosCoords(Point Original, bool backwards = false)
         {
             float Scale = 4095 / PreviewGraphics.Size.Width;
             if (!backwards)
@@ -76,11 +90,11 @@ namespace Path
                 return new Point((int)(Original.X / Scale), (int)(Original.Y / Scale));
             }
         }
-        public double getDistance(Point point1, Point point2)
+        double getDistance(Point point1, Point point2)
         {
             return Math.Sqrt(Math.Pow(point1.X - point2.X, 2) + Math.Pow(point1.Y - point2.Y,2));
         }
-        public void updateKeyPointInfo()
+        void updateKeyPointInfo()
         {
             for(int i = 0; i < project.dynamicPath.Count; i++)
             {
@@ -90,7 +104,7 @@ namespace Path
                 }
             }
         }        
-        public class PathLineFrame //SOMETIMES IS A KEYFRAME SOMETIMES ISNT
+        class PathLineFrame //SOMETIMES IS A KEYFRAME SOMETIMES ISNT
         {
             private int time; //Note the time is in frames not seconds, i'd recommend 30 frames per second unless you have expensive gear
             public int Time
@@ -122,6 +136,12 @@ namespace Path
                 get { return listIndex; }
                 set { listIndex = value; }
             }
+            public List<Point> GenLaserPoints(bool AddEdges = false)
+            {
+
+                return new List<Point>();
+            }
+
             public List<LinePoint> GenKeyPoints(bool middle = false)
             {
                 List<LinePoint> KeyPoints= new List<LinePoint>();
@@ -171,7 +191,7 @@ namespace Path
             }   //Easy Constructor
             public PathLineFrame()  //Json Constructor
             {
-
+                //Just dont use this I beg
             }
             public PathLineFrame(float AnimationProgress, PathLineFrame FrameBefore, PathLineFrame FrameAfter)
             {
@@ -309,7 +329,7 @@ namespace Path
             }
             public PathLine()
             {
-
+                //Needed for JSON Conversion IDK why its just how the extension works
             }
             public void SortKeyFramesByTime()
             {
@@ -356,7 +376,7 @@ namespace Path
                 return list;
             }
         }
-        public class LinePoint
+        class LinePoint
         {
             int shapeListIndex;
             public int ShapeListIndex
@@ -401,10 +421,6 @@ namespace Path
 
         }
 
-        public int projectToHelios()
-        {
-            return 0;
-        }
         //THE GRAPHICS PANEL
         private void PreviewGraphics_Paint(object sender, PaintEventArgs e)
         {
@@ -480,7 +496,7 @@ namespace Path
 
                 }
             }
-
+            projectToHelios();
         }
         private void PreviewGraphics_MouseDown(object sender, MouseEventArgs e)                         //MOUSE MOVEMENT
         {
@@ -666,7 +682,7 @@ namespace Path
             UpdateLineProperties();
             PreviewGraphics.Invalidate();
         }
-        public void UpdateLineProperties()
+        void UpdateLineProperties()
         {
             timelineGUI.Invalidate();
             //Select PathLineFrame
@@ -714,11 +730,11 @@ namespace Path
                 LinePropertiesChangeColor.BackColor = project.dynamicPath[selectedLineDynamicIndex].GenFrameAt(mainTime).PathColor;
             }
         }
-        public PathLineFrame GetSelectedFrameWrite()
+        PathLineFrame GetSelectedFrameWrite()
         {
             return project.dynamicPath[selectedLineDynamicIndex].GetFrameAt(mainTime);
         }
-        public void ChangeTime(int newTime)
+        void ChangeTime(int newTime)
         {
             mainTime = newTime;
             UpdateLineProperties();

@@ -335,7 +335,7 @@
             this.TimeLinePanel.Controls.Add(this.TimeLineTitleLabel);
             this.TimeLinePanel.Location = new System.Drawing.Point(5, 553);
             this.TimeLinePanel.Name = "TimeLinePanel";
-            this.TimeLinePanel.Size = new System.Drawing.Size(503, 192);
+            this.TimeLinePanel.Size = new System.Drawing.Size(544, 192);
             this.TimeLinePanel.TabIndex = 2;
             // 
             // progressBar1
@@ -454,7 +454,7 @@
             this.tabPage2.Location = new System.Drawing.Point(4, 24);
             this.tabPage2.Name = "tabPage2";
             this.tabPage2.Padding = new System.Windows.Forms.Padding(3);
-            this.tabPage2.Size = new System.Drawing.Size(376, 84);
+            this.tabPage2.Size = new System.Drawing.Size(365, 84);
             this.tabPage2.TabIndex = 1;
             this.tabPage2.Text = "tabPage2";
             this.tabPage2.UseVisualStyleBackColor = true;
@@ -773,20 +773,20 @@
             // sToolStripMenuItem
             // 
             this.sToolStripMenuItem.Name = "sToolStripMenuItem";
-            this.sToolStripMenuItem.Size = new System.Drawing.Size(180, 22);
+            this.sToolStripMenuItem.Size = new System.Drawing.Size(161, 22);
             this.sToolStripMenuItem.Text = "Laser Settings";
             // 
             // connectToDACToolStripMenuItem
             // 
             this.connectToDACToolStripMenuItem.Name = "connectToDACToolStripMenuItem";
-            this.connectToDACToolStripMenuItem.Size = new System.Drawing.Size(180, 22);
+            this.connectToDACToolStripMenuItem.Size = new System.Drawing.Size(161, 22);
             this.connectToDACToolStripMenuItem.Text = "Connect To DAC";
             this.connectToDACToolStripMenuItem.Click += new System.EventHandler(this.connectToDACToolStripMenuItem_Click);
             // 
             // disconnectDACToolStripMenuItem
             // 
             this.disconnectDACToolStripMenuItem.Name = "disconnectDACToolStripMenuItem";
-            this.disconnectDACToolStripMenuItem.Size = new System.Drawing.Size(180, 22);
+            this.disconnectDACToolStripMenuItem.Size = new System.Drawing.Size(161, 22);
             this.disconnectDACToolStripMenuItem.Text = "Disconnect DAC";
             this.disconnectDACToolStripMenuItem.Click += new System.EventHandler(this.disconnectDACToolStripMenuItem_Click);
             // 
