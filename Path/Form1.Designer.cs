@@ -57,7 +57,7 @@
             this.openFileDialog1 = new System.Windows.Forms.OpenFileDialog();
             this.saveFileDialog1 = new System.Windows.Forms.SaveFileDialog();
             this.LinePropertiesPanel = new System.Windows.Forms.Panel();
-            this.tabControl1 = new System.Windows.Forms.TabControl();
+            this.linePropertiesStrobeSettings = new System.Windows.Forms.TabControl();
             this.tabPage1 = new System.Windows.Forms.TabPage();
             this.tabPage2 = new System.Windows.Forms.TabPage();
             this.LinePropertiesYCoordinate = new System.Windows.Forms.TextBox();
@@ -86,19 +86,24 @@
             this.InformationTitleLabel = new System.Windows.Forms.Label();
             this.DrawerColorDialog = new System.Windows.Forms.ColorDialog();
             this.LinePropertiesColorDialog = new System.Windows.Forms.ColorDialog();
+            this.menuStrip1 = new System.Windows.Forms.MenuStrip();
+            this.fileToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.saveToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.openToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             ((System.ComponentModel.ISupportInitialize)(this.PreviewGraphics)).BeginInit();
             this.OptionsPanel.SuspendLayout();
             this.TimeLinePanel.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.timelineGUI)).BeginInit();
             this.LinePropertiesPanel.SuspendLayout();
-            this.tabControl1.SuspendLayout();
+            this.linePropertiesStrobeSettings.SuspendLayout();
             this.InformationPanel.SuspendLayout();
+            this.menuStrip1.SuspendLayout();
             this.SuspendLayout();
             // 
             // PreviewGraphics
             // 
             this.PreviewGraphics.BorderStyle = System.Windows.Forms.BorderStyle.Fixed3D;
-            this.PreviewGraphics.Location = new System.Drawing.Point(12, 12);
+            this.PreviewGraphics.Location = new System.Drawing.Point(15, 88);
             this.PreviewGraphics.Name = "PreviewGraphics";
             this.PreviewGraphics.Size = new System.Drawing.Size(509, 509);
             this.PreviewGraphics.SizeMode = System.Windows.Forms.PictureBoxSizeMode.Zoom;
@@ -132,9 +137,9 @@
             this.OptionsPanel.Controls.Add(this.OptionsKPPSLabel);
             this.OptionsPanel.Controls.Add(this.OptionsTitleLabel);
             this.OptionsPanel.Controls.Add(this.OptionsFPSLabel);
-            this.OptionsPanel.Location = new System.Drawing.Point(530, 507);
+            this.OptionsPanel.Location = new System.Drawing.Point(530, 583);
             this.OptionsPanel.Name = "OptionsPanel";
-            this.OptionsPanel.Size = new System.Drawing.Size(394, 206);
+            this.OptionsPanel.Size = new System.Drawing.Size(431, 206);
             this.OptionsPanel.TabIndex = 1;
             // 
             // TimeLineFramesInput
@@ -318,7 +323,7 @@
             this.TimeLinePanel.Controls.Add(this.TimeLineNextFrame);
             this.TimeLinePanel.Controls.Add(this.TimeLineBackFrame);
             this.TimeLinePanel.Controls.Add(this.TimeLineTitleLabel);
-            this.TimeLinePanel.Location = new System.Drawing.Point(12, 527);
+            this.TimeLinePanel.Location = new System.Drawing.Point(12, 603);
             this.TimeLinePanel.Name = "TimeLinePanel";
             this.TimeLinePanel.Size = new System.Drawing.Size(512, 186);
             this.TimeLinePanel.TabIndex = 2;
@@ -384,7 +389,12 @@
             // 
             // openFileDialog1
             // 
+            this.openFileDialog1.DefaultExt = "dyPth";
             this.openFileDialog1.FileName = "openFileDialog1";
+            // 
+            // saveFileDialog1
+            // 
+            this.saveFileDialog1.DefaultExt = "dyPth";
             // 
             // LinePropertiesPanel
             // 
@@ -393,7 +403,7 @@
             | System.Windows.Forms.AnchorStyles.Right)));
             this.LinePropertiesPanel.AutoScroll = true;
             this.LinePropertiesPanel.BorderStyle = System.Windows.Forms.BorderStyle.Fixed3D;
-            this.LinePropertiesPanel.Controls.Add(this.tabControl1);
+            this.LinePropertiesPanel.Controls.Add(this.linePropertiesStrobeSettings);
             this.LinePropertiesPanel.Controls.Add(this.LinePropertiesYCoordinate);
             this.LinePropertiesPanel.Controls.Add(this.PathLinePointsListBox);
             this.LinePropertiesPanel.Controls.Add(this.LinePropertiesXCoordinate);
@@ -404,20 +414,20 @@
             this.LinePropertiesPanel.Controls.Add(this.LinePropertiesPathIndexLabel);
             this.LinePropertiesPanel.Controls.Add(this.LinePropertiesKeyFramesTextBox);
             this.LinePropertiesPanel.Controls.Add(this.LinePropertiesTitle);
-            this.LinePropertiesPanel.Location = new System.Drawing.Point(530, 12);
+            this.LinePropertiesPanel.Location = new System.Drawing.Point(530, 27);
             this.LinePropertiesPanel.Name = "LinePropertiesPanel";
-            this.LinePropertiesPanel.Size = new System.Drawing.Size(394, 365);
+            this.LinePropertiesPanel.Size = new System.Drawing.Size(431, 426);
             this.LinePropertiesPanel.TabIndex = 3;
             // 
-            // tabControl1
+            // linePropertiesStrobeSettings
             // 
-            this.tabControl1.Controls.Add(this.tabPage1);
-            this.tabControl1.Controls.Add(this.tabPage2);
-            this.tabControl1.Location = new System.Drawing.Point(3, 246);
-            this.tabControl1.Name = "tabControl1";
-            this.tabControl1.SelectedIndex = 0;
-            this.tabControl1.Size = new System.Drawing.Size(384, 112);
-            this.tabControl1.TabIndex = 32;
+            this.linePropertiesStrobeSettings.Controls.Add(this.tabPage1);
+            this.linePropertiesStrobeSettings.Controls.Add(this.tabPage2);
+            this.linePropertiesStrobeSettings.Location = new System.Drawing.Point(3, 246);
+            this.linePropertiesStrobeSettings.Name = "linePropertiesStrobeSettings";
+            this.linePropertiesStrobeSettings.SelectedIndex = 0;
+            this.linePropertiesStrobeSettings.Size = new System.Drawing.Size(384, 112);
+            this.linePropertiesStrobeSettings.TabIndex = 32;
             // 
             // tabPage1
             // 
@@ -554,9 +564,9 @@
             this.InformationPanel.Controls.Add(this.InformationPoint2TitleLabel);
             this.InformationPanel.Controls.Add(this.InformationPoint1TitleLablel);
             this.InformationPanel.Controls.Add(this.InformationTitleLabel);
-            this.InformationPanel.Location = new System.Drawing.Point(530, 383);
+            this.InformationPanel.Location = new System.Drawing.Point(530, 459);
             this.InformationPanel.Name = "InformationPanel";
-            this.InformationPanel.Size = new System.Drawing.Size(394, 118);
+            this.InformationPanel.Size = new System.Drawing.Size(431, 118);
             this.InformationPanel.TabIndex = 19;
             // 
             // InformationPreviewModeData
@@ -699,20 +709,57 @@
             // 
             this.LinePropertiesColorDialog.Color = System.Drawing.Color.White;
             // 
+            // menuStrip1
+            // 
+            this.menuStrip1.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
+            this.fileToolStripMenuItem});
+            this.menuStrip1.Location = new System.Drawing.Point(0, 0);
+            this.menuStrip1.Name = "menuStrip1";
+            this.menuStrip1.Size = new System.Drawing.Size(973, 24);
+            this.menuStrip1.TabIndex = 20;
+            this.menuStrip1.Text = "menuStrip1";
+            // 
+            // fileToolStripMenuItem
+            // 
+            this.fileToolStripMenuItem.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
+            this.saveToolStripMenuItem,
+            this.openToolStripMenuItem});
+            this.fileToolStripMenuItem.Name = "fileToolStripMenuItem";
+            this.fileToolStripMenuItem.Size = new System.Drawing.Size(37, 20);
+            this.fileToolStripMenuItem.Text = "File";
+            // 
+            // saveToolStripMenuItem
+            // 
+            this.saveToolStripMenuItem.Name = "saveToolStripMenuItem";
+            this.saveToolStripMenuItem.Size = new System.Drawing.Size(151, 22);
+            this.saveToolStripMenuItem.Text = "Save Path File";
+            this.saveToolStripMenuItem.Click += new System.EventHandler(this.saveToolStripMenuItem_Click);
+            // 
+            // openToolStripMenuItem
+            // 
+            this.openToolStripMenuItem.Name = "openToolStripMenuItem";
+            this.openToolStripMenuItem.Size = new System.Drawing.Size(151, 22);
+            this.openToolStripMenuItem.Text = "Open Path File";
+            this.openToolStripMenuItem.Click += new System.EventHandler(this.openToolStripMenuItem_Click);
+            // 
             // Form1
             // 
             this.AccessibleName = "Path Window";
             this.AutoScaleDimensions = new System.Drawing.SizeF(7F, 15F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.BackColor = System.Drawing.SystemColors.Desktop;
-            this.ClientSize = new System.Drawing.Size(936, 725);
+            this.ClientSize = new System.Drawing.Size(973, 801);
             this.Controls.Add(this.PreviewGraphics);
             this.Controls.Add(this.InformationPanel);
             this.Controls.Add(this.LinePropertiesPanel);
             this.Controls.Add(this.TimeLinePanel);
             this.Controls.Add(this.OptionsPanel);
+            this.Controls.Add(this.menuStrip1);
+            this.MainMenuStrip = this.menuStrip1;
+            this.MinimizeBox = false;
             this.Name = "Form1";
             this.Text = "Path";
+            this.WindowState = System.Windows.Forms.FormWindowState.Maximized;
             ((System.ComponentModel.ISupportInitialize)(this.PreviewGraphics)).EndInit();
             this.OptionsPanel.ResumeLayout(false);
             this.OptionsPanel.PerformLayout();
@@ -721,10 +768,13 @@
             ((System.ComponentModel.ISupportInitialize)(this.timelineGUI)).EndInit();
             this.LinePropertiesPanel.ResumeLayout(false);
             this.LinePropertiesPanel.PerformLayout();
-            this.tabControl1.ResumeLayout(false);
+            this.linePropertiesStrobeSettings.ResumeLayout(false);
             this.InformationPanel.ResumeLayout(false);
             this.InformationPanel.PerformLayout();
+            this.menuStrip1.ResumeLayout(false);
+            this.menuStrip1.PerformLayout();
             this.ResumeLayout(false);
+            this.PerformLayout();
 
         }
 
@@ -779,7 +829,7 @@
         private Label InformationPreviewModeData;
         private Label InformationPreviewModeLabel;
         private ListBox PathLinePointsListBox;
-        private TabControl tabControl1;
+        private TabControl linePropertiesStrobeSettings;
         private TabPage tabPage1;
         private TabPage tabPage2;
         private TextBox LinePropertiesYCoordinate;
@@ -788,5 +838,9 @@
         private Label LinePropertiesXCoordinateLabel;
         private ProgressBar progressBar1;
         private PictureBox timelineGUI;
+        private MenuStrip menuStrip1;
+        private ToolStripMenuItem fileToolStripMenuItem;
+        private ToolStripMenuItem saveToolStripMenuItem;
+        private ToolStripMenuItem openToolStripMenuItem;
     }
 }
