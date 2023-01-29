@@ -72,7 +72,7 @@
             this.LinePropertiesTitle = new System.Windows.Forms.Label();
             this.InformationPanel = new System.Windows.Forms.Panel();
             this.InformationPreviewModeData = new System.Windows.Forms.Label();
-            this.InformationPreviewModeLabel = new System.Windows.Forms.Label();
+            this.InformationConnectedDACCount = new System.Windows.Forms.Label();
             this.InformationClosestPointData = new System.Windows.Forms.Label();
             this.InformationClosestPointLabel = new System.Windows.Forms.Label();
             this.InformationFrameListCountInfo = new System.Windows.Forms.Label();
@@ -94,6 +94,8 @@
             this.settingsToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.sToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.connectToDACToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.disconnectDACToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.splitContainer1 = new System.Windows.Forms.SplitContainer();
             ((System.ComponentModel.ISupportInitialize)(this.PreviewGraphics)).BeginInit();
             this.OptionsPanel.SuspendLayout();
             this.TimeLinePanel.SuspendLayout();
@@ -102,14 +104,18 @@
             this.linePropertiesStrobeSettings.SuspendLayout();
             this.InformationPanel.SuspendLayout();
             this.menuStrip1.SuspendLayout();
+            ((System.ComponentModel.ISupportInitialize)(this.splitContainer1)).BeginInit();
+            this.splitContainer1.Panel1.SuspendLayout();
+            this.splitContainer1.Panel2.SuspendLayout();
+            this.splitContainer1.SuspendLayout();
             this.SuspendLayout();
             // 
             // PreviewGraphics
             // 
             this.PreviewGraphics.BorderStyle = System.Windows.Forms.BorderStyle.Fixed3D;
-            this.PreviewGraphics.Location = new System.Drawing.Point(15, 88);
+            this.PreviewGraphics.Location = new System.Drawing.Point(5, 3);
             this.PreviewGraphics.Name = "PreviewGraphics";
-            this.PreviewGraphics.Size = new System.Drawing.Size(509, 509);
+            this.PreviewGraphics.Size = new System.Drawing.Size(544, 544);
             this.PreviewGraphics.SizeMode = System.Windows.Forms.PictureBoxSizeMode.Zoom;
             this.PreviewGraphics.TabIndex = 0;
             this.PreviewGraphics.TabStop = false;
@@ -141,9 +147,9 @@
             this.OptionsPanel.Controls.Add(this.OptionsKPPSLabel);
             this.OptionsPanel.Controls.Add(this.OptionsTitleLabel);
             this.OptionsPanel.Controls.Add(this.OptionsFPSLabel);
-            this.OptionsPanel.Location = new System.Drawing.Point(530, 583);
+            this.OptionsPanel.Location = new System.Drawing.Point(3, 524);
             this.OptionsPanel.Name = "OptionsPanel";
-            this.OptionsPanel.Size = new System.Drawing.Size(431, 206);
+            this.OptionsPanel.Size = new System.Drawing.Size(383, 221);
             this.OptionsPanel.TabIndex = 1;
             // 
             // TimeLineFramesInput
@@ -327,23 +333,23 @@
             this.TimeLinePanel.Controls.Add(this.TimeLineNextFrame);
             this.TimeLinePanel.Controls.Add(this.TimeLineBackFrame);
             this.TimeLinePanel.Controls.Add(this.TimeLineTitleLabel);
-            this.TimeLinePanel.Location = new System.Drawing.Point(12, 603);
+            this.TimeLinePanel.Location = new System.Drawing.Point(5, 553);
             this.TimeLinePanel.Name = "TimeLinePanel";
-            this.TimeLinePanel.Size = new System.Drawing.Size(512, 186);
+            this.TimeLinePanel.Size = new System.Drawing.Size(503, 192);
             this.TimeLinePanel.TabIndex = 2;
             // 
             // progressBar1
             // 
-            this.progressBar1.Location = new System.Drawing.Point(3, 164);
+            this.progressBar1.Location = new System.Drawing.Point(3, 175);
             this.progressBar1.Name = "progressBar1";
-            this.progressBar1.Size = new System.Drawing.Size(502, 16);
+            this.progressBar1.Size = new System.Drawing.Size(493, 10);
             this.progressBar1.TabIndex = 6;
             // 
             // timelineGUI
             // 
             this.timelineGUI.Location = new System.Drawing.Point(3, 36);
             this.timelineGUI.Name = "timelineGUI";
-            this.timelineGUI.Size = new System.Drawing.Size(502, 122);
+            this.timelineGUI.Size = new System.Drawing.Size(493, 133);
             this.timelineGUI.TabIndex = 5;
             this.timelineGUI.TabStop = false;
             this.timelineGUI.Paint += new System.Windows.Forms.PaintEventHandler(this.timeline_GUI_updater);
@@ -418,9 +424,9 @@
             this.LinePropertiesPanel.Controls.Add(this.LinePropertiesPathIndexLabel);
             this.LinePropertiesPanel.Controls.Add(this.LinePropertiesKeyFramesTextBox);
             this.LinePropertiesPanel.Controls.Add(this.LinePropertiesTitle);
-            this.LinePropertiesPanel.Location = new System.Drawing.Point(530, 27);
+            this.LinePropertiesPanel.Location = new System.Drawing.Point(3, 3);
             this.LinePropertiesPanel.Name = "LinePropertiesPanel";
-            this.LinePropertiesPanel.Size = new System.Drawing.Size(431, 426);
+            this.LinePropertiesPanel.Size = new System.Drawing.Size(383, 391);
             this.LinePropertiesPanel.TabIndex = 3;
             // 
             // linePropertiesStrobeSettings
@@ -430,7 +436,7 @@
             this.linePropertiesStrobeSettings.Location = new System.Drawing.Point(3, 246);
             this.linePropertiesStrobeSettings.Name = "linePropertiesStrobeSettings";
             this.linePropertiesStrobeSettings.SelectedIndex = 0;
-            this.linePropertiesStrobeSettings.Size = new System.Drawing.Size(384, 112);
+            this.linePropertiesStrobeSettings.Size = new System.Drawing.Size(373, 112);
             this.linePropertiesStrobeSettings.TabIndex = 32;
             // 
             // tabPage1
@@ -438,7 +444,7 @@
             this.tabPage1.Location = new System.Drawing.Point(4, 24);
             this.tabPage1.Name = "tabPage1";
             this.tabPage1.Padding = new System.Windows.Forms.Padding(3);
-            this.tabPage1.Size = new System.Drawing.Size(376, 84);
+            this.tabPage1.Size = new System.Drawing.Size(365, 84);
             this.tabPage1.TabIndex = 0;
             this.tabPage1.Text = "tabPage1";
             this.tabPage1.UseVisualStyleBackColor = true;
@@ -465,9 +471,9 @@
             // 
             this.PathLinePointsListBox.FormattingEnabled = true;
             this.PathLinePointsListBox.ItemHeight = 15;
-            this.PathLinePointsListBox.Location = new System.Drawing.Point(222, 48);
+            this.PathLinePointsListBox.Location = new System.Drawing.Point(217, 48);
             this.PathLinePointsListBox.Name = "PathLinePointsListBox";
-            this.PathLinePointsListBox.Size = new System.Drawing.Size(165, 94);
+            this.PathLinePointsListBox.Size = new System.Drawing.Size(159, 94);
             this.PathLinePointsListBox.TabIndex = 31;
             this.PathLinePointsListBox.SelectedIndexChanged += new System.EventHandler(this.PathLinePointsListBox_SelectedIndexChanged);
             // 
@@ -483,7 +489,7 @@
             // 
             this.LinePropertiesChangeColor.Location = new System.Drawing.Point(197, 148);
             this.LinePropertiesChangeColor.Name = "LinePropertiesChangeColor";
-            this.LinePropertiesChangeColor.Size = new System.Drawing.Size(190, 23);
+            this.LinePropertiesChangeColor.Size = new System.Drawing.Size(179, 23);
             this.LinePropertiesChangeColor.TabIndex = 30;
             this.LinePropertiesChangeColor.Text = "Color";
             this.LinePropertiesChangeColor.UseVisualStyleBackColor = true;
@@ -556,7 +562,7 @@
             | System.Windows.Forms.AnchorStyles.Right)));
             this.InformationPanel.BorderStyle = System.Windows.Forms.BorderStyle.Fixed3D;
             this.InformationPanel.Controls.Add(this.InformationPreviewModeData);
-            this.InformationPanel.Controls.Add(this.InformationPreviewModeLabel);
+            this.InformationPanel.Controls.Add(this.InformationConnectedDACCount);
             this.InformationPanel.Controls.Add(this.InformationClosestPointData);
             this.InformationPanel.Controls.Add(this.InformationClosestPointLabel);
             this.InformationPanel.Controls.Add(this.InformationFrameListCountInfo);
@@ -568,9 +574,9 @@
             this.InformationPanel.Controls.Add(this.InformationPoint2TitleLabel);
             this.InformationPanel.Controls.Add(this.InformationPoint1TitleLablel);
             this.InformationPanel.Controls.Add(this.InformationTitleLabel);
-            this.InformationPanel.Location = new System.Drawing.Point(530, 459);
+            this.InformationPanel.Location = new System.Drawing.Point(3, 400);
             this.InformationPanel.Name = "InformationPanel";
-            this.InformationPanel.Size = new System.Drawing.Size(431, 118);
+            this.InformationPanel.Size = new System.Drawing.Size(383, 118);
             this.InformationPanel.TabIndex = 19;
             // 
             // InformationPreviewModeData
@@ -583,15 +589,15 @@
             this.InformationPreviewModeData.TabIndex = 30;
             this.InformationPreviewModeData.Text = "null";
             // 
-            // InformationPreviewModeLabel
+            // InformationConnectedDACCount
             // 
-            this.InformationPreviewModeLabel.AutoSize = true;
-            this.InformationPreviewModeLabel.ForeColor = System.Drawing.SystemColors.Control;
-            this.InformationPreviewModeLabel.Location = new System.Drawing.Point(197, 56);
-            this.InformationPreviewModeLabel.Name = "InformationPreviewModeLabel";
-            this.InformationPreviewModeLabel.Size = new System.Drawing.Size(100, 15);
-            this.InformationPreviewModeLabel.TabIndex = 29;
-            this.InformationPreviewModeLabel.Text = "Connected DACs:";
+            this.InformationConnectedDACCount.AutoSize = true;
+            this.InformationConnectedDACCount.ForeColor = System.Drawing.SystemColors.Control;
+            this.InformationConnectedDACCount.Location = new System.Drawing.Point(197, 56);
+            this.InformationConnectedDACCount.Name = "InformationConnectedDACCount";
+            this.InformationConnectedDACCount.Size = new System.Drawing.Size(100, 15);
+            this.InformationConnectedDACCount.TabIndex = 29;
+            this.InformationConnectedDACCount.Text = "Connected DACs:";
             // 
             // InformationClosestPointData
             // 
@@ -699,7 +705,7 @@
             this.InformationTitleLabel.AutoSize = true;
             this.InformationTitleLabel.Font = new System.Drawing.Font("Segoe UI", 15.75F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point);
             this.InformationTitleLabel.ForeColor = System.Drawing.SystemColors.ControlLight;
-            this.InformationTitleLabel.Location = new System.Drawing.Point(3, 0);
+            this.InformationTitleLabel.Location = new System.Drawing.Point(3, 2);
             this.InformationTitleLabel.Name = "InformationTitleLabel";
             this.InformationTitleLabel.Size = new System.Drawing.Size(122, 30);
             this.InformationTitleLabel.TabIndex = 18;
@@ -758,7 +764,8 @@
             // 
             this.settingsToolStripMenuItem.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
             this.sToolStripMenuItem,
-            this.connectToDACToolStripMenuItem});
+            this.connectToDACToolStripMenuItem,
+            this.disconnectDACToolStripMenuItem});
             this.settingsToolStripMenuItem.Name = "settingsToolStripMenuItem";
             this.settingsToolStripMenuItem.Size = new System.Drawing.Size(61, 20);
             this.settingsToolStripMenuItem.Text = "Settings";
@@ -776,6 +783,33 @@
             this.connectToDACToolStripMenuItem.Text = "Connect To DAC";
             this.connectToDACToolStripMenuItem.Click += new System.EventHandler(this.connectToDACToolStripMenuItem_Click);
             // 
+            // disconnectDACToolStripMenuItem
+            // 
+            this.disconnectDACToolStripMenuItem.Name = "disconnectDACToolStripMenuItem";
+            this.disconnectDACToolStripMenuItem.Size = new System.Drawing.Size(180, 22);
+            this.disconnectDACToolStripMenuItem.Text = "Disconnect DAC";
+            this.disconnectDACToolStripMenuItem.Click += new System.EventHandler(this.disconnectDACToolStripMenuItem_Click);
+            // 
+            // splitContainer1
+            // 
+            this.splitContainer1.Location = new System.Drawing.Point(15, 41);
+            this.splitContainer1.Name = "splitContainer1";
+            // 
+            // splitContainer1.Panel1
+            // 
+            this.splitContainer1.Panel1.Controls.Add(this.PreviewGraphics);
+            this.splitContainer1.Panel1.Controls.Add(this.TimeLinePanel);
+            // 
+            // splitContainer1.Panel2
+            // 
+            this.splitContainer1.Panel2.Controls.Add(this.LinePropertiesPanel);
+            this.splitContainer1.Panel2.Controls.Add(this.InformationPanel);
+            this.splitContainer1.Panel2.Controls.Add(this.OptionsPanel);
+            this.splitContainer1.Size = new System.Drawing.Size(946, 748);
+            this.splitContainer1.SplitterDistance = 553;
+            this.splitContainer1.TabIndex = 21;
+            this.splitContainer1.SplitterMoved += new System.Windows.Forms.SplitterEventHandler(this.splitContainer1_SplitterMoved);
+            // 
             // Form1
             // 
             this.AccessibleName = "Path Window";
@@ -783,11 +817,7 @@
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.BackColor = System.Drawing.SystemColors.Desktop;
             this.ClientSize = new System.Drawing.Size(973, 801);
-            this.Controls.Add(this.PreviewGraphics);
-            this.Controls.Add(this.InformationPanel);
-            this.Controls.Add(this.LinePropertiesPanel);
-            this.Controls.Add(this.TimeLinePanel);
-            this.Controls.Add(this.OptionsPanel);
+            this.Controls.Add(this.splitContainer1);
             this.Controls.Add(this.menuStrip1);
             this.MainMenuStrip = this.menuStrip1;
             this.MinimizeBox = false;
@@ -807,6 +837,10 @@
             this.InformationPanel.PerformLayout();
             this.menuStrip1.ResumeLayout(false);
             this.menuStrip1.PerformLayout();
+            this.splitContainer1.Panel1.ResumeLayout(false);
+            this.splitContainer1.Panel2.ResumeLayout(false);
+            ((System.ComponentModel.ISupportInitialize)(this.splitContainer1)).EndInit();
+            this.splitContainer1.ResumeLayout(false);
             this.ResumeLayout(false);
             this.PerformLayout();
 
@@ -861,7 +895,7 @@
         private Label InformationClosestPointLabel;
         private Label InformationClosestPointData;
         private Label InformationPreviewModeData;
-        private Label InformationPreviewModeLabel;
+        private Label InformationConnectedDACCount;
         private ListBox PathLinePointsListBox;
         private TabControl linePropertiesStrobeSettings;
         private TabPage tabPage1;
@@ -880,5 +914,7 @@
         private ToolStripMenuItem settingsToolStripMenuItem;
         private ToolStripMenuItem sToolStripMenuItem;
         private ToolStripMenuItem connectToDACToolStripMenuItem;
+        private ToolStripMenuItem disconnectDACToolStripMenuItem;
+        private SplitContainer splitContainer1;
     }
 }

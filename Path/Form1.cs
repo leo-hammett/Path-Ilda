@@ -876,6 +876,17 @@ namespace Path
         {
             InformationPreviewModeData.Text = helios.openDevices().ToString();
         }
+
+        private void disconnectDACToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            InformationPreviewModeData.Text = "Disconnected";
+            helios.closeDevices();
+        }
+
+        private void splitContainer1_SplitterMoved(object sender, SplitterEventArgs e)
+        {
+
+        }
     }
     #region NOT MY CODE USED FOR SAVING FILES IN A HUMAN READABLE FORMAT
     /// <summary>
