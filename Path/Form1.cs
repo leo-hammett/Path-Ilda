@@ -1,6 +1,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using Newtonsoft;
+using HeliosLaserDAC;
 //project.dynamicPath = the file & whole animation
 //framePath = the PathLineFrame array for the individual frame
 
@@ -36,16 +37,24 @@ namespace Path
         TimelineSettings currentTimelineSettings;
         LinePoint timelineClosestPoint;
         List<LinePoint> TimelineDots = new List<LinePoint>();
+
+        //Helios Laser management variables
+        public HeliosDac helios = new HeliosDac();
+        List<HeliosPoint> heliosLaserPoints = new List<HeliosPoint>();
+
+
         public Form1()
         {
             InitializeComponent();
             //Initialising Variables
             project.dynamicPath = new List<PathLine>();
+            HeliosDac helios = new HeliosDac();
             framePath = new List<PathLineFrame>();
             mainTime = 0;
             DrawerColorDialog.Color = Color.White;
             OptionsDrawLineMode.Checked = true;
             currentTimelineSettings = new TimelineSettings();
+            InformationPreviewModeData.Text = helios.openDevices().ToString();
         }
         class PathProject
         {
@@ -861,6 +870,11 @@ namespace Path
             selectedLineDynamicIndex = 0;
             selectedPointDynamicIndex = 0;
             ChangeTime(0);
+        }
+
+        private void connectToDACToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            InformationPreviewModeData.Text = helios.openDevices().ToString();
         }
     }
     #region NOT MY CODE USED FOR SAVING FILES IN A HUMAN READABLE FORMAT

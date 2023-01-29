@@ -88,8 +88,12 @@
             this.LinePropertiesColorDialog = new System.Windows.Forms.ColorDialog();
             this.menuStrip1 = new System.Windows.Forms.MenuStrip();
             this.fileToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
-            this.saveToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.newPathProjectToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.openToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.saveToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.settingsToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.sToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.connectToDACToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             ((System.ComponentModel.ISupportInitialize)(this.PreviewGraphics)).BeginInit();
             this.OptionsPanel.SuspendLayout();
             this.TimeLinePanel.SuspendLayout();
@@ -573,7 +577,7 @@
             // 
             this.InformationPreviewModeData.AutoSize = true;
             this.InformationPreviewModeData.ForeColor = System.Drawing.SystemColors.Control;
-            this.InformationPreviewModeData.Location = new System.Drawing.Point(288, 56);
+            this.InformationPreviewModeData.Location = new System.Drawing.Point(303, 56);
             this.InformationPreviewModeData.Name = "InformationPreviewModeData";
             this.InformationPreviewModeData.Size = new System.Drawing.Size(27, 15);
             this.InformationPreviewModeData.TabIndex = 30;
@@ -585,9 +589,9 @@
             this.InformationPreviewModeLabel.ForeColor = System.Drawing.SystemColors.Control;
             this.InformationPreviewModeLabel.Location = new System.Drawing.Point(197, 56);
             this.InformationPreviewModeLabel.Name = "InformationPreviewModeLabel";
-            this.InformationPreviewModeLabel.Size = new System.Drawing.Size(85, 15);
+            this.InformationPreviewModeLabel.Size = new System.Drawing.Size(100, 15);
             this.InformationPreviewModeLabel.TabIndex = 29;
-            this.InformationPreviewModeLabel.Text = "Preview mode:";
+            this.InformationPreviewModeLabel.Text = "Connected DACs:";
             // 
             // InformationClosestPointData
             // 
@@ -712,7 +716,8 @@
             // menuStrip1
             // 
             this.menuStrip1.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
-            this.fileToolStripMenuItem});
+            this.fileToolStripMenuItem,
+            this.settingsToolStripMenuItem});
             this.menuStrip1.Location = new System.Drawing.Point(0, 0);
             this.menuStrip1.Name = "menuStrip1";
             this.menuStrip1.Size = new System.Drawing.Size(973, 24);
@@ -722,25 +727,54 @@
             // fileToolStripMenuItem
             // 
             this.fileToolStripMenuItem.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
-            this.saveToolStripMenuItem,
-            this.openToolStripMenuItem});
+            this.newPathProjectToolStripMenuItem,
+            this.openToolStripMenuItem,
+            this.saveToolStripMenuItem});
             this.fileToolStripMenuItem.Name = "fileToolStripMenuItem";
             this.fileToolStripMenuItem.Size = new System.Drawing.Size(37, 20);
             this.fileToolStripMenuItem.Text = "File";
             // 
-            // saveToolStripMenuItem
+            // newPathProjectToolStripMenuItem
             // 
-            this.saveToolStripMenuItem.Name = "saveToolStripMenuItem";
-            this.saveToolStripMenuItem.Size = new System.Drawing.Size(151, 22);
-            this.saveToolStripMenuItem.Text = "Save Path File";
-            this.saveToolStripMenuItem.Click += new System.EventHandler(this.saveToolStripMenuItem_Click);
+            this.newPathProjectToolStripMenuItem.Name = "newPathProjectToolStripMenuItem";
+            this.newPathProjectToolStripMenuItem.Size = new System.Drawing.Size(165, 22);
+            this.newPathProjectToolStripMenuItem.Text = "New Path Project";
             // 
             // openToolStripMenuItem
             // 
             this.openToolStripMenuItem.Name = "openToolStripMenuItem";
-            this.openToolStripMenuItem.Size = new System.Drawing.Size(151, 22);
+            this.openToolStripMenuItem.Size = new System.Drawing.Size(165, 22);
             this.openToolStripMenuItem.Text = "Open Path File";
             this.openToolStripMenuItem.Click += new System.EventHandler(this.openToolStripMenuItem_Click);
+            // 
+            // saveToolStripMenuItem
+            // 
+            this.saveToolStripMenuItem.Name = "saveToolStripMenuItem";
+            this.saveToolStripMenuItem.Size = new System.Drawing.Size(165, 22);
+            this.saveToolStripMenuItem.Text = "Save Path File As";
+            this.saveToolStripMenuItem.Click += new System.EventHandler(this.saveToolStripMenuItem_Click);
+            // 
+            // settingsToolStripMenuItem
+            // 
+            this.settingsToolStripMenuItem.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
+            this.sToolStripMenuItem,
+            this.connectToDACToolStripMenuItem});
+            this.settingsToolStripMenuItem.Name = "settingsToolStripMenuItem";
+            this.settingsToolStripMenuItem.Size = new System.Drawing.Size(61, 20);
+            this.settingsToolStripMenuItem.Text = "Settings";
+            // 
+            // sToolStripMenuItem
+            // 
+            this.sToolStripMenuItem.Name = "sToolStripMenuItem";
+            this.sToolStripMenuItem.Size = new System.Drawing.Size(180, 22);
+            this.sToolStripMenuItem.Text = "Laser Settings";
+            // 
+            // connectToDACToolStripMenuItem
+            // 
+            this.connectToDACToolStripMenuItem.Name = "connectToDACToolStripMenuItem";
+            this.connectToDACToolStripMenuItem.Size = new System.Drawing.Size(180, 22);
+            this.connectToDACToolStripMenuItem.Text = "Connect To DAC";
+            this.connectToDACToolStripMenuItem.Click += new System.EventHandler(this.connectToDACToolStripMenuItem_Click);
             // 
             // Form1
             // 
@@ -842,5 +876,9 @@
         private ToolStripMenuItem fileToolStripMenuItem;
         private ToolStripMenuItem saveToolStripMenuItem;
         private ToolStripMenuItem openToolStripMenuItem;
+        private ToolStripMenuItem newPathProjectToolStripMenuItem;
+        private ToolStripMenuItem settingsToolStripMenuItem;
+        private ToolStripMenuItem sToolStripMenuItem;
+        private ToolStripMenuItem connectToDACToolStripMenuItem;
     }
 }
