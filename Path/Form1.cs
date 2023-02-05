@@ -984,7 +984,7 @@ namespace Path
             }
             public float getFloatXOfFrameTime(int frameTime, int fps)
             {
-                return this.LeftMargin + frameTime * (this.PixelsPerSecond / fps);
+                return this.LeftMargin + (frameTime) * (this.PixelsPerSecond / fps) + this.PixelsPerSecond;
             }
         }
 
@@ -998,12 +998,18 @@ namespace Path
             e.Graphics.DrawLine(thinWhitePen, new PointF(currentTimeX, currentTimelineSettings.PixelsPerShape), new PointF(currentTimeX, timelineGUI.Size.Height));
             for (float horizontalPixelsUsed = currentTimelineSettings.LeftMargin; horizontalPixelsUsed < timelineGUI.Size.Width; horizontalPixelsUsed += currentTimelineSettings.PixelsPerSecond)
             {
-                e.Graphics.DrawString(seconds.ToString(), currentTimelineSettings.SecondsFont, new SolidBrush(Color.White), new PointF(horizontalPixelsUsed - ((int)(currentTimelineSettings.SecondsFont.Size / 2)),currentTimelineSettings.LeftMargin));
+                e.Graphics.DrawString(seconds.ToString(), currentTimelineSettings.SecondsFont, new SolidBrush(Color.White), new PointF(horizontalPixelsUsed - ((int)((currentTimelineSettings.SecondsFont.Size * seconds.ToString().Count()) / 2)),currentTimelineSettings.TopMargin + timelineGUIHugger.AutoScrollOffset.Y));
                 seconds++;
+            }
+            int shapeNumber = 1; //Skip the first zero for aesthetics.
+            for (float verticalPixelsUsed = currentTimelineSettings.TopMargin + currentTimelineSettings.PixelsPerShape; verticalPixelsUsed < timelineGUI.Size.Height; verticalPixelsUsed += currentTimelineSettings.PixelsPerShape)
+            {
+                e.Graphics.DrawString(shapeNumber.ToString(), currentTimelineSettings.SecondsFont, new SolidBrush(Color.White), new PointF(currentTimelineSettings.LeftMargin + timelineGUIHugger.AutoScrollOffset.X, verticalPixelsUsed - ((int)((currentTimelineSettings.SecondsFont.Size * shapeNumber.ToString().Count()) / 2))));
+                shapeNumber++;
             }
             int dynamicPathTempIndex = 0;
             TimelineDots.Clear();
-            for(float verticalSpaceUsed = currentTimelineSettings.TopMargin; verticalSpaceUsed < timelineGUI.Size.Height;verticalSpaceUsed += currentTimelineSettings.PixelsPerShape)
+            for(float verticalSpaceUsed = currentTimelineSettings.TopMargin; verticalSpaceUsed < Convert.ToInt32(currentTimelineSettings.TopMargin * 2 + currentTimelineSettings.PixelsPerShape * (project.dynamicPath.Count)); verticalSpaceUsed += currentTimelineSettings.PixelsPerShape)
             {
                 if (project.dynamicPath.Count != 0 && project.dynamicPath.Count > dynamicPathTempIndex)
                 {
