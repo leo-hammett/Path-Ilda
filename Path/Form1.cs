@@ -788,16 +788,19 @@ namespace Path
 
         private void PreviewGraphics_Resize(object sender, EventArgs e)
         {
-            if (PreviewGraphics.Width == PreviewGraphics.Height) return;
-
-            if (PreviewGraphics.Width > PreviewGraphics.Height)
+            int maxHorizontalSpace = splitContainer1.Panel1.Width - PreviewGraphics.Margin.Horizontal;  //300 for the rhs panels
+            int maxVerticalSpace = splitContainer1.Panel1.Height - (splitContainer1.Panel1.Height / 5) - PreviewGraphics.Margin.Vertical - TimeLinePanel.Margin.Vertical;   //150 for the bottom panel
+            if(maxHorizontalSpace < maxVerticalSpace)
             {
-                PreviewGraphics.Height = PreviewGraphics.Width;
+                maxVerticalSpace = maxHorizontalSpace;
             }
             else
             {
-                PreviewGraphics.Width = PreviewGraphics.Height;
+                maxHorizontalSpace = maxVerticalSpace;  //The actual max size is the smallest of the two.
             }
+            PreviewGraphics.Size = new Size(maxHorizontalSpace - PreviewGraphics.Margin.Horizontal, maxVerticalSpace - 2*PreviewGraphics.Margin.Vertical);
+            TimeLinePanel.Size = new Size(splitContainer1.Panel1.Width - TimeLinePanel.Margin.Horizontal, splitContainer1.Panel1.Height - maxVerticalSpace);
+            TimeLinePanel.Location = new Point(TimeLinePanel.Margin.Left,splitContainer1.Panel1.Height - (TimeLinePanel.Height + TimeLinePanel.Margin.Bottom)); 
         }
         
         private void OptionsDrawLineMode_CheckedChanged(object sender, EventArgs e)
@@ -1085,11 +1088,6 @@ namespace Path
         {
             InformationPreviewModeData.Text = "Disconnected";
             helios.closeDevices();
-        }
-
-        private void splitContainer1_SplitterMoved(object sender, SplitterEventArgs e)
-        {
-
         }
     }
     #region NOT MY CODE USED FOR SAVING FILES IN A HUMAN READABLE FORMAT
