@@ -48,6 +48,8 @@
             this.OptionsTitleLabel = new System.Windows.Forms.Label();
             this.OptionsFPSLabel = new System.Windows.Forms.Label();
             this.TimeLinePanel = new System.Windows.Forms.Panel();
+            this.projectMaxTimeSelector = new System.Windows.Forms.NumericUpDown();
+            this.timelineGUIHugger = new System.Windows.Forms.Panel();
             this.timelineGUI = new System.Windows.Forms.PictureBox();
             this.TimeLinePlay = new System.Windows.Forms.CheckBox();
             this.TimeLineNextFrame = new System.Windows.Forms.Button();
@@ -96,10 +98,11 @@
             this.connectToDACToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.disconnectDACToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.splitContainer1 = new System.Windows.Forms.SplitContainer();
-            this.panel1 = new System.Windows.Forms.Panel();
             ((System.ComponentModel.ISupportInitialize)(this.PreviewGraphics)).BeginInit();
             this.OptionsPanel.SuspendLayout();
             this.TimeLinePanel.SuspendLayout();
+            ((System.ComponentModel.ISupportInitialize)(this.projectMaxTimeSelector)).BeginInit();
+            this.timelineGUIHugger.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.timelineGUI)).BeginInit();
             this.LinePropertiesPanel.SuspendLayout();
             this.linePropertiesStrobeSettings.SuspendLayout();
@@ -109,7 +112,6 @@
             this.splitContainer1.Panel1.SuspendLayout();
             this.splitContainer1.Panel2.SuspendLayout();
             this.splitContainer1.SuspendLayout();
-            this.panel1.SuspendLayout();
             this.SuspendLayout();
             // 
             // PreviewGraphics
@@ -128,9 +130,9 @@
             // 
             // OptionsPanel
             // 
-            this.OptionsPanel.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
-            | System.Windows.Forms.AnchorStyles.Left) 
+            this.OptionsPanel.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left) 
             | System.Windows.Forms.AnchorStyles.Right)));
+            this.OptionsPanel.AutoSizeMode = System.Windows.Forms.AutoSizeMode.GrowAndShrink;
             this.OptionsPanel.BorderStyle = System.Windows.Forms.BorderStyle.Fixed3D;
             this.OptionsPanel.Controls.Add(this.TimeLineFramesInput);
             this.OptionsPanel.Controls.Add(this.OptionsSnapToPoint);
@@ -330,7 +332,8 @@
             this.TimeLinePanel.Anchor = System.Windows.Forms.AnchorStyles.Bottom;
             this.TimeLinePanel.AutoSizeMode = System.Windows.Forms.AutoSizeMode.GrowAndShrink;
             this.TimeLinePanel.BorderStyle = System.Windows.Forms.BorderStyle.Fixed3D;
-            this.TimeLinePanel.Controls.Add(this.panel1);
+            this.TimeLinePanel.Controls.Add(this.projectMaxTimeSelector);
+            this.TimeLinePanel.Controls.Add(this.timelineGUIHugger);
             this.TimeLinePanel.Controls.Add(this.TimeLinePlay);
             this.TimeLinePanel.Controls.Add(this.TimeLineNextFrame);
             this.TimeLinePanel.Controls.Add(this.TimeLineBackFrame);
@@ -340,11 +343,41 @@
             this.TimeLinePanel.Size = new System.Drawing.Size(546, 192);
             this.TimeLinePanel.TabIndex = 2;
             // 
+            // projectMaxTimeSelector
+            // 
+            this.projectMaxTimeSelector.Location = new System.Drawing.Point(486, 4);
+            this.projectMaxTimeSelector.Maximum = new decimal(new int[] {
+            -727379968,
+            232,
+            0,
+            0});
+            this.projectMaxTimeSelector.Name = "projectMaxTimeSelector";
+            this.projectMaxTimeSelector.Size = new System.Drawing.Size(53, 23);
+            this.projectMaxTimeSelector.TabIndex = 6;
+            this.projectMaxTimeSelector.Value = new decimal(new int[] {
+            30,
+            0,
+            0,
+            0});
+            // 
+            // timelineGUIHugger
+            // 
+            this.timelineGUIHugger.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
+            | System.Windows.Forms.AnchorStyles.Left) 
+            | System.Windows.Forms.AnchorStyles.Right)));
+            this.timelineGUIHugger.AutoScroll = true;
+            this.timelineGUIHugger.AutoSizeMode = System.Windows.Forms.AutoSizeMode.GrowAndShrink;
+            this.timelineGUIHugger.Controls.Add(this.timelineGUI);
+            this.timelineGUIHugger.Location = new System.Drawing.Point(5, 36);
+            this.timelineGUIHugger.Name = "timelineGUIHugger";
+            this.timelineGUIHugger.Size = new System.Drawing.Size(534, 149);
+            this.timelineGUIHugger.TabIndex = 5;
+            // 
             // timelineGUI
             // 
             this.timelineGUI.Location = new System.Drawing.Point(0, 0);
             this.timelineGUI.Name = "timelineGUI";
-            this.timelineGUI.Size = new System.Drawing.Size(534, 149);
+            this.timelineGUI.Size = new System.Drawing.Size(453, 109);
             this.timelineGUI.TabIndex = 5;
             this.timelineGUI.TabStop = false;
             this.timelineGUI.Paint += new System.Windows.Forms.PaintEventHandler(this.timeline_GUI_updater);
@@ -355,7 +388,7 @@
             // 
             this.TimeLinePlay.Appearance = System.Windows.Forms.Appearance.Button;
             this.TimeLinePlay.AutoSize = true;
-            this.TimeLinePlay.Location = new System.Drawing.Point(305, 4);
+            this.TimeLinePlay.Location = new System.Drawing.Point(239, 3);
             this.TimeLinePlay.Name = "TimeLinePlay";
             this.TimeLinePlay.Size = new System.Drawing.Size(39, 25);
             this.TimeLinePlay.TabIndex = 4;
@@ -364,18 +397,18 @@
             // 
             // TimeLineNextFrame
             // 
-            this.TimeLineNextFrame.Location = new System.Drawing.Point(350, 3);
+            this.TimeLineNextFrame.Location = new System.Drawing.Point(284, 4);
             this.TimeLineNextFrame.Name = "TimeLineNextFrame";
-            this.TimeLineNextFrame.Size = new System.Drawing.Size(77, 26);
+            this.TimeLineNextFrame.Size = new System.Drawing.Size(77, 24);
             this.TimeLineNextFrame.TabIndex = 3;
             this.TimeLineNextFrame.Text = "Next";
             this.TimeLineNextFrame.UseVisualStyleBackColor = true;
             // 
             // TimeLineBackFrame
             // 
-            this.TimeLineBackFrame.Location = new System.Drawing.Point(222, 3);
+            this.TimeLineBackFrame.Location = new System.Drawing.Point(156, 3);
             this.TimeLineBackFrame.Name = "TimeLineBackFrame";
-            this.TimeLineBackFrame.Size = new System.Drawing.Size(77, 27);
+            this.TimeLineBackFrame.Size = new System.Drawing.Size(77, 25);
             this.TimeLineBackFrame.TabIndex = 2;
             this.TimeLineBackFrame.Text = "Back";
             this.TimeLineBackFrame.UseVisualStyleBackColor = true;
@@ -403,8 +436,7 @@
             // 
             // LinePropertiesPanel
             // 
-            this.LinePropertiesPanel.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
-            | System.Windows.Forms.AnchorStyles.Left) 
+            this.LinePropertiesPanel.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
             | System.Windows.Forms.AnchorStyles.Right)));
             this.LinePropertiesPanel.AutoScroll = true;
             this.LinePropertiesPanel.BorderStyle = System.Windows.Forms.BorderStyle.Fixed3D;
@@ -818,15 +850,6 @@
             this.splitContainer1.TabIndex = 21;
             this.splitContainer1.Resize += new System.EventHandler(this.PreviewGraphics_Resize);
             // 
-            // panel1
-            // 
-            this.panel1.AutoScroll = true;
-            this.panel1.Controls.Add(this.timelineGUI);
-            this.panel1.Location = new System.Drawing.Point(5, 36);
-            this.panel1.Name = "panel1";
-            this.panel1.Size = new System.Drawing.Size(534, 149);
-            this.panel1.TabIndex = 5;
-            // 
             // Form1
             // 
             this.AccessibleName = "Path Window";
@@ -846,6 +869,8 @@
             this.OptionsPanel.PerformLayout();
             this.TimeLinePanel.ResumeLayout(false);
             this.TimeLinePanel.PerformLayout();
+            ((System.ComponentModel.ISupportInitialize)(this.projectMaxTimeSelector)).EndInit();
+            this.timelineGUIHugger.ResumeLayout(false);
             ((System.ComponentModel.ISupportInitialize)(this.timelineGUI)).EndInit();
             this.LinePropertiesPanel.ResumeLayout(false);
             this.LinePropertiesPanel.PerformLayout();
@@ -858,7 +883,6 @@
             this.splitContainer1.Panel2.ResumeLayout(false);
             ((System.ComponentModel.ISupportInitialize)(this.splitContainer1)).EndInit();
             this.splitContainer1.ResumeLayout(false);
-            this.panel1.ResumeLayout(false);
             this.ResumeLayout(false);
             this.PerformLayout();
 
@@ -934,6 +958,7 @@
         private ToolStripMenuItem dACSettingsToolStripMenuItem;
         private ToolStripMenuItem connectToDACToolStripMenuItem;
         private ToolStripMenuItem disconnectDACToolStripMenuItem;
-        private Panel panel1;
+        private Panel timelineGUIHugger;
+        private NumericUpDown projectMaxTimeSelector;
     }
 }
