@@ -29,6 +29,9 @@ namespace Path
         PathLineFrame selectedFrameReadOnly;
         int selectedPointDynamicIndex = -1;
 
+        Queue<PathLineFrame> laserFrame;    //This is a step on the way for making laser points.
+        List<HeliosPoint> laserPoints = new List<HeliosPoint>();
+
         bool showCircles = false;
         bool showLines = false;
         bool mouseDown = false;
@@ -69,9 +72,9 @@ namespace Path
         }
         class LaserSettings
         {
-            public int kpps = 40000;       //The maximum number of points we should be sending down the dac. Mine was rated at 40KPPS but that could be a false rating at this point.
-            public int maxVelocity = 100;
-            public int maxAcceleration = 500;
+            public int kpps = 40;       //The maximum number of points we should be sending down the dac. Mine was rated at 40KPPS but that could be a false rating at this point.
+            public int maxVelocity = 10;
+            public int maxAcceleration = 5;
             public int bufferLength = 10;
             public bool project = true;
         }
@@ -246,6 +249,8 @@ namespace Path
             public List<HeliosPoint> GenLaserPoints(LaserSettings currentLaserSettings)
             {
                 List<HeliosPoint> points = new List<HeliosPoint>();
+                #region higher order maths that i swear is hella close to working but isnt quite working. Think it might have made curves anyway.
+                /* DOESNT WORK AS I SO VERY WISHED IT WOULD
                 for(int i = 0; i < pathPoints.Count-1; i++)
                 {
                     double lineFrameLength = getDistance(pathPoints[i], pathPoints[i+1]);
@@ -286,6 +291,26 @@ namespace Path
                         }
                         lineFrameProcessed += velocity;
                     }
+                }*/
+                #endregion
+                //If we have constant acceleration life is hella easy thanks to a person named Mrs SUVAT (idk if Suvat equations were named after a man or a woman) 
+                //Also because this is a legal exam I needa say i'm joking I know Suvat is the acronym for displacement, intial velocity, etc.
+                //S = ut + 1/2 a t^2 (hold on one sec we got to the good bit in my playlist I needa jam for a sec)
+                Queue<double> beginningDisplacements = new Queue<double>();
+                Stack<double> endingDisplacements = new Stack<double>();
+                int acceleratingTime = currentLaserSettings.maxVelocity / currentLaserSettings.maxAcceleration;
+                double halfDisplacement = getDistance(this.pathPoints[0], this.pathPoints[1])/2;//I realise that I havent added multi point compatibility this is a relatively easy fix for before summer :)
+                for(double t = 0; t < acceleratingTime && (0.5 * t * t * currentLaserSettings.maxAcceleration) < halfDisplacement; t++)
+                {
+                    beginningDisplacements.Enqueue(0.5 * t * t * currentLaserSettings.maxAcceleration);
+                    endingDisplacements.Push(0.5 * t * t * currentLaserSettings.maxAcceleration);
+                }
+                if(halfDisplacement - beginningDisplacements.Last() > currentLaserSettings.maxVelocity/2)//If distance left to cover will take more than a point.
+                {
+                    for(int i = 0; i < (halfDisplacement - beginningDisplacements.Last()) / currentLaserSettings.maxVelocity; i++)
+                    {
+
+                    }
                 }
                 return points;
             }
@@ -296,17 +321,20 @@ namespace Path
             public List<LinePoint> GenKeyPoints(bool middle = false)
             {
                 List<LinePoint> KeyPoints= new List<LinePoint>();
-                for(int i = 0; i < PathPoints.Count; i++)
+
+                for (int i = 0; i < PathPoints.Count - 1; i++)
                 {
-                    KeyPoints.Add(new LinePoint(ListIndex,i, pathPoints[i], false));
-                    if(middle && (i+1) != pathPoints.Count)
+                    KeyPoints.Add(new LinePoint(ListIndex, i, pathPoints[i], false));
+                    if (middle)
                     {
-                        KeyPoints.Add(new LinePoint(ListIndex,KeyPoints.Count, new Point(
-                            Convert.ToInt32((pathPoints[i].X + pathPoints[i+1].X) / 2),
-                            Convert.ToInt32((pathPoints[i].Y + pathPoints[i + 1].Y) / 2))
-                            ,true));
+                        KeyPoints.Add(new LinePoint(ListIndex, i, new Point(
+                                Convert.ToInt32((pathPoints[i].X + pathPoints[i+1].X) / 2),
+                                Convert.ToInt32((pathPoints[i].Y + pathPoints[i+1].Y) / 2))
+                                , true));
                     }
                 }
+                
+                KeyPoints.Add(new LinePoint(ListIndex, PathPoints.Count-1, pathPoints.Last(), false));
                 return KeyPoints;
             }   
             /*So basically this function generates keypoints, keypoints are any points with details that we might want to adjust
@@ -420,7 +448,6 @@ namespace Path
             {
                 get { return dynamicPathIndex;}
             }
-
 
             bool isHidden = false;
             public bool IsHidden
@@ -606,21 +633,34 @@ namespace Path
             }
             InformationFrameListCountInfo.Text = framePath.Count().ToString();
 
-            Queue<PathLineFrame> laserFrame = genShapeLaserPath(framePath);
+            laserFrame = genShapeLaserPath(framePath);  //Literally generates the laser Path
+            laserPoints.Clear();
             foreach(PathLineFrame laserLine in laserFrame)
             {
-                if (laserLine.Hidden)
+                if (laserPathToolStripMenuItem.Checked)
                 {
-                    e.Graphics.DrawLine(new Pen(Color.Red,2),
-                    ConvertToHeliosCoords(laserLine.PathPoints[0], true), ConvertToHeliosCoords(laserLine.PathPoints[1], true));
-                }
-                else
-                {
-                    e.Graphics.DrawLine(new Pen(Color.Blue),
+                    if (laserLine.Hidden)
+                    {
+                        e.Graphics.DrawLine(new Pen(Color.Blue),
                         ConvertToHeliosCoords(laserLine.PathPoints[0], true), ConvertToHeliosCoords(laserLine.PathPoints[1], true));
+                    }
+                    else
+                    {
+                        e.Graphics.DrawLine(new Pen(Color.Green, 2),
+                            ConvertToHeliosCoords(laserLine.PathPoints[0], true), ConvertToHeliosCoords(laserLine.PathPoints[1], true));
+                    }
+                }
+
+                laserPoints.AddRange(laserLine.GenLaserPoints(currentLaserSettings));
+
+            }
+            if (laserPointsToolStripMenuItem.Checked)
+            {
+                foreach (HeliosPoint point in laserPoints)
+                {
+                    e.Graphics.FillCircle(new SolidBrush(Color.Pink), ConvertToHeliosCoords(new Point(point.x,point.y), true), 2);
                 }
             }
-
             //Draw lines, dots and selection bits.
             Pen linePen;
             double closestPointDistance = 1000000;
@@ -631,7 +671,10 @@ namespace Path
                 linePen = new Pen(framePath[i].PathColor);
                 for(int j = 0; j < framePath[i].PathPoints.Count() - 1; j++)    //REMEMBER TO UNCOMMENT THIS
                 {
-                    //e.Graphics.DrawLine(linePen, ConvertToHeliosCoords(framePath[i].PathPoints[j], true), ConvertToHeliosCoords(framePath[i].PathPoints[j + 1], true));
+                    if (previewShapesToolStripMenuItem.Checked)
+                    {
+                        e.Graphics.DrawLine(linePen, ConvertToHeliosCoords(framePath[i].PathPoints[j], true), ConvertToHeliosCoords(framePath[i].PathPoints[j + 1], true));
+                    }
                 }
                 
                 //Im pretty sure this is the function that provides closest points.
@@ -763,7 +806,6 @@ namespace Path
             framePathTime = -1;
             UpdateLineProperties();
         }
-
         private void PreviewGraphics_MouseUp(object sender, MouseEventArgs e)                           //MOUSE SHENINAGINS
         {
             mouseDown = false;
@@ -970,7 +1012,7 @@ namespace Path
             public float TopMargin = 10;
             public float PixelsPerShape = 20;
             public float TimelineDotSize = 5;
-            public Font SecondsFont = new Font("Arial", 4, FontStyle.Bold);
+            public Font SecondsFont = new Font("Arial", 8, FontStyle.Bold);
             public TimelineSettings(int pixelsPerSecond = 20, int pixelsPerShape = 20, Font secondsFont = null)
             {
                 this.PixelsPerSecond = pixelsPerSecond;
@@ -994,17 +1036,17 @@ namespace Path
                 ,Convert.ToInt32(currentTimelineSettings.TopMargin*2 + currentTimelineSettings.PixelsPerShape*(project.dynamicPath.Count)));
             int seconds = 0;
             Pen thinWhitePen = new Pen(Color.White);
-            float currentTimeX = currentTimelineSettings.LeftMargin + mainTime * (currentTimelineSettings.PixelsPerSecond / project.fps);
+            float currentTimeX = currentTimelineSettings.LeftMargin + (mainTime + project.fps) * (currentTimelineSettings.PixelsPerSecond / project.fps);
             e.Graphics.DrawLine(thinWhitePen, new PointF(currentTimeX, currentTimelineSettings.PixelsPerShape), new PointF(currentTimeX, timelineGUI.Size.Height));
             for (float horizontalPixelsUsed = currentTimelineSettings.LeftMargin; horizontalPixelsUsed < timelineGUI.Size.Width; horizontalPixelsUsed += currentTimelineSettings.PixelsPerSecond)
             {
-                e.Graphics.DrawString(seconds.ToString(), currentTimelineSettings.SecondsFont, new SolidBrush(Color.White), new PointF(horizontalPixelsUsed - ((int)((currentTimelineSettings.SecondsFont.Size * seconds.ToString().Count()) / 2)),currentTimelineSettings.TopMargin + timelineGUIHugger.AutoScrollOffset.Y));
+                e.Graphics.DrawString(seconds.ToString(), currentTimelineSettings.SecondsFont, new SolidBrush(Color.White), new PointF(horizontalPixelsUsed - ((int)((currentTimelineSettings.SecondsFont.Size * seconds.ToString().Count()) / 2)),currentTimelineSettings.TopMargin + timelineGUIHugger.VerticalScroll.Value));
                 seconds++;
             }
             int shapeNumber = 1; //Skip the first zero for aesthetics.
             for (float verticalPixelsUsed = currentTimelineSettings.TopMargin + currentTimelineSettings.PixelsPerShape; verticalPixelsUsed < timelineGUI.Size.Height; verticalPixelsUsed += currentTimelineSettings.PixelsPerShape)
             {
-                e.Graphics.DrawString(shapeNumber.ToString(), currentTimelineSettings.SecondsFont, new SolidBrush(Color.White), new PointF(currentTimelineSettings.LeftMargin + timelineGUIHugger.AutoScrollOffset.X, verticalPixelsUsed - ((int)((currentTimelineSettings.SecondsFont.Size * shapeNumber.ToString().Count()) / 2))));
+                e.Graphics.DrawString(shapeNumber.ToString(), currentTimelineSettings.SecondsFont, new SolidBrush(Color.White), new PointF(currentTimelineSettings.LeftMargin + timelineGUIHugger.HorizontalScroll.Value - ((int)((currentTimelineSettings.SecondsFont.Size * shapeNumber.ToString().Count()) / 2)), verticalPixelsUsed));
                 shapeNumber++;
             }
             int dynamicPathTempIndex = 0;
@@ -1040,7 +1082,8 @@ namespace Path
         {
             if(e.Button == MouseButtons.Left)
             {
-                int newTimeFrame = (int)((e.Location.X - currentTimelineSettings.LeftMargin) / (currentTimelineSettings.PixelsPerSecond / project.fps));
+                int newTimeFrame = (int)((e.Location.X - currentTimelineSettings.LeftMargin - currentTimelineSettings.PixelsPerSecond
+                    ) / (currentTimelineSettings.PixelsPerSecond / project.fps));
                 if (newTimeFrame > 0)
                 {
                     ChangeTime(newTimeFrame);

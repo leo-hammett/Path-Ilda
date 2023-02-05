@@ -92,6 +92,10 @@
             this.newPathProjectToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.openToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.saveToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.showToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.laserPathToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.laserPointsToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.previewShapesToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.settingsToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.sToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.dACSettingsToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
@@ -460,7 +464,7 @@
             // 
             this.linePropertiesStrobeSettings.Controls.Add(this.tabPage1);
             this.linePropertiesStrobeSettings.Controls.Add(this.tabPage2);
-            this.linePropertiesStrobeSettings.Location = new System.Drawing.Point(3, 246);
+            this.linePropertiesStrobeSettings.Location = new System.Drawing.Point(3, 286);
             this.linePropertiesStrobeSettings.Name = "linePropertiesStrobeSettings";
             this.linePropertiesStrobeSettings.SelectedIndex = 0;
             this.linePropertiesStrobeSettings.Size = new System.Drawing.Size(373, 112);
@@ -751,6 +755,7 @@
             // 
             this.menuStrip1.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
             this.fileToolStripMenuItem,
+            this.showToolStripMenuItem,
             this.settingsToolStripMenuItem});
             this.menuStrip1.Location = new System.Drawing.Point(0, 0);
             this.menuStrip1.Name = "menuStrip1";
@@ -788,6 +793,39 @@
             this.saveToolStripMenuItem.Text = "Save Path File As";
             this.saveToolStripMenuItem.Click += new System.EventHandler(this.saveToolStripMenuItem_Click);
             // 
+            // showToolStripMenuItem
+            // 
+            this.showToolStripMenuItem.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
+            this.laserPathToolStripMenuItem,
+            this.laserPointsToolStripMenuItem,
+            this.previewShapesToolStripMenuItem});
+            this.showToolStripMenuItem.Name = "showToolStripMenuItem";
+            this.showToolStripMenuItem.Size = new System.Drawing.Size(48, 20);
+            this.showToolStripMenuItem.Text = "Show";
+            // 
+            // laserPathToolStripMenuItem
+            // 
+            this.laserPathToolStripMenuItem.CheckOnClick = true;
+            this.laserPathToolStripMenuItem.Name = "laserPathToolStripMenuItem";
+            this.laserPathToolStripMenuItem.Size = new System.Drawing.Size(180, 22);
+            this.laserPathToolStripMenuItem.Text = "Laser Path";
+            // 
+            // laserPointsToolStripMenuItem
+            // 
+            this.laserPointsToolStripMenuItem.CheckOnClick = true;
+            this.laserPointsToolStripMenuItem.Name = "laserPointsToolStripMenuItem";
+            this.laserPointsToolStripMenuItem.Size = new System.Drawing.Size(180, 22);
+            this.laserPointsToolStripMenuItem.Text = "Laser Points";
+            // 
+            // previewShapesToolStripMenuItem
+            // 
+            this.previewShapesToolStripMenuItem.Checked = true;
+            this.previewShapesToolStripMenuItem.CheckOnClick = true;
+            this.previewShapesToolStripMenuItem.CheckState = System.Windows.Forms.CheckState.Checked;
+            this.previewShapesToolStripMenuItem.Name = "previewShapesToolStripMenuItem";
+            this.previewShapesToolStripMenuItem.Size = new System.Drawing.Size(180, 22);
+            this.previewShapesToolStripMenuItem.Text = "Preview Shapes";
+            // 
             // settingsToolStripMenuItem
             // 
             this.settingsToolStripMenuItem.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
@@ -800,7 +838,7 @@
             // sToolStripMenuItem
             // 
             this.sToolStripMenuItem.Name = "sToolStripMenuItem";
-            this.sToolStripMenuItem.Size = new System.Drawing.Size(146, 22);
+            this.sToolStripMenuItem.Size = new System.Drawing.Size(180, 22);
             this.sToolStripMenuItem.Text = "Laser Settings";
             // 
             // dACSettingsToolStripMenuItem
@@ -809,7 +847,7 @@
             this.connectToDACToolStripMenuItem,
             this.disconnectDACToolStripMenuItem});
             this.dACSettingsToolStripMenuItem.Name = "dACSettingsToolStripMenuItem";
-            this.dACSettingsToolStripMenuItem.Size = new System.Drawing.Size(146, 22);
+            this.dACSettingsToolStripMenuItem.Size = new System.Drawing.Size(180, 22);
             this.dACSettingsToolStripMenuItem.Text = "DAC Settings";
             // 
             // connectToDACToolStripMenuItem
@@ -960,5 +998,9 @@
         private ToolStripMenuItem disconnectDACToolStripMenuItem;
         private Panel timelineGUIHugger;
         private NumericUpDown projectMaxTimeSelector;
+        private ToolStripMenuItem showToolStripMenuItem;
+        private ToolStripMenuItem laserPathToolStripMenuItem;
+        private ToolStripMenuItem laserPointsToolStripMenuItem;
+        private ToolStripMenuItem previewShapesToolStripMenuItem;
     }
 }
