@@ -990,8 +990,8 @@ namespace Path
 
         private void timeline_GUI_updater(object sender, PaintEventArgs e)
         {
-            timelineGUI.Size = new Size(Convert.ToInt32(projectMaxTimeSelector.Value*currentTimelineSettings.PixelsPerSecond + 2*currentTimelineSettings.LeftMargin)
-                ,Convert.ToInt32(currentTimelineSettings.TopMargin + currentTimelineSettings.PixelsPerShape*project.dynamicPath.Count));
+            timelineGUI.Size = new Size(Convert.ToInt32((float)projectMaxTimeSelector.Value*currentTimelineSettings.PixelsPerSecond + 2*currentTimelineSettings.LeftMargin)
+                ,Convert.ToInt32(currentTimelineSettings.TopMargin*2 + currentTimelineSettings.PixelsPerShape*(project.dynamicPath.Count)));
             int seconds = 0;
             Pen thinWhitePen = new Pen(Color.White);
             float currentTimeX = currentTimelineSettings.LeftMargin + mainTime * (currentTimelineSettings.PixelsPerSecond / project.fps);

@@ -377,7 +377,7 @@
             // 
             this.timelineGUI.Location = new System.Drawing.Point(0, 0);
             this.timelineGUI.Name = "timelineGUI";
-            this.timelineGUI.Size = new System.Drawing.Size(453, 109);
+            this.timelineGUI.Size = new System.Drawing.Size(531, 149);
             this.timelineGUI.TabIndex = 5;
             this.timelineGUI.TabStop = false;
             this.timelineGUI.Paint += new System.Windows.Forms.PaintEventHandler(this.timeline_GUI_updater);
