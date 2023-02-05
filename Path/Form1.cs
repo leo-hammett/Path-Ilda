@@ -72,9 +72,9 @@ namespace Path
         }
         class LaserSettings
         {
-            public int kpps = 40;       //The maximum number of points we should be sending down the dac. Mine was rated at 40KPPS but that could be a false rating at this point.
+            public int kpps = 40000;       //The maximum number of points we should be sending down the dac. Mine was rated at 40KPPS but that could be a false rating at this point.
             public int maxVelocity = 10;
-            public int maxAcceleration = 5;
+            public int maxAcceleration = 2;
             public int bufferLength = 10;
             public bool project = true;
         }
@@ -296,20 +296,65 @@ namespace Path
                 //If we have constant acceleration life is hella easy thanks to a person named Mrs SUVAT (idk if Suvat equations were named after a man or a woman) 
                 //Also because this is a legal exam I needa say i'm joking I know Suvat is the acronym for displacement, intial velocity, etc.
                 //S = ut + 1/2 a t^2 (hold on one sec we got to the good bit in my playlist I needa jam for a sec)
-                Queue<double> beginningDisplacements = new Queue<double>();
-                Stack<double> endingDisplacements = new Stack<double>();
-                int acceleratingTime = currentLaserSettings.maxVelocity / currentLaserSettings.maxAcceleration;
-                double halfDisplacement = getDistance(this.pathPoints[0], this.pathPoints[1])/2;//I realise that I havent added multi point compatibility this is a relatively easy fix for before summer :)
-                for(double t = 0; t < acceleratingTime && (0.5 * t * t * currentLaserSettings.maxAcceleration) < halfDisplacement; t++)
+                if (pathPoints.Count > 0)
                 {
-                    beginningDisplacements.Enqueue(0.5 * t * t * currentLaserSettings.maxAcceleration);
-                    endingDisplacements.Push(0.5 * t * t * currentLaserSettings.maxAcceleration);
-                }
-                if(halfDisplacement - beginningDisplacements.Last() > currentLaserSettings.maxVelocity/2)//If distance left to cover will take more than a point.
-                {
-                    for(int i = 0; i < (halfDisplacement - beginningDisplacements.Last()) / currentLaserSettings.maxVelocity; i++)
+                    Queue<double> beginningDisplacements = new Queue<double>();
+                    Stack<double> endingDisplacements = new Stack<double>();
+                    int acceleratingTime = currentLaserSettings.maxVelocity / currentLaserSettings.maxAcceleration;
+                    double halfDisplacement = getDistance(this.pathPoints[0], this.pathPoints[1]) / 2;//I realise that I havent added multi point compatibility this is a relatively easy fix for before summer :)
+                    for (double t = 0; t < acceleratingTime && (0.5 * t * t * currentLaserSettings.maxAcceleration) < halfDisplacement; t++)
                     {
-
+                        beginningDisplacements.Enqueue(0.5 * t * t * currentLaserSettings.maxAcceleration);
+                        endingDisplacements.Push(0.5 * t * t * currentLaserSettings.maxAcceleration);
+                    }
+                    if((currentLaserSettings.maxAcceleration) < halfDisplacement && halfDisplacement - beginningDisplacements.Last() > currentLaserSettings.maxVelocity / 2)//If distance left to cover will take more than a point.
+                    {
+                        for (int i = 0; i < (halfDisplacement - beginningDisplacements.Last()) / currentLaserSettings.maxVelocity; i++)
+                        {
+                            beginningDisplacements.Enqueue(beginningDisplacements.Last() + ((halfDisplacement - beginningDisplacements.Last()) / ((halfDisplacement - beginningDisplacements.Last()) / currentLaserSettings.maxVelocity)));
+                            endingDisplacements.Push(endingDisplacements.Last() + ((halfDisplacement - beginningDisplacements.Last()) / ((halfDisplacement - beginningDisplacements.Last()) / currentLaserSettings.maxVelocity))); //Should make it so the middle points are evenly spaced.
+                        }   // SHCHC A GOOOD MIXXXX I CANNOT EXPLAIN HOW GOOD IT IS ITS FIREREEEEEE  https://youtu.be/WKuaujIHBT4?t=3914
+                            // This bit fills in the middle so the velocity isnt bigger than the max velocity. The rest uses the max acceleration.
+                    }
+                    HeliosPoint currentPoint = new HeliosPoint();
+                    double currentDisplacement = 0;
+                    double theta;
+                    if ((pathPoints[1].X - pathPoints[0].X) == 0)
+                    {
+                        if ((pathPoints[1].Y - pathPoints[0].Y) > 0)
+                        {
+                            theta = Math.PI;
+                        }
+                        else
+                        {
+                            theta = -Math.PI;
+                        }
+                    }
+                    else
+                    {
+                        theta = Math.Atan((pathPoints[1].Y - pathPoints[0].Y) / (pathPoints[1].X - pathPoints[0].X));
+                    }
+                    for (int i = 0; i < beginningDisplacements.Count; i++)
+                    {
+                        currentDisplacement = beginningDisplacements.Dequeue();
+                        currentPoint.x = (ushort)(pathPoints[0].X + currentDisplacement * Math.Cos(theta));
+                        currentPoint.y = (ushort)(pathPoints[0].Y + currentDisplacement * Math.Sin(theta));
+                        currentPoint.r = pathColor.R;
+                        currentPoint.g = pathColor.G;
+                        currentPoint.b = pathColor.B;
+                        currentPoint.i = pathColor.A;
+                        points.Add(currentPoint);
+                    }
+                    for (int i = 0; i < beginningDisplacements.Count; i++)
+                    {
+                        currentDisplacement = beginningDisplacements.Dequeue();
+                        currentPoint.x = (ushort)(pathPoints[0].X - currentDisplacement * Math.Cos(theta));
+                        currentPoint.y = (ushort)(pathPoints[0].Y - currentDisplacement * Math.Sin(theta));
+                        currentPoint.r = pathColor.R;
+                        currentPoint.g = pathColor.G;
+                        currentPoint.b = pathColor.B;
+                        currentPoint.i = pathColor.A;
+                        points.Add(currentPoint);
                     }
                 }
                 return points;
