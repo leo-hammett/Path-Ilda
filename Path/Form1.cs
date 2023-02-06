@@ -3,6 +3,7 @@ using System.Linq;
 using Newtonsoft;
 using HeliosLaserDAC;
 using System.Drawing;
+using System.Linq.Expressions;
 //project.dynamicPath = the file & whole animation
 //framePath = the PathLineFrame array for the individual frame
 
@@ -1223,8 +1224,15 @@ namespace Path
             try
             {
                 var contentsToWriteToFile = Newtonsoft.Json.JsonConvert.SerializeObject(objectToWrite);
-                writer = new StreamWriter(filePath, append);
-                writer.Write(contentsToWriteToFile);
+                try
+                {
+                    writer = new StreamWriter(filePath, append);
+                    writer.Write(contentsToWriteToFile);
+                }
+                catch
+                { 
+
+                }
             }
             finally
             {
