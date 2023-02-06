@@ -2,6 +2,7 @@ using System.Collections.Generic;
 using System.Linq;
 using Newtonsoft;
 using HeliosLaserDAC;
+using System.Drawing;
 //project.dynamicPath = the file & whole animation
 //framePath = the PathLineFrame array for the individual frame
 
@@ -61,6 +62,7 @@ namespace Path
             OptionsDrawLineMode.Checked = true;
             currentTimelineSettings = new TimelineSettings();
             InformationPreviewModeData.Text = helios.openDevices().ToString();
+            backgroundWorker1.RunWorkerAsync();
         }
         class PathProject
         {
@@ -72,9 +74,9 @@ namespace Path
         }
         class LaserSettings
         {
-            public int kpps = 40000;       //The maximum number of points we should be sending down the dac. Mine was rated at 40KPPS but that could be a false rating at this point.
-            public int maxVelocity = 150;
-            public int maxAcceleration = 4;
+            public int kpps = 4000;       //The maximum number of points we should be sending down the dac. Mine was rated at 40KPPS but that could be a false rating at this point.
+            public int maxVelocity = 15;
+            public int maxAcceleration = 2;
             public int bufferLength = 10;
             public bool project = true;
         }
@@ -101,7 +103,7 @@ namespace Path
         {
             return Math.Sqrt(Math.Pow(point1.X - point2.X, 2) + Math.Pow(point1.Y - point2.Y,2));
         }
-
+        //not workin vvv
         List<HeliosPoint> travelBetweenPoints(PointF zeroPoint, PointF lastPoint, PointF currentVelocity, PointF endVelocity, int maxVelocity, int maxAcceleration)
         {
             HeliosPoint currentPoint;
@@ -330,10 +332,10 @@ namespace Path
                         currentDisplacement = beginningDisplacements.Dequeue();
                         currentPoint.x = (ushort)(pathPoints[0].X + currentDisplacement * horizontaleScaleValue);
                         currentPoint.y = (ushort)(pathPoints[0].Y + currentDisplacement * verticalScaleValue);
-                        currentPoint.r = pathColor.R;
-                        currentPoint.g = pathColor.G;
-                        currentPoint.b = pathColor.B;
-                        currentPoint.i = pathColor.A;
+                        currentPoint.r = (byte)((this.pathColor.R * this.pathColor.A) / 0xFF);
+                        currentPoint.g = (byte)((this.pathColor.G * this.pathColor.A) / 0xFF);
+                        currentPoint.b = (byte)((this.pathColor.B * this.pathColor.A) / 0xFF);
+                        currentPoint.i = (byte)(this.pathColor.A);
                         points.Add(currentPoint);
                     }
                     while(endingDisplacements.Count > 0)
@@ -341,10 +343,10 @@ namespace Path
                         currentDisplacement = endingDisplacements.Pop();
                         currentPoint.x = (ushort)(pathPoints[1].X - currentDisplacement * horizontaleScaleValue);
                         currentPoint.y = (ushort)(pathPoints[1].Y - currentDisplacement * verticalScaleValue);
-                        currentPoint.r = pathColor.R;
-                        currentPoint.g = pathColor.G;
-                        currentPoint.b = pathColor.B;
-                        currentPoint.i = pathColor.A;
+                        currentPoint.r = (byte)((this.pathColor.R * this.pathColor.A) / 0xFF);
+                        currentPoint.g = (byte)((this.pathColor.G * this.pathColor.A) / 0xFF);
+                        currentPoint.b = (byte)((this.pathColor.B * this.pathColor.A) / 0xFF);
+                        currentPoint.i = (byte)(this.pathColor.A);
                         points.Add(currentPoint);
                     }
                 }
@@ -697,7 +699,6 @@ namespace Path
                     e.Graphics.FillCircle(new SolidBrush(Color.Pink), ConvertToHeliosCoords(new Point(point.x,point.y), true), 2);
                 }
             }
-            helios.writeFrame(0, currentLaserSettings.kpps, 0, laserPoints.ToArray(), laserPoints.Count());
             //Draw lines, dots and selection bits.
             Pen linePen;
             double closestPointDistance = 1000000;
@@ -984,11 +985,11 @@ namespace Path
                 LinePropertiesPathIndexData.Text = selectedLineDynamicIndex.ToString();
 
                 //Update the colors and coordinates
-                if (selectedPointDynamicIndex != -1) 
-                {
-                    LinePropertiesXCoordinate.Text = project.dynamicPath[selectedLineDynamicIndex].GenFrameAt(mainTime).PathPoints[selectedPointDynamicIndex].X.ToString();
-                    LinePropertiesYCoordinate.Text = project.dynamicPath[selectedLineDynamicIndex].GenFrameAt(mainTime).PathPoints[selectedPointDynamicIndex].Y.ToString();
-                }
+//                if (selectedPointDynamicIndex != -1) 
+  //              {
+    //                LinePropertiesXCoordinate.Text = project.dynamicPath[selectedLineDynamicIndex].GenFrameAt(mainTime).PathPoints[selectedPointDynamicIndex].X.ToString();
+      //              LinePropertiesYCoordinate.Text = project.dynamicPath[selectedLineDynamicIndex].GenFrameAt(mainTime).PathPoints[selectedPointDynamicIndex].Y.ToString();
+        //        }
 
                 //Add the keyframes to the keyframe textbox
                 LinePropertiesKeyFramesTextBox.Items.Clear();
@@ -1176,6 +1177,31 @@ namespace Path
         {
             InformationPreviewModeData.Text = "Disconnected";
             helios.closeDevices();
+        }
+
+        private void backgroundWorker1_DoWork(object sender, System.ComponentModel.DoWorkEventArgs e)
+        {
+            while (true)
+            {
+                if (true)
+                {
+                    while (helios.getStatus(0) == 0)
+                    {
+                        Thread.Sleep(1);
+                    }
+                    helios.writeFrame(0, 40000, 0, laserPoints.ToArray(), laserPoints.Count());
+                }
+                else
+                {
+                    Thread.Sleep(100);
+                    helios.closeDevices();
+                }
+            }
+        }
+
+        private void splitContainer1_Panel1_Paint(object sender, PaintEventArgs e)
+        {
+
         }
     }
     #region NOT MY CODE USED FOR SAVING FILES IN A HUMAN READABLE FORMAT
