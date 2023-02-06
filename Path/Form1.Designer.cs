@@ -58,8 +58,8 @@
             this.openFileDialog1 = new System.Windows.Forms.OpenFileDialog();
             this.saveFileDialog1 = new System.Windows.Forms.SaveFileDialog();
             this.LinePropertiesPanel = new System.Windows.Forms.Panel();
-            this.numericUpDown2 = new System.Windows.Forms.NumericUpDown();
-            this.numericUpDown1 = new System.Windows.Forms.NumericUpDown();
+            this.LinePropertiesYCoordinate = new System.Windows.Forms.NumericUpDown();
+            this.LinePropertiesXCoordinate = new System.Windows.Forms.NumericUpDown();
             this.linePropertiesStrobeSettings = new System.Windows.Forms.TabControl();
             this.linePropertiesFrameControlsPanel = new System.Windows.Forms.TabPage();
             this.tabPage2 = new System.Windows.Forms.TabPage();
@@ -110,8 +110,8 @@
             this.timelineGUIHugger.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.timelineGUI)).BeginInit();
             this.LinePropertiesPanel.SuspendLayout();
-            ((System.ComponentModel.ISupportInitialize)(this.numericUpDown2)).BeginInit();
-            ((System.ComponentModel.ISupportInitialize)(this.numericUpDown1)).BeginInit();
+            ((System.ComponentModel.ISupportInitialize)(this.LinePropertiesYCoordinate)).BeginInit();
+            ((System.ComponentModel.ISupportInitialize)(this.LinePropertiesXCoordinate)).BeginInit();
             this.linePropertiesStrobeSettings.SuspendLayout();
             this.InformationPanel.SuspendLayout();
             this.menuStrip1.SuspendLayout();
@@ -162,7 +162,7 @@
             this.OptionsPanel.Location = new System.Drawing.Point(5, 639);
             this.OptionsPanel.Margin = new System.Windows.Forms.Padding(5, 6, 5, 6);
             this.OptionsPanel.Name = "OptionsPanel";
-            this.OptionsPanel.Size = new System.Drawing.Size(675, 438);
+            this.OptionsPanel.Size = new System.Drawing.Size(666, 438);
             this.OptionsPanel.TabIndex = 1;
             // 
             // TimeLineFramesInput
@@ -504,8 +504,8 @@
             | System.Windows.Forms.AnchorStyles.Right)));
             this.LinePropertiesPanel.AutoScroll = true;
             this.LinePropertiesPanel.BorderStyle = System.Windows.Forms.BorderStyle.Fixed3D;
-            this.LinePropertiesPanel.Controls.Add(this.numericUpDown2);
-            this.LinePropertiesPanel.Controls.Add(this.numericUpDown1);
+            this.LinePropertiesPanel.Controls.Add(this.LinePropertiesYCoordinate);
+            this.LinePropertiesPanel.Controls.Add(this.LinePropertiesXCoordinate);
             this.LinePropertiesPanel.Controls.Add(this.linePropertiesStrobeSettings);
             this.LinePropertiesPanel.Controls.Add(this.PathLinePointsListBox);
             this.LinePropertiesPanel.Controls.Add(this.LinePropertiesChangeColor);
@@ -518,26 +518,38 @@
             this.LinePropertiesPanel.Location = new System.Drawing.Point(5, 6);
             this.LinePropertiesPanel.Margin = new System.Windows.Forms.Padding(5, 6, 5, 6);
             this.LinePropertiesPanel.Name = "LinePropertiesPanel";
-            this.LinePropertiesPanel.Size = new System.Drawing.Size(675, 621);
+            this.LinePropertiesPanel.Size = new System.Drawing.Size(666, 621);
             this.LinePropertiesPanel.TabIndex = 3;
             // 
-            // numericUpDown2
+            // LinePropertiesYCoordinate
             // 
-            this.numericUpDown2.BackColor = System.Drawing.SystemColors.ControlText;
-            this.numericUpDown2.ForeColor = System.Drawing.SystemColors.HighlightText;
-            this.numericUpDown2.Location = new System.Drawing.Point(204, 302);
-            this.numericUpDown2.Name = "numericUpDown2";
-            this.numericUpDown2.Size = new System.Drawing.Size(101, 35);
-            this.numericUpDown2.TabIndex = 34;
+            this.LinePropertiesYCoordinate.BackColor = System.Drawing.SystemColors.ControlText;
+            this.LinePropertiesYCoordinate.ForeColor = System.Drawing.SystemColors.HighlightText;
+            this.LinePropertiesYCoordinate.Location = new System.Drawing.Point(204, 302);
+            this.LinePropertiesYCoordinate.Maximum = new decimal(new int[] {
+            4096,
+            0,
+            0,
+            0});
+            this.LinePropertiesYCoordinate.Name = "LinePropertiesYCoordinate";
+            this.LinePropertiesYCoordinate.Size = new System.Drawing.Size(101, 35);
+            this.LinePropertiesYCoordinate.TabIndex = 34;
+            this.LinePropertiesYCoordinate.ValueChanged += new System.EventHandler(this.linePropertiesXOrYCoordinate_ValueChanged);
             // 
-            // numericUpDown1
+            // LinePropertiesXCoordinate
             // 
-            this.numericUpDown1.BackColor = System.Drawing.SystemColors.Desktop;
-            this.numericUpDown1.ForeColor = System.Drawing.SystemColors.HighlightText;
-            this.numericUpDown1.Location = new System.Drawing.Point(49, 302);
-            this.numericUpDown1.Name = "numericUpDown1";
-            this.numericUpDown1.Size = new System.Drawing.Size(101, 35);
-            this.numericUpDown1.TabIndex = 33;
+            this.LinePropertiesXCoordinate.BackColor = System.Drawing.SystemColors.Desktop;
+            this.LinePropertiesXCoordinate.ForeColor = System.Drawing.SystemColors.HighlightText;
+            this.LinePropertiesXCoordinate.Location = new System.Drawing.Point(49, 302);
+            this.LinePropertiesXCoordinate.Maximum = new decimal(new int[] {
+            4096,
+            0,
+            0,
+            0});
+            this.LinePropertiesXCoordinate.Name = "LinePropertiesXCoordinate";
+            this.LinePropertiesXCoordinate.Size = new System.Drawing.Size(101, 35);
+            this.LinePropertiesXCoordinate.TabIndex = 33;
+            this.LinePropertiesXCoordinate.ValueChanged += new System.EventHandler(this.linePropertiesXOrYCoordinate_ValueChanged);
             // 
             // linePropertiesStrobeSettings
             // 
@@ -690,7 +702,7 @@
             this.InformationPanel.Location = new System.Drawing.Point(5, 828);
             this.InformationPanel.Margin = new System.Windows.Forms.Padding(5, 6, 5, 6);
             this.InformationPanel.Name = "InformationPanel";
-            this.InformationPanel.Size = new System.Drawing.Size(675, 0);
+            this.InformationPanel.Size = new System.Drawing.Size(666, 0);
             this.InformationPanel.TabIndex = 19;
             // 
             // InformationPreviewModeData
@@ -1023,8 +1035,8 @@
             ((System.ComponentModel.ISupportInitialize)(this.timelineGUI)).EndInit();
             this.LinePropertiesPanel.ResumeLayout(false);
             this.LinePropertiesPanel.PerformLayout();
-            ((System.ComponentModel.ISupportInitialize)(this.numericUpDown2)).EndInit();
-            ((System.ComponentModel.ISupportInitialize)(this.numericUpDown1)).EndInit();
+            ((System.ComponentModel.ISupportInitialize)(this.LinePropertiesYCoordinate)).EndInit();
+            ((System.ComponentModel.ISupportInitialize)(this.LinePropertiesXCoordinate)).EndInit();
             this.linePropertiesStrobeSettings.ResumeLayout(false);
             this.InformationPanel.ResumeLayout(false);
             this.InformationPanel.PerformLayout();
@@ -1114,7 +1126,7 @@
         private ToolStripMenuItem laserPointsToolStripMenuItem;
         private ToolStripMenuItem previewShapesToolStripMenuItem;
         private System.ComponentModel.BackgroundWorker backgroundWorker1;
-        private NumericUpDown numericUpDown2;
-        private NumericUpDown numericUpDown1;
+        private NumericUpDown LinePropertiesYCoordinate;
+        private NumericUpDown LinePropertiesXCoordinate;
     }
 }

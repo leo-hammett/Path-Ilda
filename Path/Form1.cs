@@ -985,11 +985,11 @@ namespace Path
                 LinePropertiesPathIndexData.Text = selectedLineDynamicIndex.ToString();
 
                 //Update the colors and coordinates
-//                if (selectedPointDynamicIndex != -1) 
-  //              {
-    //                LinePropertiesXCoordinate.Text = project.dynamicPath[selectedLineDynamicIndex].GenFrameAt(mainTime).PathPoints[selectedPointDynamicIndex].X.ToString();
-      //              LinePropertiesYCoordinate.Text = project.dynamicPath[selectedLineDynamicIndex].GenFrameAt(mainTime).PathPoints[selectedPointDynamicIndex].Y.ToString();
-        //        }
+                if (selectedPointDynamicIndex != -1) 
+                {
+                    LinePropertiesXCoordinate.Value = project.dynamicPath[selectedLineDynamicIndex].GenFrameAt(mainTime).PathPoints[selectedPointDynamicIndex].X;
+                    LinePropertiesYCoordinate.Value = project.dynamicPath[selectedLineDynamicIndex].GenFrameAt(mainTime).PathPoints[selectedPointDynamicIndex].Y;
+                }
 
                 //Add the keyframes to the keyframe textbox
                 LinePropertiesKeyFramesTextBox.Items.Clear();
@@ -1019,20 +1019,6 @@ namespace Path
                 mainTime = project.dynamicPath[selectedLineDynamicIndex].KeyFrames[LinePropertiesKeyFramesTextBox.SelectedIndex].Time;
                 UpdateLineProperties();
             }
-        }
-
-        private void LinePropertiesXCoordinate_Leave(object sender, EventArgs e)
-        {
-            //try
-            //{
-            //    GetSelectedFrameWrite().PathPoints[selectedPointDynamicIndex] = new Point(Convert.ToInt32(LinePropertiesXCoordinate.Text), Convert.ToInt32(LinePropertiesYCoordinate.Text));
-            //    this.PreviewGraphics.Invalidate();
-            //}
-            //catch
-            //{
-            //
-            //}
-            //UpdateLineProperties();
         }
 
         private void PathLinePointsListBox_SelectedIndexChanged(object sender, EventArgs e)
@@ -1202,6 +1188,13 @@ namespace Path
         private void splitContainer1_Panel1_Paint(object sender, PaintEventArgs e)
         {
 
+        }
+
+        private void linePropertiesXOrYCoordinate_ValueChanged(object sender, EventArgs e)
+        {
+            GetSelectedFrameWrite().PathPoints[selectedPointDynamicIndex] = new Point(Convert.ToInt32(LinePropertiesXCoordinate.Value), Convert.ToInt32(LinePropertiesYCoordinate.Value));
+            this.PreviewGraphics.Invalidate();
+            UpdateLineProperties();
         }
     }
     #region NOT MY CODE USED FOR SAVING FILES IN A HUMAN READABLE FORMAT
