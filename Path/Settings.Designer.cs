@@ -138,8 +138,6 @@
             // 
             // numericUpDown1
             // 
-            this.numericUpDown1.BackColor = System.Drawing.SystemColors.WindowText;
-            this.numericUpDown1.ForeColor = System.Drawing.SystemColors.Window;
             this.numericUpDown1.Location = new System.Drawing.Point(209, 62);
             this.numericUpDown1.Name = "numericUpDown1";
             this.numericUpDown1.Size = new System.Drawing.Size(164, 35);
@@ -147,8 +145,6 @@
             // 
             // numericUpDown2
             // 
-            this.numericUpDown2.BackColor = System.Drawing.SystemColors.WindowText;
-            this.numericUpDown2.ForeColor = System.Drawing.SystemColors.Window;
             this.numericUpDown2.Location = new System.Drawing.Point(209, 103);
             this.numericUpDown2.Name = "numericUpDown2";
             this.numericUpDown2.Size = new System.Drawing.Size(164, 35);
