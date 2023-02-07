@@ -1,6 +1,6 @@
 ﻿namespace Path
 {
-    partial class Form1
+    partial class PathMainWindow
     {
         /// <summary>
         ///  Required designer variable.
@@ -62,6 +62,7 @@
             this.LinePropertiesXCoordinate = new System.Windows.Forms.NumericUpDown();
             this.linePropertiesStrobeSettings = new System.Windows.Forms.TabControl();
             this.linePropertiesFrameControlsPanel = new System.Windows.Forms.TabPage();
+            this.deleteShape = new System.Windows.Forms.Button();
             this.tabPage2 = new System.Windows.Forms.TabPage();
             this.PathLinePointsListBox = new System.Windows.Forms.ListBox();
             this.LinePropertiesChangeColor = new System.Windows.Forms.Button();
@@ -113,6 +114,7 @@
             ((System.ComponentModel.ISupportInitialize)(this.LinePropertiesYCoordinate)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.LinePropertiesXCoordinate)).BeginInit();
             this.linePropertiesStrobeSettings.SuspendLayout();
+            this.linePropertiesFrameControlsPanel.SuspendLayout();
             this.InformationPanel.SuspendLayout();
             this.menuStrip1.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.splitContainer1)).BeginInit();
@@ -127,7 +129,7 @@
             this.PreviewGraphics.Location = new System.Drawing.Point(9, 6);
             this.PreviewGraphics.Margin = new System.Windows.Forms.Padding(5, 6, 5, 6);
             this.PreviewGraphics.Name = "PreviewGraphics";
-            this.PreviewGraphics.Size = new System.Drawing.Size(972, 679);
+            this.PreviewGraphics.Size = new System.Drawing.Size(973, 976);
             this.PreviewGraphics.TabIndex = 0;
             this.PreviewGraphics.TabStop = false;
             this.PreviewGraphics.Paint += new System.Windows.Forms.PaintEventHandler(this.PreviewGraphics_Paint);
@@ -159,10 +161,10 @@
             this.OptionsPanel.Controls.Add(this.OptionsKPPSLabel);
             this.OptionsPanel.Controls.Add(this.OptionsTitleLabel);
             this.OptionsPanel.Controls.Add(this.OptionsFPSLabel);
-            this.OptionsPanel.Location = new System.Drawing.Point(5, 639);
+            this.OptionsPanel.Location = new System.Drawing.Point(7, 946);
             this.OptionsPanel.Margin = new System.Windows.Forms.Padding(5, 6, 5, 6);
             this.OptionsPanel.Name = "OptionsPanel";
-            this.OptionsPanel.Size = new System.Drawing.Size(666, 438);
+            this.OptionsPanel.Size = new System.Drawing.Size(689, 434);
             this.OptionsPanel.TabIndex = 1;
             // 
             // TimeLineFramesInput
@@ -222,7 +224,7 @@
             this.OptionsColorSelecterOpener.Location = new System.Drawing.Point(531, 350);
             this.OptionsColorSelecterOpener.Margin = new System.Windows.Forms.Padding(5, 6, 5, 6);
             this.OptionsColorSelecterOpener.Name = "OptionsColorSelecterOpener";
-            this.OptionsColorSelecterOpener.Size = new System.Drawing.Size(129, 40);
+            this.OptionsColorSelecterOpener.Size = new System.Drawing.Size(129, 50);
             this.OptionsColorSelecterOpener.TabIndex = 18;
             this.OptionsColorSelecterOpener.Text = "Color";
             this.OptionsColorSelecterOpener.UseVisualStyleBackColor = false;
@@ -289,16 +291,17 @@
             this.OptionsToggleProject.Location = new System.Drawing.Point(5, 256);
             this.OptionsToggleProject.Margin = new System.Windows.Forms.Padding(5, 6, 5, 6);
             this.OptionsToggleProject.Name = "OptionsToggleProject";
-            this.OptionsToggleProject.Size = new System.Drawing.Size(114, 40);
+            this.OptionsToggleProject.Size = new System.Drawing.Size(138, 40);
             this.OptionsToggleProject.TabIndex = 14;
-            this.OptionsToggleProject.Text = "Laser On?";
+            this.OptionsToggleProject.Text = "Toggle Laser";
             this.OptionsToggleProject.UseVisualStyleBackColor = false;
+            this.OptionsToggleProject.CheckedChanged += new System.EventHandler(this.OptionsToggleProject_CheckedChanged);
             // 
             // OptionsSavePathFile
             // 
             this.OptionsSavePathFile.BackColor = System.Drawing.SystemColors.ControlText;
             this.OptionsSavePathFile.ForeColor = System.Drawing.SystemColors.Control;
-            this.OptionsSavePathFile.Location = new System.Drawing.Point(214, 198);
+            this.OptionsSavePathFile.Location = new System.Drawing.Point(214, 190);
             this.OptionsSavePathFile.Margin = new System.Windows.Forms.Padding(5, 6, 5, 6);
             this.OptionsSavePathFile.Name = "OptionsSavePathFile";
             this.OptionsSavePathFile.Size = new System.Drawing.Size(199, 46);
@@ -310,7 +313,7 @@
             // 
             this.OptionsLoadPathFile.BackColor = System.Drawing.SystemColors.ControlText;
             this.OptionsLoadPathFile.ForeColor = System.Drawing.SystemColors.Control;
-            this.OptionsLoadPathFile.Location = new System.Drawing.Point(5, 198);
+            this.OptionsLoadPathFile.Location = new System.Drawing.Point(5, 190);
             this.OptionsLoadPathFile.Margin = new System.Windows.Forms.Padding(5, 6, 5, 6);
             this.OptionsLoadPathFile.Name = "OptionsLoadPathFile";
             this.OptionsLoadPathFile.Size = new System.Drawing.Size(199, 46);
@@ -322,7 +325,7 @@
             // 
             this.OptionsKPPSTextBox.BackColor = System.Drawing.SystemColors.ControlText;
             this.OptionsKPPSTextBox.ForeColor = System.Drawing.SystemColors.Control;
-            this.OptionsKPPSTextBox.Location = new System.Drawing.Point(255, 142);
+            this.OptionsKPPSTextBox.Location = new System.Drawing.Point(255, 122);
             this.OptionsKPPSTextBox.Margin = new System.Windows.Forms.Padding(5, 6, 5, 6);
             this.OptionsKPPSTextBox.Name = "OptionsKPPSTextBox";
             this.OptionsKPPSTextBox.Size = new System.Drawing.Size(246, 35);
@@ -333,7 +336,7 @@
             // 
             this.OptionsFPSTextBox.BackColor = System.Drawing.SystemColors.ControlText;
             this.OptionsFPSTextBox.ForeColor = System.Drawing.SystemColors.Control;
-            this.OptionsFPSTextBox.Location = new System.Drawing.Point(255, 84);
+            this.OptionsFPSTextBox.Location = new System.Drawing.Point(255, 68);
             this.OptionsFPSTextBox.Margin = new System.Windows.Forms.Padding(5, 6, 5, 6);
             this.OptionsFPSTextBox.Name = "OptionsFPSTextBox";
             this.OptionsFPSTextBox.Size = new System.Drawing.Size(246, 35);
@@ -344,7 +347,7 @@
             // 
             this.OptionsKPPSLabel.AutoSize = true;
             this.OptionsKPPSLabel.ForeColor = System.Drawing.SystemColors.Control;
-            this.OptionsKPPSLabel.Location = new System.Drawing.Point(5, 148);
+            this.OptionsKPPSLabel.Location = new System.Drawing.Point(5, 128);
             this.OptionsKPPSLabel.Margin = new System.Windows.Forms.Padding(5, 0, 5, 0);
             this.OptionsKPPSLabel.Name = "OptionsKPPSLabel";
             this.OptionsKPPSLabel.Size = new System.Drawing.Size(248, 30);
@@ -368,7 +371,7 @@
             // 
             this.OptionsFPSLabel.AutoSize = true;
             this.OptionsFPSLabel.ForeColor = System.Drawing.SystemColors.Control;
-            this.OptionsFPSLabel.Location = new System.Drawing.Point(5, 90);
+            this.OptionsFPSLabel.Location = new System.Drawing.Point(5, 74);
             this.OptionsFPSLabel.Margin = new System.Windows.Forms.Padding(5, 0, 5, 0);
             this.OptionsFPSLabel.Name = "OptionsFPSLabel";
             this.OptionsFPSLabel.Size = new System.Drawing.Size(244, 30);
@@ -386,10 +389,10 @@
             this.TimeLinePanel.Controls.Add(this.TimeLineNextFrame);
             this.TimeLinePanel.Controls.Add(this.TimeLineBackFrame);
             this.TimeLinePanel.Controls.Add(this.TimeLineTitleLabel);
-            this.TimeLinePanel.Location = new System.Drawing.Point(9, 697);
+            this.TimeLinePanel.Location = new System.Drawing.Point(9, 998);
             this.TimeLinePanel.Margin = new System.Windows.Forms.Padding(5, 6, 5, 6);
             this.TimeLinePanel.Name = "TimeLinePanel";
-            this.TimeLinePanel.Size = new System.Drawing.Size(972, 380);
+            this.TimeLinePanel.Size = new System.Drawing.Size(973, 380);
             this.TimeLinePanel.TabIndex = 2;
             // 
             // projectMaxTimeSelector
@@ -423,7 +426,7 @@
             this.timelineGUIHugger.Location = new System.Drawing.Point(9, 72);
             this.timelineGUIHugger.Margin = new System.Windows.Forms.Padding(5, 6, 5, 6);
             this.timelineGUIHugger.Name = "timelineGUIHugger";
-            this.timelineGUIHugger.Size = new System.Drawing.Size(954, 298);
+            this.timelineGUIHugger.Size = new System.Drawing.Size(953, 298);
             this.timelineGUIHugger.TabIndex = 5;
             // 
             // timelineGUI
@@ -431,7 +434,7 @@
             this.timelineGUI.Location = new System.Drawing.Point(0, 0);
             this.timelineGUI.Margin = new System.Windows.Forms.Padding(5, 6, 5, 6);
             this.timelineGUI.Name = "timelineGUI";
-            this.timelineGUI.Size = new System.Drawing.Size(954, 298);
+            this.timelineGUI.Size = new System.Drawing.Size(953, 298);
             this.timelineGUI.TabIndex = 5;
             this.timelineGUI.TabStop = false;
             this.timelineGUI.Paint += new System.Windows.Forms.PaintEventHandler(this.timeline_GUI_updater);
@@ -444,7 +447,7 @@
             this.TimeLinePlay.AutoSize = true;
             this.TimeLinePlay.BackColor = System.Drawing.SystemColors.ControlText;
             this.TimeLinePlay.ForeColor = System.Drawing.SystemColors.Control;
-            this.TimeLinePlay.Location = new System.Drawing.Point(410, 6);
+            this.TimeLinePlay.Location = new System.Drawing.Point(360, 6);
             this.TimeLinePlay.Margin = new System.Windows.Forms.Padding(5, 6, 5, 6);
             this.TimeLinePlay.Name = "TimeLinePlay";
             this.TimeLinePlay.Size = new System.Drawing.Size(61, 40);
@@ -456,10 +459,10 @@
             // 
             this.TimeLineNextFrame.BackColor = System.Drawing.SystemColors.ControlText;
             this.TimeLineNextFrame.ForeColor = System.Drawing.SystemColors.Control;
-            this.TimeLineNextFrame.Location = new System.Drawing.Point(481, 6);
+            this.TimeLineNextFrame.Location = new System.Drawing.Point(437, 8);
             this.TimeLineNextFrame.Margin = new System.Windows.Forms.Padding(5, 6, 5, 6);
             this.TimeLineNextFrame.Name = "TimeLineNextFrame";
-            this.TimeLineNextFrame.Size = new System.Drawing.Size(132, 40);
+            this.TimeLineNextFrame.Size = new System.Drawing.Size(81, 48);
             this.TimeLineNextFrame.TabIndex = 3;
             this.TimeLineNextFrame.Text = "Next";
             this.TimeLineNextFrame.UseVisualStyleBackColor = false;
@@ -471,7 +474,7 @@
             this.TimeLineBackFrame.Location = new System.Drawing.Point(267, 6);
             this.TimeLineBackFrame.Margin = new System.Windows.Forms.Padding(5, 6, 5, 6);
             this.TimeLineBackFrame.Name = "TimeLineBackFrame";
-            this.TimeLineBackFrame.Size = new System.Drawing.Size(132, 40);
+            this.TimeLineBackFrame.Size = new System.Drawing.Size(82, 48);
             this.TimeLineBackFrame.TabIndex = 2;
             this.TimeLineBackFrame.Text = "Back";
             this.TimeLineBackFrame.UseVisualStyleBackColor = false;
@@ -518,7 +521,7 @@
             this.LinePropertiesPanel.Location = new System.Drawing.Point(5, 6);
             this.LinePropertiesPanel.Margin = new System.Windows.Forms.Padding(5, 6, 5, 6);
             this.LinePropertiesPanel.Name = "LinePropertiesPanel";
-            this.LinePropertiesPanel.Size = new System.Drawing.Size(666, 621);
+            this.LinePropertiesPanel.Size = new System.Drawing.Size(689, 620);
             this.LinePropertiesPanel.TabIndex = 3;
             // 
             // LinePropertiesYCoordinate
@@ -526,6 +529,7 @@
             this.LinePropertiesYCoordinate.BackColor = System.Drawing.SystemColors.ControlText;
             this.LinePropertiesYCoordinate.ForeColor = System.Drawing.SystemColors.HighlightText;
             this.LinePropertiesYCoordinate.Location = new System.Drawing.Point(204, 302);
+            this.LinePropertiesYCoordinate.Margin = new System.Windows.Forms.Padding(3, 4, 3, 4);
             this.LinePropertiesYCoordinate.Maximum = new decimal(new int[] {
             4096,
             0,
@@ -540,7 +544,8 @@
             // 
             this.LinePropertiesXCoordinate.BackColor = System.Drawing.SystemColors.Desktop;
             this.LinePropertiesXCoordinate.ForeColor = System.Drawing.SystemColors.HighlightText;
-            this.LinePropertiesXCoordinate.Location = new System.Drawing.Point(49, 302);
+            this.LinePropertiesXCoordinate.Location = new System.Drawing.Point(50, 302);
+            this.LinePropertiesXCoordinate.Margin = new System.Windows.Forms.Padding(3, 4, 3, 4);
             this.LinePropertiesXCoordinate.Maximum = new decimal(new int[] {
             4096,
             0,
@@ -559,31 +564,45 @@
             this.linePropertiesStrobeSettings.Margin = new System.Windows.Forms.Padding(5, 6, 5, 6);
             this.linePropertiesStrobeSettings.Name = "linePropertiesStrobeSettings";
             this.linePropertiesStrobeSettings.SelectedIndex = 0;
-            this.linePropertiesStrobeSettings.Size = new System.Drawing.Size(639, 224);
+            this.linePropertiesStrobeSettings.Size = new System.Drawing.Size(677, 256);
             this.linePropertiesStrobeSettings.TabIndex = 32;
             // 
             // linePropertiesFrameControlsPanel
             // 
             this.linePropertiesFrameControlsPanel.BackColor = System.Drawing.SystemColors.ControlText;
+            this.linePropertiesFrameControlsPanel.Controls.Add(this.deleteShape);
             this.linePropertiesFrameControlsPanel.ForeColor = System.Drawing.SystemColors.Control;
             this.linePropertiesFrameControlsPanel.Location = new System.Drawing.Point(4, 39);
             this.linePropertiesFrameControlsPanel.Margin = new System.Windows.Forms.Padding(5, 6, 5, 6);
             this.linePropertiesFrameControlsPanel.Name = "linePropertiesFrameControlsPanel";
             this.linePropertiesFrameControlsPanel.Padding = new System.Windows.Forms.Padding(5, 6, 5, 6);
-            this.linePropertiesFrameControlsPanel.Size = new System.Drawing.Size(631, 181);
+            this.linePropertiesFrameControlsPanel.Size = new System.Drawing.Size(669, 213);
             this.linePropertiesFrameControlsPanel.TabIndex = 0;
             this.linePropertiesFrameControlsPanel.Text = "Frame Controls";
             // 
+            // deleteShape
+            // 
+            this.deleteShape.BackColor = System.Drawing.SystemColors.ControlText;
+            this.deleteShape.Location = new System.Drawing.Point(10, 12);
+            this.deleteShape.Margin = new System.Windows.Forms.Padding(5, 6, 5, 6);
+            this.deleteShape.Name = "deleteShape";
+            this.deleteShape.Size = new System.Drawing.Size(194, 46);
+            this.deleteShape.TabIndex = 0;
+            this.deleteShape.Text = "Delete Shape";
+            this.deleteShape.UseVisualStyleBackColor = false;
+            this.deleteShape.Click += new System.EventHandler(this.deleteShape_Click);
+            // 
             // tabPage2
             // 
+            this.tabPage2.BackColor = System.Drawing.Color.Black;
+            this.tabPage2.ForeColor = System.Drawing.SystemColors.Control;
             this.tabPage2.Location = new System.Drawing.Point(4, 39);
             this.tabPage2.Margin = new System.Windows.Forms.Padding(5, 6, 5, 6);
             this.tabPage2.Name = "tabPage2";
             this.tabPage2.Padding = new System.Windows.Forms.Padding(5, 6, 5, 6);
-            this.tabPage2.Size = new System.Drawing.Size(631, 181);
+            this.tabPage2.Size = new System.Drawing.Size(669, 213);
             this.tabPage2.TabIndex = 1;
             this.tabPage2.Text = "Effects";
-            this.tabPage2.UseVisualStyleBackColor = true;
             // 
             // PathLinePointsListBox
             // 
@@ -594,7 +613,7 @@
             this.PathLinePointsListBox.Location = new System.Drawing.Point(372, 96);
             this.PathLinePointsListBox.Margin = new System.Windows.Forms.Padding(5, 6, 5, 6);
             this.PathLinePointsListBox.Name = "PathLinePointsListBox";
-            this.PathLinePointsListBox.Size = new System.Drawing.Size(270, 184);
+            this.PathLinePointsListBox.Size = new System.Drawing.Size(307, 184);
             this.PathLinePointsListBox.TabIndex = 31;
             this.PathLinePointsListBox.SelectedIndexChanged += new System.EventHandler(this.PathLinePointsListBox_SelectedIndexChanged);
             // 
@@ -605,10 +624,11 @@
             this.LinePropertiesChangeColor.Location = new System.Drawing.Point(338, 296);
             this.LinePropertiesChangeColor.Margin = new System.Windows.Forms.Padding(5, 6, 5, 6);
             this.LinePropertiesChangeColor.Name = "LinePropertiesChangeColor";
-            this.LinePropertiesChangeColor.Size = new System.Drawing.Size(307, 46);
+            this.LinePropertiesChangeColor.Size = new System.Drawing.Size(345, 46);
             this.LinePropertiesChangeColor.TabIndex = 30;
             this.LinePropertiesChangeColor.Text = "Color";
             this.LinePropertiesChangeColor.UseVisualStyleBackColor = false;
+            this.LinePropertiesChangeColor.Click += new System.EventHandler(this.LinePropertiesChangeColor_Click);
             // 
             // LinePropertiesYCoordinateLabel
             // 
@@ -699,10 +719,10 @@
             this.InformationPanel.Controls.Add(this.InformationPoint2TitleLabel);
             this.InformationPanel.Controls.Add(this.InformationPoint1TitleLablel);
             this.InformationPanel.Controls.Add(this.InformationTitleLabel);
-            this.InformationPanel.Location = new System.Drawing.Point(5, 828);
+            this.InformationPanel.Location = new System.Drawing.Point(7, 632);
             this.InformationPanel.Margin = new System.Windows.Forms.Padding(5, 6, 5, 6);
             this.InformationPanel.Name = "InformationPanel";
-            this.InformationPanel.Size = new System.Drawing.Size(666, 0);
+            this.InformationPanel.Size = new System.Drawing.Size(688, 308);
             this.InformationPanel.TabIndex = 19;
             // 
             // InformationPreviewModeData
@@ -887,8 +907,8 @@
             // 
             // newPathProjectToolStripMenuItem
             // 
-            this.newPathProjectToolStripMenuItem.BackColor = System.Drawing.SystemColors.ControlText;
-            this.newPathProjectToolStripMenuItem.ForeColor = System.Drawing.SystemColors.Control;
+            this.newPathProjectToolStripMenuItem.BackColor = System.Drawing.SystemColors.Control;
+            this.newPathProjectToolStripMenuItem.ForeColor = System.Drawing.SystemColors.ControlText;
             this.newPathProjectToolStripMenuItem.Name = "newPathProjectToolStripMenuItem";
             this.newPathProjectToolStripMenuItem.Size = new System.Drawing.Size(290, 40);
             this.newPathProjectToolStripMenuItem.Text = "New Path Project";
@@ -954,8 +974,9 @@
             // sToolStripMenuItem
             // 
             this.sToolStripMenuItem.Name = "sToolStripMenuItem";
-            this.sToolStripMenuItem.Size = new System.Drawing.Size(259, 40);
+            this.sToolStripMenuItem.Size = new System.Drawing.Size(315, 40);
             this.sToolStripMenuItem.Text = "Laser Settings";
+            this.sToolStripMenuItem.Click += new System.EventHandler(this.sToolStripMenuItem_Click);
             // 
             // dACSettingsToolStripMenuItem
             // 
@@ -963,7 +984,7 @@
             this.connectToDACToolStripMenuItem,
             this.disconnectDACToolStripMenuItem});
             this.dACSettingsToolStripMenuItem.Name = "dACSettingsToolStripMenuItem";
-            this.dACSettingsToolStripMenuItem.Size = new System.Drawing.Size(259, 40);
+            this.dACSettingsToolStripMenuItem.Size = new System.Drawing.Size(315, 40);
             this.dACSettingsToolStripMenuItem.Text = "DAC Settings";
             // 
             // connectToDACToolStripMenuItem
@@ -1001,8 +1022,8 @@
             this.splitContainer1.Panel2.Controls.Add(this.LinePropertiesPanel);
             this.splitContainer1.Panel2.Controls.Add(this.InformationPanel);
             this.splitContainer1.Panel2.Controls.Add(this.OptionsPanel);
-            this.splitContainer1.Size = new System.Drawing.Size(1705, 1087);
-            this.splitContainer1.SplitterDistance = 993;
+            this.splitContainer1.Size = new System.Drawing.Size(1706, 1390);
+            this.splitContainer1.SplitterDistance = 992;
             this.splitContainer1.SplitterWidth = 7;
             this.splitContainer1.TabIndex = 21;
             this.splitContainer1.Resize += new System.EventHandler(this.PreviewGraphics_Resize);
@@ -1011,20 +1032,21 @@
             // 
             this.backgroundWorker1.DoWork += new System.ComponentModel.DoWorkEventHandler(this.backgroundWorker1_DoWork);
             // 
-            // Form1
+            // PathMainWindow
             // 
             this.AccessibleName = "Path Window";
             this.AutoScaleDimensions = new System.Drawing.SizeF(12F, 30F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.BackColor = System.Drawing.SystemColors.Desktop;
-            this.ClientSize = new System.Drawing.Size(1740, 1156);
+            this.ClientSize = new System.Drawing.Size(1740, 1458);
             this.Controls.Add(this.splitContainer1);
             this.Controls.Add(this.menuStrip1);
             this.MainMenuStrip = this.menuStrip1;
             this.Margin = new System.Windows.Forms.Padding(5, 6, 5, 6);
             this.MinimizeBox = false;
-            this.Name = "Form1";
+            this.Name = "PathMainWindow";
             this.Text = "Path";
+            this.KeyPress += new System.Windows.Forms.KeyPressEventHandler(this.Form1_KeyPress);
             ((System.ComponentModel.ISupportInitialize)(this.PreviewGraphics)).EndInit();
             this.OptionsPanel.ResumeLayout(false);
             this.OptionsPanel.PerformLayout();
@@ -1038,6 +1060,7 @@
             ((System.ComponentModel.ISupportInitialize)(this.LinePropertiesYCoordinate)).EndInit();
             ((System.ComponentModel.ISupportInitialize)(this.LinePropertiesXCoordinate)).EndInit();
             this.linePropertiesStrobeSettings.ResumeLayout(false);
+            this.linePropertiesFrameControlsPanel.ResumeLayout(false);
             this.InformationPanel.ResumeLayout(false);
             this.InformationPanel.PerformLayout();
             this.menuStrip1.ResumeLayout(false);
@@ -1128,5 +1151,6 @@
         private System.ComponentModel.BackgroundWorker backgroundWorker1;
         private NumericUpDown LinePropertiesYCoordinate;
         private NumericUpDown LinePropertiesXCoordinate;
+        private Button deleteShape;
     }
 }
