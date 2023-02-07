@@ -11,7 +11,7 @@ using System.Linq.Expressions;
 
 namespace Path
 {
-    public partial class Form1 : Form
+    public partial class PathMainWindow : Form
     {
         PathProject project = new PathProject();
         List<PathLineFrame> framePath;      //What individual frames should look like. Should hopefully be generateable from a for loop and get line at project.dynamicPath[i]
@@ -51,7 +51,7 @@ namespace Path
         LaserSettings currentLaserSettings = new LaserSettings();
 
 
-        public Form1()
+        public PathMainWindow()
         {
             InitializeComponent();
             //Initialising Variables
@@ -78,7 +78,7 @@ namespace Path
             public int kpps = 4000;       //The maximum number of points we should be sending down the dac. Mine was rated at 40KPPS but that could be a false rating at this point.
             public int maxVelocity = 15;
             public int maxAcceleration = 2;
-            public int bufferLength = 10;
+            public int dwellPoints = 10;
             public bool project = false;
         }
         List<HeliosPoint> projectToHelios(List<PathLine> dynamicPath)
@@ -1183,7 +1183,7 @@ namespace Path
                     {
                         Thread.Sleep(1);
                     }
-                    helios.writeFrame(0, 40000, 0, laserPoints.ToArray(), laserPoints.Count());
+                    helios.writeFrame(0, currentLaserSettings.kpps, 0, laserPoints.ToArray(), laserPoints.Count());
                 }
                 else
                 {
@@ -1209,12 +1209,15 @@ namespace Path
 
         private void deleteShape_Click(object sender, EventArgs e)
         {
-            project.dynamicPath.RemoveAt(selectedLineDynamicIndex);
-            ChangeTime(mainTime);
-            PreviewGraphics.Invalidate();
-            UpdateLineProperties();
-            selectedLineDynamicIndex = 0;
-            selectedPointDynamicIndex = 0;
+            if(selectedLineDynamicIndex != -1)
+            {
+                project.dynamicPath.RemoveAt(selectedLineDynamicIndex);
+                ChangeTime(mainTime);
+                PreviewGraphics.Invalidate();
+                UpdateLineProperties();
+                selectedLineDynamicIndex = 0;
+                selectedPointDynamicIndex = 0;
+            }
         }
 
         private void Form1_KeyPress(object sender, KeyPressEventArgs e)
@@ -1265,6 +1268,12 @@ namespace Path
         {
             LinePropertiesColorDialog.ShowDialog(this);
             project.dynamicPath[selectedLineDynamicIndex].GetFrameAt(mainTime).PathColor = LinePropertiesColorDialog.Color;
+        }
+
+        private void sToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            Settings settingsWindow = new Settings();
+            settingsWindow.ShowDialog();
         }
     }
     #region NOT MY CODE USED FOR SAVING FILES IN A HUMAN READABLE FORMAT
