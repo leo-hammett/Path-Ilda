@@ -79,7 +79,7 @@ namespace Path
             public int maxVelocity = 15;
             public int maxAcceleration = 2;
             public int bufferLength = 10;
-            public bool project = true;
+            public bool project = false;
         }
         List<HeliosPoint> projectToHelios(List<PathLine> dynamicPath)
         {
@@ -199,7 +199,7 @@ namespace Path
                         }//This if statement basically travels the line either forewards or backwards.
                         else
                         {
-                            PathLineFrame frame = framePath[currentPoint.ShapeListIndex];
+                            PathLineFrame frame = new PathLineFrame(framePath[currentPoint.ShapeListIndex]);
                             frame.Reverse();
                             linesToGenPointsFor.Enqueue(frame);
                             nextIndex = nextIndex - 1;    //Subtract one because the index below isnt affected. Like because the line is reversed yk
@@ -359,7 +359,7 @@ namespace Path
             }
             public List<LinePoint> GenKeyPoints(bool middle = false)
             {
-                List<LinePoint> KeyPoints= new List<LinePoint>();
+                List<LinePoint> KeyPoints = new List<LinePoint>();
 
                 for (int i = 0; i < PathPoints.Count - 1; i++)
                 {
@@ -384,10 +384,10 @@ namespace Path
             } //This is a function to work out the properties of a nonkeyframe. Iz guud.
             public PathLineFrame(int Time, Color PathColor, List<Point> PathPoints, int ListIndex)
             {
-                time = Time;
-                pathColor = PathColor;
-                pathPoints = PathPoints;
-                listIndex = ListIndex;
+                this.time = Time;
+                this.pathColor = PathColor;
+                this.pathPoints = PathPoints;
+                this.listIndex = ListIndex;
             }   //Basic constructor
             public PathLineFrame(int Time, Color PathColor, Point Point1, Point Point2, int ListIndex)
             {
@@ -409,7 +409,7 @@ namespace Path
             }   //Easy Constructor
             public PathLineFrame()  //Json Constructor
             {
-                //Just dont use this I beg
+                //Just dont use this
             }
             public PathLineFrame(bool hidden, Point Point1, Point Point2)
             {
@@ -463,7 +463,11 @@ namespace Path
                 time = frame.Time;
                 listIndex = frame.ListIndex;
                 pathColor = frame.PathColor;
-                pathPoints = new List<Point>(frame.PathPoints);
+                pathPoints = new List<Point>();
+                foreach(Point point in frame.PathPoints)
+                {
+                    pathPoints.Add(point);
+                }
             }
         }
         class PathLine
@@ -512,7 +516,7 @@ namespace Path
                 int frameBeforeIndex = -1;
                 int frameAfterIndex = -1;
                 PathLineFrame newFrame;
-                for (int i = 0; i < keyFrames.Count; i++)
+                for (int i = 0; i < keyFrames.Count; i++)       //DO A BINARY SEARCH HERE
                 {
                     if (keyFrames[i].Time == frameTime)          //Checks to see if the time lands on a keyframe - This is merely a performance thing
                     {
@@ -988,8 +992,9 @@ namespace Path
                 //Update the colors and coordinates
                 if (selectedPointDynamicIndex != -1) 
                 {
-                    LinePropertiesXCoordinate.Value = project.dynamicPath[selectedLineDynamicIndex].GenFrameAt(mainTime).PathPoints[selectedPointDynamicIndex].X;
-                    LinePropertiesYCoordinate.Value = project.dynamicPath[selectedLineDynamicIndex].GenFrameAt(mainTime).PathPoints[selectedPointDynamicIndex].Y;
+                    Point tempPoint = project.dynamicPath[selectedLineDynamicIndex].GenFrameAt(mainTime).PathPoints[selectedPointDynamicIndex];
+                    LinePropertiesXCoordinate.Value = tempPoint.X;
+                    LinePropertiesYCoordinate.Value = tempPoint.Y;
                 }
 
                 //Add the keyframes to the keyframe textbox
@@ -1008,6 +1013,8 @@ namespace Path
         }
         void ChangeTime(int newTime)
         {
+            selectedLineDynamicIndex = 0;
+            selectedPointDynamicIndex = -1;
             mainTime = newTime;
             UpdateLineProperties();
             timelineGUI.Invalidate();
@@ -1058,14 +1065,14 @@ namespace Path
         private void timeline_GUI_updater(object sender, PaintEventArgs e)
         {
             timelineGUI.Size = new Size(Convert.ToInt32((float)projectMaxTimeSelector.Value*currentTimelineSettings.PixelsPerSecond + 2*currentTimelineSettings.LeftMargin)
-                ,Convert.ToInt32(currentTimelineSettings.TopMargin*2 + currentTimelineSettings.PixelsPerShape*(project.dynamicPath.Count)));
+                ,Convert.ToInt32(currentTimelineSettings.TopMargin*2 + currentTimelineSettings.PixelsPerShape*(project.dynamicPath.Count)) + 10);
             int seconds = 0;
             Pen thinWhitePen = new Pen(Color.White);
             float currentTimeX = currentTimelineSettings.LeftMargin + (mainTime + project.fps) * (currentTimelineSettings.PixelsPerSecond / project.fps);
             e.Graphics.DrawLine(thinWhitePen, new PointF(currentTimeX, currentTimelineSettings.PixelsPerShape), new PointF(currentTimeX, timelineGUI.Size.Height));
             for (float horizontalPixelsUsed = currentTimelineSettings.LeftMargin; horizontalPixelsUsed < timelineGUI.Size.Width; horizontalPixelsUsed += currentTimelineSettings.PixelsPerSecond)
             {
-                e.Graphics.DrawString(seconds.ToString(), currentTimelineSettings.SecondsFont, new SolidBrush(Color.White), new PointF(horizontalPixelsUsed - ((int)((currentTimelineSettings.SecondsFont.Size * seconds.ToString().Count()) / 2)),currentTimelineSettings.TopMargin + timelineGUIHugger.VerticalScroll.Value));
+                e.Graphics.DrawString((seconds-1).ToString(), currentTimelineSettings.SecondsFont, new SolidBrush(Color.White), new PointF(horizontalPixelsUsed - ((int)((currentTimelineSettings.SecondsFont.Size * seconds.ToString().Count()) / 2)),currentTimelineSettings.TopMargin + timelineGUIHugger.VerticalScroll.Value));
                 seconds++;
             }
             int shapeNumber = 1; //Skip the first zero for aesthetics.
@@ -1170,7 +1177,7 @@ namespace Path
         {
             while (true)
             {
-                if (true)
+                if (currentLaserSettings.project)
                 {
                     while (helios.getStatus(0) == 0)
                     {
@@ -1180,8 +1187,7 @@ namespace Path
                 }
                 else
                 {
-                    Thread.Sleep(100);
-                    helios.closeDevices();
+                    Thread.Sleep(100); 
                 }
             }
         }
@@ -1193,9 +1199,72 @@ namespace Path
 
         private void linePropertiesXOrYCoordinate_ValueChanged(object sender, EventArgs e)
         {
-            GetSelectedFrameWrite().PathPoints[selectedPointDynamicIndex] = new Point(Convert.ToInt32(LinePropertiesXCoordinate.Value), Convert.ToInt32(LinePropertiesYCoordinate.Value));
-            this.PreviewGraphics.Invalidate();
+            if(GetSelectedFrameWrite().PathPoints.Count > (selectedPointDynamicIndex))
+            {
+                GetSelectedFrameWrite().PathPoints[selectedPointDynamicIndex] = new Point(Convert.ToInt32(LinePropertiesXCoordinate.Value), Convert.ToInt32(LinePropertiesYCoordinate.Value));
+                this.PreviewGraphics.Invalidate();
+                UpdateLineProperties();
+            }
+        }
+
+        private void deleteShape_Click(object sender, EventArgs e)
+        {
+            project.dynamicPath.RemoveAt(selectedLineDynamicIndex);
+            ChangeTime(mainTime);
+            PreviewGraphics.Invalidate();
             UpdateLineProperties();
+            selectedLineDynamicIndex = 0;
+            selectedPointDynamicIndex = 0;
+        }
+
+        private void Form1_KeyPress(object sender, KeyPressEventArgs e)
+        {
+            if(e.KeyChar == ' ')
+            {
+
+                currentLaserSettings.project = false;
+                HeliosPoint[] blackFrame = { new HeliosPoint() };
+                blackFrame[0].x = (ushort)(0x000);
+                blackFrame[0].y = (ushort)(0x000);
+                blackFrame[0].r = (byte)(0x00);
+                blackFrame[0].g = (byte)(0x00);
+                blackFrame[0].b = (byte)(0x00);
+                blackFrame[0].i = (byte)(0x00);
+                helios.writeFrame(0,currentLaserSettings.kpps,1,blackFrame, 1);
+                OptionsToggleProject.Checked = false;
+            }
+            if (e.KeyChar == 'p')
+            {
+                PreviewGraphics.Invalidate();
+                currentLaserSettings.project = true;
+            }
+        }
+
+        private void OptionsToggleProject_CheckedChanged(object sender, EventArgs e)
+        {
+            if (OptionsToggleProject.Checked)
+            {
+                PreviewGraphics.Invalidate();
+                currentLaserSettings.project = true;
+            }
+            else
+            {
+                currentLaserSettings.project = false;
+                HeliosPoint[] blackFrame = { new HeliosPoint() };
+                blackFrame[0].x = (ushort)(0x000);
+                blackFrame[0].y = (ushort)(0x000);
+                blackFrame[0].r = (byte)(0x00);
+                blackFrame[0].g = (byte)(0x00);
+                blackFrame[0].b = (byte)(0x00);
+                blackFrame[0].i = (byte)(0x00);
+                helios.writeFrame(0, currentLaserSettings.kpps, 1, blackFrame, 1);
+            }
+        }
+
+        private void LinePropertiesChangeColor_Click(object sender, EventArgs e)
+        {
+            LinePropertiesColorDialog.ShowDialog(this);
+            project.dynamicPath[selectedLineDynamicIndex].GetFrameAt(mainTime).PathColor = LinePropertiesColorDialog.Color;
         }
     }
     #region NOT MY CODE USED FOR SAVING FILES IN A HUMAN READABLE FORMAT
