@@ -27,6 +27,9 @@ namespace Path
 
         Point closestPoint;
 
+        bool currentlyPlaying = false;
+
+
         int selectedLineDynamicIndex = 0;
         PathLineFrame selectedFrameReadOnly;
         int selectedPointDynamicIndex = -1;
@@ -41,14 +44,14 @@ namespace Path
         bool showLaser = false; //THIS IS ACTUALLY A SAFETY THINGYMIGGY SO DONT SET THIS TO TRUE UNLESS YOU ACC MEAN IT. CHILDRENS EYES ARE AT STEAK.
 
         //Timeline GUI variables
-        TimelineSettings currentTimelineSettings;
+        public TimelineSettings currentTimelineSettings;
         LinePoint timelineClosestPoint;
         List<LinePoint> TimelineDots = new List<LinePoint>();
 
         //Helios Laser management variables
         public HeliosDac helios = new HeliosDac();
         List<HeliosPoint> heliosLaserPoints = new List<HeliosPoint>();
-        LaserSettings currentLaserSettings = new LaserSettings();
+        public LaserSettings currentLaserSettings = new LaserSettings();
 
 
         public PathMainWindow()
@@ -71,15 +74,22 @@ namespace Path
 
             bool showLaser = false; //THIS IS ACTUALLY A SAFETY THINGYMIGGY SO DONT SET THIS TO TRUE UNLESS YOU ACC MEAN IT. CHILDRENS EYES ARE AT STEAK.
 
+            public float maxtimeSeconds = 25;
+
             public int fps = 30;        //The number of frames per second (to get time in seconds divide time by fps)
         }
-        class LaserSettings
+        public class LaserSettings
         {
             public int kpps = 4000;       //The maximum number of points we should be sending down the dac. Mine was rated at 40KPPS but that could be a false rating at this point.
             public int maxVelocity = 15;
             public int maxAcceleration = 2;
+            public int bufferLength = 10;
             public int dwellPoints = 10;
             public bool project = false;
+            public LaserSettings()
+            {
+
+            }
         }
         List<HeliosPoint> projectToHelios(List<PathLine> dynamicPath)
         {
@@ -960,51 +970,54 @@ namespace Path
         }
         void UpdateLineProperties()
         {
-            timelineGUI.Invalidate();
-            //Select PathLineFrame
-            if (project.dynamicPath.Count != 0)
+            if (!currentlyPlaying)
             {
-                //Make sure all indexes are correct
-                if (selectedLineDynamicIndex > project.dynamicPath.Count)
+                timelineGUI.Invalidate();
+                //Select PathLineFrame
+                if (project.dynamicPath.Count != 0)
                 {
-                    selectedLineDynamicIndex = 0;
-                    selectedPointDynamicIndex = 0;
-                }
-                selectedFrameReadOnly = project.dynamicPath[selectedLineDynamicIndex].GenFrameAt(mainTime); //Self updating
-                if (selectedPointDynamicIndex > selectedFrameReadOnly.PathPoints.Count)
-                {
-                    selectedPointDynamicIndex = 0;
-                }
-                //selectedLineDynamicIndex = needs to be selected via the GUI or maybe a button at some point.
-                selectedFrameReadOnly = project.dynamicPath[selectedLineDynamicIndex].GenFrameAt(mainTime); //Self updating
-                //selectedPointDynamicIndex = must be changed via a specific function
-                //Add to the points textbox
-                PathLinePointsListBox.Items.Clear();
-                for (int i = 0; i < selectedFrameReadOnly.PathPoints.Count; i++)
-                {
-                    PathLinePointsListBox.Items.Add(selectedFrameReadOnly.PathPoints[i].ToString());
-                }
-                //PathLinePointsListBox.SelectedItem = selectedFrameReadOnly.PathPoints[selectedPointDynamicIndex].ToString();
-                //Line properties title
-                LinePropertiesTitle.Text = "Line Properties: " + project.dynamicPath[selectedLineDynamicIndex].Name;
-                LinePropertiesPathIndexData.Text = selectedLineDynamicIndex.ToString();
+                    //Make sure all indexes are correct
+                    if (selectedLineDynamicIndex > project.dynamicPath.Count)
+                    {
+                        selectedLineDynamicIndex = 0;
+                        selectedPointDynamicIndex = 0;
+                    }
+                    selectedFrameReadOnly = project.dynamicPath[selectedLineDynamicIndex].GenFrameAt(mainTime); //Self updating
+                    if (selectedPointDynamicIndex > selectedFrameReadOnly.PathPoints.Count)
+                    {
+                        selectedPointDynamicIndex = 0;
+                    }
+                    //selectedLineDynamicIndex = needs to be selected via the GUI or maybe a button at some point.
+                    selectedFrameReadOnly = project.dynamicPath[selectedLineDynamicIndex].GenFrameAt(mainTime); //Self updating
+                                                                                                                //selectedPointDynamicIndex = must be changed via a specific function
+                                                                                                                //Add to the points textbox
+                    PathLinePointsListBox.Items.Clear();
+                    for (int i = 0; i < selectedFrameReadOnly.PathPoints.Count; i++)
+                    {
+                        PathLinePointsListBox.Items.Add(selectedFrameReadOnly.PathPoints[i].ToString());
+                    }
+                    //PathLinePointsListBox.SelectedItem = selectedFrameReadOnly.PathPoints[selectedPointDynamicIndex].ToString();
+                    //Line properties title
+                    LinePropertiesTitle.Text = "Line Properties: " + project.dynamicPath[selectedLineDynamicIndex].Name;
+                    LinePropertiesPathIndexData.Text = selectedLineDynamicIndex.ToString();
 
-                //Update the colors and coordinates
-                if (selectedPointDynamicIndex != -1) 
-                {
-                    Point tempPoint = project.dynamicPath[selectedLineDynamicIndex].GenFrameAt(mainTime).PathPoints[selectedPointDynamicIndex];
-                    LinePropertiesXCoordinate.Value = tempPoint.X;
-                    LinePropertiesYCoordinate.Value = tempPoint.Y;
-                }
+                    //Update the colors and coordinates
+                    if (selectedPointDynamicIndex != -1)
+                    {
+                        Point tempPoint = project.dynamicPath[selectedLineDynamicIndex].GenFrameAt(mainTime).PathPoints[selectedPointDynamicIndex];
+                        LinePropertiesXCoordinate.Value = tempPoint.X;
+                        LinePropertiesYCoordinate.Value = tempPoint.Y;
+                    }
 
-                //Add the keyframes to the keyframe textbox
-                LinePropertiesKeyFramesTextBox.Items.Clear();
-                for (int i = 0; i < project.dynamicPath[selectedLineDynamicIndex].KeyFrames.Count; i++)
-                {
-                    LinePropertiesKeyFramesTextBox.Items.Add(project.dynamicPath[selectedLineDynamicIndex].KeyFrames[i].Time);
+                    //Add the keyframes to the keyframe textbox
+                    LinePropertiesKeyFramesTextBox.Items.Clear();
+                    for (int i = 0; i < project.dynamicPath[selectedLineDynamicIndex].KeyFrames.Count; i++)
+                    {
+                        LinePropertiesKeyFramesTextBox.Items.Add(project.dynamicPath[selectedLineDynamicIndex].KeyFrames[i].Time);
+                    }
+                    //LinePropertiesKeyFramesTextBox.SelectedItem = mainTime;
+                    LinePropertiesChangeColor.BackColor = project.dynamicPath[selectedLineDynamicIndex].GenFrameAt(mainTime).PathColor;
                 }
-                //LinePropertiesKeyFramesTextBox.SelectedItem = mainTime;
-                LinePropertiesChangeColor.BackColor = project.dynamicPath[selectedLineDynamicIndex].GenFrameAt(mainTime).PathColor;
             }
         }
         PathLineFrame GetSelectedFrameWrite()
@@ -1037,7 +1050,7 @@ namespace Path
                 UpdateLineProperties();
             }
         }
-        class TimelineSettings
+        public class TimelineSettings
         {
             public float PixelsPerSecond = 20;
             public float LeftMargin = 10;
@@ -1060,11 +1073,15 @@ namespace Path
             {
                 return this.LeftMargin + (frameTime) * (this.PixelsPerSecond / fps) + this.PixelsPerSecond;
             }
+            public TimelineSettings()
+            {
+                //JSON fies
+            }
         }
 
         private void timeline_GUI_updater(object sender, PaintEventArgs e)
         {
-            timelineGUI.Size = new Size(Convert.ToInt32((float)projectMaxTimeSelector.Value*currentTimelineSettings.PixelsPerSecond + 2*currentTimelineSettings.LeftMargin)
+            timelineGUI.Size = new Size(Convert.ToInt32((float)project.maxtimeSeconds*currentTimelineSettings.PixelsPerSecond + 2*currentTimelineSettings.LeftMargin)
                 ,Convert.ToInt32(currentTimelineSettings.TopMargin*2 + currentTimelineSettings.PixelsPerShape*(project.dynamicPath.Count)) + 10);
             int seconds = 0;
             Pen thinWhitePen = new Pen(Color.White);
@@ -1273,7 +1290,64 @@ namespace Path
         private void sToolStripMenuItem_Click(object sender, EventArgs e)
         {
             Settings settingsWindow = new Settings();
-            settingsWindow.ShowDialog();
+            settingsWindow.Show();
+            try
+            {
+                currentLaserSettings = JsonSerialization.ReadFromJsonFile<LaserSettings>(@"//CurrentLaserSettings.Config");
+                currentTimelineSettings = JsonSerialization.ReadFromJsonFile<TimelineSettings>(@"//CurrentTimelineSettings.Config");
+            }
+            catch
+            {
+
+            }
+        }
+
+        private void backgroundWorker2_DoWork(object sender, System.ComponentModel.DoWorkEventArgs e)
+        {
+            int sleepTime = 10;
+            float timeIncrement = (sleepTime / 1000f) * project.fps;
+            float preciseTime = mainTime;
+            while (currentlyPlaying)
+            {
+                Thread.Sleep(sleepTime);
+                preciseTime += timeIncrement;
+                //Change time method without updating line properties
+                selectedPointDynamicIndex = -1;
+                mainTime = Convert.ToInt32(preciseTime);
+                timelineGUI.Invalidate();
+                PreviewGraphics.Invalidate();
+                if(mainTime > project.maxtimeSeconds * project.fps)
+                {
+                    selectedPointDynamicIndex = -1;
+                    mainTime = Convert.ToInt32(0);
+                    preciseTime = 0;    //This gave me hella headaches
+                    timelineGUI.Invalidate();
+                    PreviewGraphics.Invalidate();
+                }
+            }
+            if (!currentlyPlaying)
+            {
+                backgroundWorker2.Dispose();
+            }
+            return;
+        }
+
+        private void projectMaxTimeSelector_ValueChanged(object sender, EventArgs e)
+        {
+            project.maxtimeSeconds = (float)projectMaxTimeSelector.Value;
+        }
+
+        private void TimeLinePlay_CheckedChanged(object sender, EventArgs e)
+        {
+            currentlyPlaying = TimeLinePlay.Checked;
+            if (!currentlyPlaying)
+            {
+                backgroundWorker2.Dispose();
+            }
+            else
+            {
+                backgroundWorker2.RunWorkerAsync();
+            }
         }
     }
     #region NOT MY CODE USED FOR SAVING FILES IN A HUMAN READABLE FORMAT
