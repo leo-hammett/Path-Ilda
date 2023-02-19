@@ -34,14 +34,14 @@ namespace Path
         PathLineFrame selectedFrameReadOnly;
         int selectedPointDynamicIndex = -1;
 
-        Queue<PathLineFrame> laserFrame;    //This is a step on the way for making laser points.
+        Queue<PathLineFrame> laserTraversalPath;  //Used for converting frames into a path we can make projections for.
         List<HeliosPoint> laserPoints = new List<HeliosPoint>();
 
         bool showCircles = false;
         bool showLines = false;
         bool mouseDown = false;
 
-        bool showLaser = false; //THIS IS ACTUALLY A SAFETY THINGYMIGGY SO DONT SET THIS TO TRUE UNLESS YOU ACC MEAN IT. CHILDRENS EYES ARE AT STEAK.
+        bool showLaser = false; //Important variable for safety measures. When 'true' the laser is on which is a danger to eyes. 
 
         //Timeline GUI variables
         public TimelineSettings currentTimelineSettings;
@@ -196,7 +196,7 @@ namespace Path
                 currentPoint = pointsToTraverse[0];
                 //Travels to the next line
                 linesToGenPointsFor.Enqueue(framePath[currentPoint.ShapeListIndex]);
-                int nextIndex = pointsToTraverse.IndexOf(currentPoint);//Not add one because current point is removed
+                int nextIndex = pointsToTraverse.IndexOf(currentPoint);  //Not add one because current point is removed.
                 pointsToTraverse.Remove(currentPoint);
                 currentPoint = pointsToTraverse[nextIndex];
                 //This if statement basically travels the line either forewards or backwards.
@@ -204,23 +204,24 @@ namespace Path
 
                 while (pointsToTraverse.Count > 0)  //Start the while loop after drawing the first line.
                 {
-                    nextPoint = new LinePoint(-1, -1, new Point(100000, 100000), false);    //Reset next point to be hella far away //Here we are settign the ideal closest point.
+                    nextPoint = new LinePoint(-1, -1, new Point(0x7FFFFFFF, 0x7FFFFFFF), false);  //Reset next point to be infinitely far away //Here we are setting the ideal closest point.
                     foreach (LinePoint point in pointsToTraverse)
                     {
                         if (getDistance(point.Location, currentPoint.Location) < getDistance(nextPoint.Location, currentPoint.Location))   //This point closer to the goal than the other point
                         {
-                            nextPoint = point;
+                            nextPoint = point; //Closest point = the closer point
                         }
-                    }   //Find where to travel to (yes its the most basic path traversal heuristic but it works quite well when things are simple,
+                    }   //Find where to travel to (yes it's the most basic path traversal heuristic but it works quite well when things are simple),
                         //I would do a more complicated one but the points need to be met in certain ways.
                     linesToGenPointsFor.Enqueue(new PathLineFrame(true, currentPoint.Location, nextPoint.Location));
-                    nextIndex = pointsToTraverse.IndexOf(nextPoint);    //Needs it to remove the other part of the line. Could have done a for loop for each line to be honest, might be a piece of improvement for the future.
+                    nextIndex = pointsToTraverse.IndexOf(nextPoint);  //Needs it to remove the other part of the line. Could have done a for loop for each line to be honest, might be a piece of improvement for the future.
                     pointsToTraverse.Remove(nextPoint);  //And remove the point youve just run away from, you needa remove two points per line/while loop.
-                                                         //Its next point that gets removed as this has just been traverrsed
-                    currentPoint = nextPoint;   //Travel between two lines (the laser acc has to do this)
+                                                         //Its next point that gets removed as this has just been traversed
+                    currentPoint = nextPoint;
+                  //Travel between two lines (the laser acc has to do this)
                     if (pointsToTraverse.Count > 0)
                     {
-                        if (currentPoint.IsStart)   //If yes travel the line then remove the points
+                        if (currentPoint.IsStart)  //If yes travel the line then remove the points
                         {
                             linesToGenPointsFor.Enqueue(framePath[currentPoint.ShapeListIndex]);
                             //Index already set above
@@ -230,7 +231,7 @@ namespace Path
                             PathLineFrame frame = new PathLineFrame(framePath[currentPoint.ShapeListIndex]);
                             frame.Reverse();
                             linesToGenPointsFor.Enqueue(frame);
-                            nextIndex = nextIndex - 1;    //Subtract one because the index below isnt affected. Like because the line is reversed yk
+                            nextIndex = nextIndex - 1;  //Subtract one because the index below isnt affected. Like because the line is reversed yk
                         }
                         currentPoint = new LinePoint(pointsToTraverse[nextIndex]);
                         pointsToTraverse.Remove(pointsToTraverse[nextIndex]);
@@ -745,9 +746,9 @@ namespace Path
             }
             InformationFrameListCountInfo.Text = framePath.Count().ToString();
 
-            laserFrame = genShapeLaserPath(framePath);  //Literally generates the laser Path
+            laserTraversalPath = genShapeLaserPath(framePath);  //Literally generates the laser Path
             laserPoints.Clear();
-            foreach(PathLineFrame laserLine in laserFrame)
+            foreach(PathLineFrame laserLine in laserTraversalPath)
             {
                 if (laserPathToolStripMenuItem.Checked)
                 {
