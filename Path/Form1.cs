@@ -81,21 +81,15 @@ namespace Path
             public int maxAcceleration = 2;  //The fastest rate of change the laser can travel.
             public int dwellPoints = 10;  //The amount of time the laser waits at the end of a line. This is a quality improver.
             public bool showLaser = false; //Important variable for safety measures. When 'true' the laser is on which is a danger to eyes. 
-            public LaserSettings()
+            public LaserSettings()  //JSON constructor.
             {
 
             }
         }
-        List<HeliosPoint> projectToHelios(List<PathLine> dynamicPath)
-        {
-            List<HeliosPoint> heliosLaserPoints = dynamicPath[0].GenFrameAt(mainTime).GenLaserPoints(currentLaserSettings);
-
-            return heliosLaserPoints;
-        }
         Point ConvertToHeliosCoords(Point Original, bool backwards = false)
         {
-            Point returnConverted;
-            float Scale = 4095 / PreviewGraphics.Size.Width;    //This assumes preview graphics is square, I intend to make this bit such that the projection range is resizeable.
+            Point returnConverted;  //This transaltes all the laser coordinates onto a single map to ensure consistency when resizing images.
+            float Scale = 4095 / PreviewGraphics.Size.Width;  //This assumes preview graphics is square, I intend to make this bit such that the projection range is resizeable.
             if (!backwards)
             {
                 returnConverted = new Point((int)(Original.X * Scale),(int)(Original.Y * Scale));
@@ -104,7 +98,7 @@ namespace Path
             {
                 returnConverted =  new Point((int)(Original.X / Scale), (int)(Original.Y / Scale));
             }
-            if(returnConverted.X > 4095)
+            if(returnConverted.X > 4095)  //Checks to make sure no points are outside the laser area.
             {
                 returnConverted.X = 4095;
             }
@@ -116,7 +110,7 @@ namespace Path
             {
                 returnConverted.Y = 4095;
             }
-            else if (returnConverted.Y < 0) //Checks to make sure no points are outside the laser area
+            else if (returnConverted.Y < 0)
             {
                 returnConverted.Y = 0;
             }
@@ -164,28 +158,18 @@ namespace Path
 
             return returnPoints;
         }         //Beginning of my optimising pathalgorithm
-        void updateKeyPointInfo()
-        {
-            for(int i = 0; i < project.dynamicPath.Count; i++)
-            {
-                for(int j = 0; j < project.dynamicPath[i].KeyFrames.Count; j++)
-                {
-                    MessageBox.Show(project.dynamicPath[i].KeyFrames[j].Time.ToString());
-                }
-            }
-        }
         Queue<PathLineFrame> genShapeLaserPath(List<PathLineFrame> framePath)
         {
             List<LinePoint> pointsToTraverse = new List<LinePoint>();
-            foreach(PathLineFrame line in framePath)
+            foreach(PathLineFrame line in framePath)  //Gets all the points required in order to traverse.
             {
                 pointsToTraverse.Add(new LinePoint(framePath.IndexOf(line), -1, line.PathPoints[0], false, true));
                 pointsToTraverse.Add(new LinePoint(framePath.IndexOf(line), -1, line.PathPoints[^1], false, false));
             }
-            Queue<PathLineFrame> linesToGenPointsFor = new Queue<PathLineFrame>();
-            LinePoint currentPoint;
-            LinePoint nextPoint;
-            if (pointsToTraverse.Count > 1 && (pointsToTraverse.Count % 2 == 0))
+            Queue<PathLineFrame> linesToGenPointsFor = new Queue<PathLineFrame>();  //Setting up variables.
+            LinePoint currentPoint;  //Where we are.
+            LinePoint nextPoint;  //Where we want to go.
+            if (pointsToTraverse.Count > 1 && (pointsToTraverse.Count % 2 == 0))  //If we are in a position where there is a need to project.
             {
                 currentPoint = pointsToTraverse[0];
                 //Travels to the next line
@@ -830,10 +814,6 @@ namespace Path
                 {
 
                 }
-            }
-            if(currentLaserSettings.)
-            {
-                //ADD IN THE PROJECTION CODE HERE
             }
         }
         private void PreviewGraphics_MouseDown(object sender, MouseEventArgs e)                         //MOUSE MOVEMENT
