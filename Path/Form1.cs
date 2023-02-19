@@ -14,12 +14,12 @@ namespace Path
     public partial class PathMainWindow : Form
     {
         PathProject project = new PathProject();
-        List<PathLineFrame> framePath;      //What individual frames should look like. Should hopefully be generateable from a for loop and get line at project.dynamicPath[i]
-        int framePathTime = -1;                  //Gives the time the framePath is generated for
+        List<PathLineFrame> framePath;  //What individual frames should look like. Should hopefully be generateable from a for loop and get line at project.dynamicPath[i]
+        int framePathTime = -1;  //Gives the time the framePath is generated for
 
-        int mainTime = 0;       //The time in frames that the system is at
+        int mainTime = 0;  //The time in frames that the system is at
 
-        Point mouseLastLocation;   //If set to -1,-1 no line preview should be made - Saving where the mouse went down
+        Point mouseLastLocation;  //If set to -1,-1 no line preview should be made - Saving where the mouse went down
         Point timelineMouseLastLocation;
 
         List<LinePoint> closestPoints = new List<LinePoint>();
@@ -39,9 +39,7 @@ namespace Path
 
         bool showCircles = false;
         bool showLines = false;
-        bool mouseDown = false;
-
-        bool showLaser = false; //Important variable for safety measures. When 'true' the laser is on which is a danger to eyes. 
+        bool mouseDown = false; 
 
         //Timeline GUI variables
         public TimelineSettings currentTimelineSettings;
@@ -70,22 +68,19 @@ namespace Path
         }
         class PathProject
         {
-            public List<PathLine> dynamicPath = new List<PathLine>();         //The highest level
-
-            bool showLaser = false; //THIS IS ACTUALLY A SAFETY THINGYMIGGY SO DONT SET THIS TO TRUE UNLESS YOU ACC MEAN IT. CHILDRENS EYES ARE AT STEAK.
+            public List<PathLine> dynamicPath = new List<PathLine>(); //The whole animation, all of the shapes etc.
 
             public float maxtimeSeconds = 25;
 
-            public int fps = 30;        //The number of frames per second (to get time in seconds divide time by fps)
+            public int fps = 30; //The number of frames per second (to obtain time in seconds divide time by fps)
         }
         public class LaserSettings
         {
-            public int kpps = 4000;       //The maximum number of points we should be sending down the dac. Mine was rated at 40KPPS but that could be a false rating at this point.
-            public int maxVelocity = 15;
-            public int maxAcceleration = 2;
-            public int bufferLength = 10;
-            public int dwellPoints = 10;
-            public bool project = false;
+            public int kpps = 30000;  //The amount of points per second the laser can travel across.
+            public int maxVelocity = 15;  //The fastest speed the laser can travel.
+            public int maxAcceleration = 2;  //The fastest rate of change the laser can travel.
+            public int dwellPoints = 10;  //The amount of time the laser waits at the end of a line. This is a quality improver.
+            public bool showLaser = false; //Important variable for safety measures. When 'true' the laser is on which is a danger to eyes. 
             public LaserSettings()
             {
 
@@ -97,7 +92,6 @@ namespace Path
 
             return heliosLaserPoints;
         }
-
         Point ConvertToHeliosCoords(Point Original, bool backwards = false)
         {
             Point returnConverted;
@@ -132,7 +126,7 @@ namespace Path
         {
             return Math.Sqrt(Math.Pow(point1.X - point2.X, 2) + Math.Pow(point1.Y - point2.Y,2));
         }
-        //not workin vvv
+        //not working vvv
         List<HeliosPoint> travelBetweenPoints(PointF zeroPoint, PointF lastPoint, PointF currentVelocity, PointF endVelocity, int maxVelocity, int maxAcceleration)
         {
             HeliosPoint currentPoint;
@@ -837,7 +831,7 @@ namespace Path
 
                 }
             }
-            if(currentLaserSettings.project)
+            if(currentLaserSettings.)
             {
                 //ADD IN THE PROJECTION CODE HERE
             }
@@ -1254,7 +1248,7 @@ namespace Path
         {
             while (true)
             {
-                if (currentLaserSettings.project)
+                if (currentLaserSettings.showLaser)
                 {
                     while (helios.getStatus(0) == 0)
                     {
@@ -1302,7 +1296,7 @@ namespace Path
             if(e.KeyChar == ' ')
             {
 
-                currentLaserSettings.project = false;
+                currentLaserSettings.showLaser = false;
                 HeliosPoint[] blackFrame = { new HeliosPoint() };
                 blackFrame[0].x = (ushort)(0x000);
                 blackFrame[0].y = (ushort)(0x000);
@@ -1316,7 +1310,7 @@ namespace Path
             if (e.KeyChar == 'p')
             {
                 PreviewGraphics.Invalidate();
-                currentLaserSettings.project = true;
+                currentLaserSettings.showLaser = true;
             }
         }
 
@@ -1325,11 +1319,11 @@ namespace Path
             if (OptionsToggleProject.Checked)
             {
                 PreviewGraphics.Invalidate();
-                currentLaserSettings.project = true;
+                currentLaserSettings.showLaser = true;
             }
             else
             {
-                currentLaserSettings.project = false;
+                currentLaserSettings.showLaser = false;
                 HeliosPoint[] blackFrame = { new HeliosPoint() };
                 blackFrame[0].x = (ushort)(0x000);
                 blackFrame[0].y = (ushort)(0x000);
