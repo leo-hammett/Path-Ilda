@@ -268,7 +268,7 @@
             // 
             this.OptionsEmergencyLabel.AutoSize = true;
             this.OptionsEmergencyLabel.ForeColor = System.Drawing.SystemColors.Control;
-            this.OptionsEmergencyLabel.Location = new System.Drawing.Point(77, 133);
+            this.OptionsEmergencyLabel.Location = new System.Drawing.Point(85, 133);
             this.OptionsEmergencyLabel.Name = "OptionsEmergencyLabel";
             this.OptionsEmergencyLabel.Size = new System.Drawing.Size(162, 15);
             this.OptionsEmergencyLabel.TabIndex = 15;

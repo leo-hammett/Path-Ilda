@@ -100,15 +100,33 @@ namespace Path
 
         Point ConvertToHeliosCoords(Point Original, bool backwards = false)
         {
-            float Scale = 4095 / PreviewGraphics.Size.Width;
+            Point returnConverted;
+            float Scale = 4095 / PreviewGraphics.Size.Width;    //This assumes preview graphics is square, I intend to make this bit such that the projection range is resizeable.
             if (!backwards)
             {
-                return new Point((int)(Original.X * Scale),(int)(Original.Y * Scale));
+                returnConverted = new Point((int)(Original.X * Scale),(int)(Original.Y * Scale));
             }
             else
             {
-                return new Point((int)(Original.X / Scale), (int)(Original.Y / Scale));
+                returnConverted =  new Point((int)(Original.X / Scale), (int)(Original.Y / Scale));
             }
+            if(returnConverted.X > 4095)
+            {
+                returnConverted.X = 4095;
+            }
+            else if (returnConverted.X < 0)
+            {
+                returnConverted.X = 0;
+            }
+            if (returnConverted.Y > 4095)
+            {
+                returnConverted.Y = 4095;
+            }
+            else if (returnConverted.Y < 0) //Checks to make sure no points are outside the laser area
+            {
+                returnConverted.Y = 0;
+            }
+            return returnConverted;
         }
         static double getDistance(Point point1, Point point2)
         {
@@ -306,8 +324,7 @@ namespace Path
                     }
                 }*/
                 #endregion
-                //If we have constant acceleration life is hella easy thanks to a person named Mrs SUVAT (idk if Suvat equations were named after a man or a woman) 
-                //Also because this is a legal exam I needa say i'm joking I know Suvat is the acronym for displacement, intial velocity, etc.
+                //If we have constant acceleration life is hella easy thanks to SUVAT equations
                 //S = ut + 1/2 a t^2 (hold on one sec we got to the good bit in my playlist I needa jam for a sec)
                 if (pathPoints.Count > 0)
                 {
@@ -330,7 +347,7 @@ namespace Path
                             beginningDisplacements.Enqueue(currentDisplacement + currentLaserSettings.maxVelocity);
                             endingDisplacements.Push(currentDisplacement + currentLaserSettings.maxVelocity); //Should make it so the middle points are evenly spaced.0
 
-                        }   // SHCHC A GOOOD MIXXXX I CANNOT EXPLAIN HOW GOOD IT IS ITS FIREREEEEEE  https://youtu.be/WKuaujIHBT4?t=3914
+                        }
 
                         // This bit fills in the middle so the velocity isnt bigger than the max velocity. The rest uses the max acceleration.
                     }
@@ -360,6 +377,10 @@ namespace Path
                         currentPoint.i = (byte)(this.pathColor.A);
                         points.Add(currentPoint);
                     }
+                }
+                else
+                {
+                    points = new List<HeliosPoint>();
                 }
                 return points;
             }
@@ -461,13 +482,13 @@ namespace Path
                         ));
                 }
             }
-            public PathLineFrame(int newTime, PathLineFrame frame)
+            /*public PathLineFrame(int newTime, PathLineFrame frame)
             {
                 time = newTime;
                 pathColor = frame.pathColor;
                 pathPoints = frame.pathPoints;
 
-            }
+            }*/
             public PathLineFrame(PathLineFrame frame)
             {
                 time = frame.Time;
@@ -521,19 +542,51 @@ namespace Path
                 this.SortKeyFramesByTime();
                 return GetFrameAt(FrameTime);
             }
-            public PathLineFrame GenFrameAt(int frameTime)
+            public List<PathLineFrame> findTouchingFrames(int timeOfFrame, List<PathLineFrame> touchingPoints, bool startingOccurance = true)
             {
-                int frameBeforeIndex = -1;
-                int frameAfterIndex = -1;
+                if (startingOccurance)
+                {
+                    touchingPoints = new List<PathLineFrame> { new PathLineFrame(-1, Color.Black, new List<Point>(), -1) }; 
+                    //Added fake beginning abnd ending frames so theres always a frame above and below or the code would j break
+                    touchingPoints.AddRange(keyFrames);
+                    touchingPoints.Add(new PathLineFrame((int) 0x7FFFFFFF, Color.Black, new List<Point>(), -1));
+                }
+                int midFrameIndex = touchingPoints.Count() / 2;
+                if (touchingPoints[midFrameIndex].Time == timeOfFrame)  //If the mid frame matches the time
+                {
+                    return new List<PathLineFrame> { touchingPoints[midFrameIndex] };
+                }
+                else if (timeOfFrame > touchingPoints[midFrameIndex].Time)
+                {
+                    if (timeOfFrame < touchingPoints[midFrameIndex + 1].Time)
+                    {
+                        return new List<PathLineFrame> { touchingPoints[midFrameIndex], touchingPoints[midFrameIndex + 1] };
+                    }
+                    return findTouchingFrames(timeOfFrame, touchingPoints.GetRange(midFrameIndex - 1 ,1 + touchingPoints.Count() - midFrameIndex), false);
+                }
+                else if (timeOfFrame < touchingPoints[midFrameIndex].Time)
+                {
+                    return findTouchingFrames(timeOfFrame, touchingPoints.GetRange(0, midFrameIndex + 1), false);
+                }
+                else 
+                {
+                    return new List<PathLineFrame>();
+                }
+
+            }
+            public PathLineFrame GenFrameAt(int FrameTime)
+            {
                 PathLineFrame newFrame;
+
+                /*
                 for (int i = 0; i < keyFrames.Count; i++)       //DO A BINARY SEARCH HERE
                 {
-                    if (keyFrames[i].Time == frameTime)          //Checks to see if the time lands on a keyframe - This is merely a performance thing
+                    if (keyFrames[i].Time == FrameTime)          //Checks to see if the time lands on a keyframe - This is merely a performance thing
                     {
                         newFrame = new PathLineFrame(keyFrames[i]);
                         return newFrame;
                     }
-                    else if (keyFrames[i].Time < frameTime)      //Finds the latest KeyFrame before the time
+                    else if (keyFrames[i].Time < FrameTime)      //Finds the latest KeyFrame before the time
                     {
                         frameBeforeIndex = i;
                     }
@@ -541,27 +594,31 @@ namespace Path
                     {
                         frameAfterIndex = i;
                     }
-                }
-                if (frameBeforeIndex == -1)                  //If before all frames then newframe is the same as the frame after or first frame
+                }*/
+
+                List<PathLineFrame> touchingFrames = findTouchingFrames(FrameTime, new List<PathLineFrame>());  //This algorithm should be much more efficient :0
+
+                if(touchingFrames.Count == 1)
                 {
-                    newFrame = new PathLineFrame(keyFrames[frameAfterIndex]);
-                    newFrame.Time = frameTime;
+                    return touchingFrames[0];
+                }
+                else if (touchingFrames[0].Time == -1)                  //If before all frames then newframe is the same as the frame after or first frame
+                {
+                    newFrame = new PathLineFrame(touchingFrames[1]);    //Sets it to the not fake frame
+                    newFrame.Time = FrameTime;
                     return newFrame;
                 }
-                else if (frameAfterIndex == -1)                   //Literally the same situation as the above if
+                else if (touchingFrames[1].Time == (int)0x7FFFFFFF)                   //Literally the same situation as the above if
                 {
-                    newFrame = new PathLineFrame(keyFrames[frameBeforeIndex]);
-                    newFrame.Time = frameTime;
+                    newFrame = new PathLineFrame(touchingFrames[0]);        //Sets it to the not fake frame
+                    newFrame.Time = FrameTime;
                     return newFrame;
                 }
                 else
-                {
-                    PathLineFrame frameAfter = new PathLineFrame(keyFrames[frameAfterIndex]);
-                    PathLineFrame frameBefore = new PathLineFrame(keyFrames[frameBeforeIndex]);
-                    
+                {                    
                     //SET ALL PROPERTIES TO PROPERTIES IN BETWEEN THEM BOTH
-                    float animationProgress = ((float) (frameTime - frameBefore.Time) / (float) (frameAfter.Time - frameBefore.Time)); //If you set each property to beforeFrame value plus (afterFrame - beforeFrame) * difference  -- This assumes a linear animation hence the constant progress as time moves forward.
-                    return new PathLineFrame(animationProgress,frameBefore,frameAfter);
+                    float animationProgress = ((float) (FrameTime - touchingFrames[0].Time) / (float) (touchingFrames[1].Time - touchingFrames[0].Time)); //If you set each property to beforeFrame value plus (afterFrame - beforeFrame) * difference  -- This assumes a linear animation hence the constant progress as time moves forward.
+                    return new PathLineFrame(animationProgress, touchingFrames[0], touchingFrames[1]);
                 }
             }   //The majourity of the animation code IF THIS PROJECT DOESNT WORK IMMA CRY
             public PathLine(string Name, PathLineFrame KeyFrame, int DynamicPathIndex)
@@ -583,7 +640,9 @@ namespace Path
             }
             public List<PathLineFrame> QuicksortByTime(List<PathLineFrame> list)
             {
-                if(list.Count() == 0)
+                //Here I impliment quicksort partially explained here: https://www.youtube.com/watch?v=SLauY6PpjW4&t=15s
+                //I used a recursive routine
+                if (list.Count() == 0)
                 {
                     return new List<PathLineFrame>();       //Gotta have something end the recursive routine
                 }
