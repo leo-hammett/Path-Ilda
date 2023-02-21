@@ -100,7 +100,7 @@
             this.previewShapesToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.settingsToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.sToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
-            this.dACSettingsToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.dacSettingsToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.connectToDACToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.disconnectDACToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.splitContainer1 = new System.Windows.Forms.SplitContainer();
@@ -926,7 +926,7 @@
             // 
             this.settingsToolStripMenuItem.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
             this.sToolStripMenuItem,
-            this.dACSettingsToolStripMenuItem});
+            this.dacSettingsToolStripMenuItem});
             this.settingsToolStripMenuItem.ForeColor = System.Drawing.SystemColors.Control;
             this.settingsToolStripMenuItem.Name = "settingsToolStripMenuItem";
             this.settingsToolStripMenuItem.Size = new System.Drawing.Size(61, 20);
@@ -935,30 +935,30 @@
             // sToolStripMenuItem
             // 
             this.sToolStripMenuItem.Name = "sToolStripMenuItem";
-            this.sToolStripMenuItem.Size = new System.Drawing.Size(146, 22);
+            this.sToolStripMenuItem.Size = new System.Drawing.Size(180, 22);
             this.sToolStripMenuItem.Text = "Laser Settings";
-            this.sToolStripMenuItem.Click += new System.EventHandler(this.sToolStripMenuItem_Click);
+            this.sToolStripMenuItem.Click += new System.EventHandler(this.ToolStripMenuItem_Click);
             // 
-            // dACSettingsToolStripMenuItem
+            // dacSettingsToolStripMenuItem
             // 
-            this.dACSettingsToolStripMenuItem.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
+            this.dacSettingsToolStripMenuItem.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
             this.connectToDACToolStripMenuItem,
             this.disconnectDACToolStripMenuItem});
-            this.dACSettingsToolStripMenuItem.Name = "dACSettingsToolStripMenuItem";
-            this.dACSettingsToolStripMenuItem.Size = new System.Drawing.Size(146, 22);
-            this.dACSettingsToolStripMenuItem.Text = "DAC Settings";
+            this.dacSettingsToolStripMenuItem.Name = "dacSettingsToolStripMenuItem";
+            this.dacSettingsToolStripMenuItem.Size = new System.Drawing.Size(180, 22);
+            this.dacSettingsToolStripMenuItem.Text = "DAC Settings";
             // 
             // connectToDACToolStripMenuItem
             // 
             this.connectToDACToolStripMenuItem.Name = "connectToDACToolStripMenuItem";
-            this.connectToDACToolStripMenuItem.Size = new System.Drawing.Size(161, 22);
+            this.connectToDACToolStripMenuItem.Size = new System.Drawing.Size(180, 22);
             this.connectToDACToolStripMenuItem.Text = "Connect To DAC";
             this.connectToDACToolStripMenuItem.Click += new System.EventHandler(this.connectToDACToolStripMenuItem_Click);
             // 
             // disconnectDACToolStripMenuItem
             // 
             this.disconnectDACToolStripMenuItem.Name = "disconnectDACToolStripMenuItem";
-            this.disconnectDACToolStripMenuItem.Size = new System.Drawing.Size(161, 22);
+            this.disconnectDACToolStripMenuItem.Size = new System.Drawing.Size(180, 22);
             this.disconnectDACToolStripMenuItem.Text = "Disconnect DAC";
             this.disconnectDACToolStripMenuItem.Click += new System.EventHandler(this.disconnectDACToolStripMenuItem_Click);
             // 
@@ -1101,7 +1101,7 @@
         private ToolStripMenuItem settingsToolStripMenuItem;
         private ToolStripMenuItem sToolStripMenuItem;
         private SplitContainer splitContainer1;
-        private ToolStripMenuItem dACSettingsToolStripMenuItem;
+        private ToolStripMenuItem dacSettingsToolStripMenuItem;
         private ToolStripMenuItem connectToDACToolStripMenuItem;
         private ToolStripMenuItem disconnectDACToolStripMenuItem;
         private Panel timelineGUIHugger;

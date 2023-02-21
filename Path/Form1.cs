@@ -3,6 +3,9 @@ using System.Linq;
 using Newtonsoft;
 using HeliosLaserDAC;
 using System.Drawing;
+using System.Text;
+using System.Text.Json;
+using System.Security.Cryptography;
 using System.Linq.Expressions;
 //project.dynamicPath = the file & whole animation
 //framePath = the PathLineFrame array for the individual frame
@@ -22,13 +25,14 @@ namespace Path
         Point mouseLastLocation;  //If set to -1,-1 no line preview should be made - Saving where the mouse went down
         Point timelineMouseLastLocation;
 
-        List<LinePoint> closestPoints = new List<LinePoint>();
-        List<LinePoint> closestPointsFrozen = new List<LinePoint>();
+        List<KeyLinePoint> closestPoints = new List<KeyLinePoint>();
+        List<KeyLinePoint> closestPointsFrozen = new List<KeyLinePoint>();
 
         Point closestPoint;
 
         bool currentlyPlaying = false;
 
+        Point tempIntermediateFramePoint = new Point(-1, -1);
 
         int selectedLineDynamicIndex = 0;
         PathLineFrame selectedFrameReadOnly;
@@ -39,12 +43,12 @@ namespace Path
 
         bool showCircles = false;
         bool showLines = false;
-        bool mouseDown = false; 
+        bool mouseDown = false;
 
         //Timeline GUI variables
         public TimelineSettings currentTimelineSettings;
-        LinePoint timelineClosestPoint;
-        List<LinePoint> TimelineDots = new List<LinePoint>();
+        TimeLinePoint timelineClosestPoint;
+        List<TimeLinePoint> TimelineDots = new List<TimeLinePoint>();
 
         //Helios Laser management variables
         public HeliosDac helios = new HeliosDac();
@@ -73,6 +77,7 @@ namespace Path
             public float maxtimeSeconds = 25;
 
             public int fps = 30; //The number of frames per second (to obtain time in seconds divide time by fps)
+            public string fileHash;    //Used to see if file has been modified outside of the software.
         }
         public class LaserSettings
         {
@@ -89,36 +94,36 @@ namespace Path
         Point ConvertToHeliosCoords(Point Original, bool backwards = false)
         {
             Point returnConverted;  //This transaltes all the laser coordinates onto a single map to ensure consistency when resizing images.
-            float Scale = 4095 / PreviewGraphics.Size.Width;  //This assumes preview graphics is square, I intend to make this bit such that the projection range is resizeable.
+            float Scale = 4095f / (float)(PreviewGraphics.Size.Width);  //This assumes preview graphics is square, I intend to make this bit such that the projection range is resizeable.
             if (!backwards)
             {
-                returnConverted = new Point((int)(Original.X * Scale),(int)(Original.Y * Scale));
+                returnConverted = new Point((int)(Original.X * Scale), (int)(Original.Y * Scale));
+                if (returnConverted.X > 4095)  //Checks to make sure no points are outside the laser area.
+                {
+                    returnConverted.X = 4095;
+                }
+                else if (returnConverted.X < 0)
+                {
+                    returnConverted.X = 0;
+                }
+                if (returnConverted.Y > 4095)
+                {
+                    returnConverted.Y = 4095;
+                }
+                else if (returnConverted.Y < 0)
+                {
+                    returnConverted.Y = 0;
+                }
             }
             else
             {
-                returnConverted =  new Point((int)(Original.X / Scale), (int)(Original.Y / Scale));
-            }
-            if(returnConverted.X > 4095)  //Checks to make sure no points are outside the laser area.
-            {
-                returnConverted.X = 4095;
-            }
-            else if (returnConverted.X < 0)
-            {
-                returnConverted.X = 0;
-            }
-            if (returnConverted.Y > 4095)
-            {
-                returnConverted.Y = 4095;
-            }
-            else if (returnConverted.Y < 0)
-            {
-                returnConverted.Y = 0;
-            }
+                returnConverted = new Point((int)(Original.X / Scale), (int)(Original.Y / Scale));
+            }          
             return returnConverted;
         }
         static double getDistance(Point point1, Point point2)
         {
-            return Math.Sqrt(Math.Pow(point1.X - point2.X, 2) + Math.Pow(point1.Y - point2.Y,2));
+            return Math.Sqrt(Math.Pow(point1.X - point2.X, 2) + Math.Pow(point1.Y - point2.Y, 2));
         }
         //not working vvv
         List<HeliosPoint> travelBetweenPoints(PointF zeroPoint, PointF lastPoint, PointF currentVelocity, PointF endVelocity, int maxVelocity, int maxAcceleration)
@@ -145,65 +150,165 @@ namespace Path
                 totalTime = timeToReachFrameX * timeScalingX;
             }
 
-            for(float time = 0; time < totalTime; time++)
+            for (float time = 0; time < totalTime; time++)
             {
-                currentPoint.x = (ushort) (1.5 * currentVelocity.X * time - 0.5 * endVelocity.X * time + zeroPoint.X);
-                currentPoint.y = (ushort) (1.5 * currentVelocity.Y * time - 0.5 * endVelocity.Y * time + zeroPoint.Y);
-                currentPoint.r = (Byte) 0;
-                currentPoint.g = (Byte) 0;
-                currentPoint.b = (Byte) 0;
-                currentPoint.i = (Byte) 0;
+                currentPoint.x = (ushort)(1.5 * currentVelocity.X * time - 0.5 * endVelocity.X * time + zeroPoint.X);
+                currentPoint.y = (ushort)(1.5 * currentVelocity.Y * time - 0.5 * endVelocity.Y * time + zeroPoint.Y);
+                currentPoint.r = (Byte)0;
+                currentPoint.g = (Byte)0;
+                currentPoint.b = (Byte)0;
+                currentPoint.i = (Byte)0;
                 returnPoints.Add(currentPoint);
             }
 
             return returnPoints;
         }         //Beginning of my optimising pathalgorithm
+        abstract class LinePoint
+        {
+            public int ShapeListIndex { get; set; }
+            public Point Location { get; set; }
+
+            public LinePoint(int shapeListIndex, Point location)
+            {
+                ShapeListIndex = shapeListIndex;
+                Location = location;
+            }
+        }
+        class TraversalLinePoint : LinePoint
+        {
+            public bool IsStart { get; set; }
+            public TraversalLinePoint(int shapeListIndex, Point location, bool isStart) : base(shapeListIndex, location)
+            {
+                ShapeListIndex = shapeListIndex;
+                Location = location;
+                IsStart = isStart;
+            }
+        }
+        class KeyLinePoint : LinePoint
+        {
+            public bool IsMiddle { get; set; }
+            public int PathPointsListIndex { get; set; }
+            public KeyLinePoint(int shapeListIndex, int pathPointsListIndex, Point location, bool isMiddle) : base(shapeListIndex, location)
+            {
+                IsMiddle = isMiddle;
+                PathPointsListIndex = pathPointsListIndex;
+            }
+        }
+        class TimeLinePoint : LinePoint
+        {
+            public int FrameTime { get; set; }
+            public TimeLinePoint(int shapeListIndex, int frameTime, Point location) : base(shapeListIndex, location)
+            {
+                FrameTime = frameTime;
+            }
+        }
+        class LinePoint1
+        {
+            int shapeListIndex;
+            public int ShapeListIndex
+            {
+                get { return shapeListIndex; }
+                set { shapeListIndex = value; }
+            }
+            int pathPointsListIndex;
+            public int PathPointsListIndex
+            {
+                get { return pathPointsListIndex; }
+                set { pathPointsListIndex = value; }
+            }
+            Point location;
+            public Point Location
+            {
+                get { return location; }
+                set { location = value; }
+            }
+            bool isMiddle;
+            public bool IsMiddle
+            {
+                get { return isMiddle; }
+            }
+            bool isStart;
+            public bool IsStart
+            {
+                get { return isStart; }
+            }
+            public LinePoint1(LinePoint1 newLinePoint)
+            {
+                this.shapeListIndex = newLinePoint.ShapeListIndex;
+                this.location = new Point(newLinePoint.Location.X, newLinePoint.Location.Y);
+                this.isMiddle = newLinePoint.IsMiddle;
+                this.pathPointsListIndex = newLinePoint.PathPointsListIndex;
+                this.isStart = newLinePoint.IsStart;
+            }
+            public LinePoint1(int ShapeListIndex, int PathPointsListIndex, Point Location, bool IsMiddle, bool IsStart = false)
+            {
+                this.shapeListIndex = ShapeListIndex;
+                this.location = Location;
+                this.isMiddle = IsMiddle;
+                this.pathPointsListIndex = PathPointsListIndex;
+                this.isStart = IsStart;
+            }
+
+        }
+
         Queue<PathLineFrame> genShapeLaserPath(List<PathLineFrame> framePath)
         {
-            List<LinePoint> pointsToTraverse = new List<LinePoint>();
-            foreach(PathLineFrame line in framePath)  //Gets all the points required in order to traverse.
+            List<TraversalLinePoint> pointsToTraverse = new List<TraversalLinePoint>();
+
+            // Gets all the points required in order to traverse.
+            foreach (PathLineFrame line in framePath)
             {
-                pointsToTraverse.Add(new LinePoint(framePath.IndexOf(line), -1, line.PathPoints[0], false, true));
-                pointsToTraverse.Add(new LinePoint(framePath.IndexOf(line), -1, line.PathPoints[^1], false, false));
+                pointsToTraverse.Add(new TraversalLinePoint(framePath.IndexOf(line), line.PathPoints[0], true));
+                pointsToTraverse.Add(new TraversalLinePoint(framePath.IndexOf(line), line.PathPoints[^1], false));
             }
-            Queue<PathLineFrame> linesToGenPointsFor = new Queue<PathLineFrame>();  //Setting up variables.
-            LinePoint currentPoint;  //Where we are.
-            LinePoint nextPoint;  //Where we want to go.
-            if (pointsToTraverse.Count > 1 && (pointsToTraverse.Count % 2 == 0))  //If we are in a position where there is a need to project.
+
+            // Setting up variables.
+            Queue<PathLineFrame> linesToGenPointsFor = new Queue<PathLineFrame>();
+            TraversalLinePoint currentPoint;  // Where we are.
+            TraversalLinePoint nextPoint;  // Where we want to go.
+
+            // If we are in a position where there is a need to project.
+            if (pointsToTraverse.Count > 1 && (pointsToTraverse.Count % 2 == 0))
             {
                 currentPoint = pointsToTraverse[0];
-                //Travels to the next line
+
+                // Travels to the next line.
                 linesToGenPointsFor.Enqueue(framePath[currentPoint.ShapeListIndex]);
-                int nextIndex = pointsToTraverse.IndexOf(currentPoint);  //Not add one because current point is removed.
+                int nextIndex = pointsToTraverse.IndexOf(currentPoint);  // Not add one because current point is removed.
                 pointsToTraverse.Remove(currentPoint);
                 currentPoint = pointsToTraverse[nextIndex];
-                //This if statement basically travels the line either forewards or backwards.
-                pointsToTraverse.Remove(currentPoint);  //Removed because its already been traversed.
 
-                while (pointsToTraverse.Count > 0)  //Start the while loop after drawing the first line.
+                // This if statement basically travels the line either forwards or backwards.
+                pointsToTraverse.Remove(currentPoint);  // Removed because it's already been traversed.
+
+                // Start the while loop after drawing the first line.
+                while (pointsToTraverse.Count > 0)
                 {
-                    nextPoint = new LinePoint(-1, -1, new Point(0x7FFFFFFF, 0x7FFFFFFF), false);  //Reset next point to be infinitely far away //Here we are setting the ideal closest point.
-                    foreach (LinePoint point in pointsToTraverse)
+                    nextPoint = new TraversalLinePoint(-1, new Point(0x7FFFFFFF, 0x7FFFFFFF), false);  // Reset next point to be infinitely far away. Here we are setting the ideal closest point.
+
+                    foreach (TraversalLinePoint point in pointsToTraverse)
                     {
-                        if (getDistance(point.Location, currentPoint.Location) < getDistance(nextPoint.Location, currentPoint.Location))   //This point closer to the goal than the other point
+                        // This point closer to the goal than the other point.
+                        if (getDistance(point.Location, currentPoint.Location) < getDistance(nextPoint.Location, currentPoint.Location))
                         {
-                            nextPoint = point; //Closest point = the closer point
+                            nextPoint = point;  // Closest point = the closer point.
                         }
-                    }   //Find where to travel to (yes it's the most basic path traversal heuristic but it works quite well when things are simple),
-                        //I would do a more complicated one but the points need to be met in certain ways.
+                    }
+
+                    // Find where to travel to (yes, it's the most basic path traversal heuristic, but it works quite well when things are simple).
+                    // I would do a more complicated one, but the points need to be met in certain ways.
                     linesToGenPointsFor.Enqueue(new PathLineFrame(true, currentPoint.Location, nextPoint.Location));
-                    nextIndex = pointsToTraverse.IndexOf(nextPoint);  //Needs it to remove the other part of the line. Could have done a for loop for each line to be honest, might be a piece of improvement for the future.
-                    pointsToTraverse.Remove(nextPoint);  //And remove the point youve just run away from, you needa remove two points per line/while loop.
-                                                         //Its next point that gets removed as this has just been traversed
+                    nextIndex = pointsToTraverse.IndexOf(nextPoint);  // Needs it to remove the other part of the line. Could have done a for loop for each line to be honest, might be a piece of improvement for the future.
+                    pointsToTraverse.Remove(nextPoint);  // And remove the point you've just run away from. You need to remove two points per line/while loop. It's next point that gets removed as this has just been traversed.
                     currentPoint = nextPoint;
-                  //Travel between two lines (the laser acc has to do this)
+
+                    // Travel between two lines (the laser has to do this it cannot simply teleport).
                     if (pointsToTraverse.Count > 0)
                     {
-                        if (currentPoint.IsStart)  //If yes travel the line then remove the points
+                        if (currentPoint.IsStart)  // If yes, travel the line then remove the points.
                         {
-                            linesToGenPointsFor.Enqueue(framePath[currentPoint.ShapeListIndex]);
-                            //Index already set above
-                        }//This if statement basically travels the line either forewards or backwards.
+                            linesToGenPointsFor.Enqueue(framePath[currentPoint.ShapeListIndex]);  // Index already set above.
+                        }
                         else
                         {
                             PathLineFrame frame = new PathLineFrame(framePath[currentPoint.ShapeListIndex]);
@@ -211,7 +316,7 @@ namespace Path
                             linesToGenPointsFor.Enqueue(frame);
                             nextIndex = nextIndex - 1;  //Subtract one because the index below isnt affected. Like because the line is reversed yk
                         }
-                        currentPoint = new LinePoint(pointsToTraverse[nextIndex]);
+                        currentPoint = pointsToTraverse[nextIndex];
                         pointsToTraverse.Remove(pointsToTraverse[nextIndex]);
                     }
                 }
@@ -246,9 +351,9 @@ namespace Path
                 get { return pathPoints; }
                 set { pathPoints = value; }
             }
-            public void AddPoint(Point NewPoint) 
-            { 
-                pathPoints.Add(NewPoint); 
+            public void AddPoint(Point NewPoint)
+            {
+                pathPoints.Add(NewPoint);
             }
             private int listIndex;                      //THE INDEX OF THE LIST VARIES DEPENDING ON IF THE OBJECT IS A KEYFRAME OR NOT
             public int ListIndex
@@ -259,7 +364,7 @@ namespace Path
             public List<HeliosPoint> GenLaserPoints(LaserSettings currentLaserSettings)
             {
                 List<HeliosPoint> points = new List<HeliosPoint>();
-                #region higher order maths that i swear is hella close to working but isnt quite working. Think it might have made curves anyway.
+                #region higher order maths that i swear is very close to working but isnt quite working. Think it might have made curves anyway.
                 /* DOESNT WORK AS I SO VERY WISHED IT WOULD
                 for(int i = 0; i < pathPoints.Count-1; i++)
                 {
@@ -309,6 +414,10 @@ namespace Path
                 {
                     Queue<double> beginningDisplacements = new Queue<double>();
                     Stack<double> endingDisplacements = new Stack<double>();
+                    for (int i = 0; i < currentLaserSettings.dwellPoints; i++)
+                    {
+                        beginningDisplacements.Enqueue(0);
+                    }
                     int acceleratingTime = currentLaserSettings.maxVelocity / currentLaserSettings.maxAcceleration;
                     double currentDisplacement = 0;
                     double halfDisplacement = getDistance(this.pathPoints[0], this.pathPoints[1]) / 2;//I realise that I havent added multi point compatibility this is a relatively easy fix for before summer :)
@@ -320,7 +429,7 @@ namespace Path
                     }
                     if (currentDisplacement < halfDisplacement + (currentLaserSettings.maxVelocity / 2))//If distance left to cover will take more than a point.
                     {
-                        for (int i = 0;currentDisplacement + currentLaserSettings.maxVelocity< halfDisplacement; i++)
+                        for (int i = 0; currentDisplacement + currentLaserSettings.maxVelocity < halfDisplacement; i++)
                         {
                             currentDisplacement += currentLaserSettings.maxVelocity;
                             beginningDisplacements.Enqueue(currentDisplacement + currentLaserSettings.maxVelocity);
@@ -334,7 +443,7 @@ namespace Path
                     currentDisplacement = 0;
                     double horizontaleScaleValue = (pathPoints[1].X - pathPoints[0].X) / getDistance(this.pathPoints[0], this.pathPoints[1]);
                     double verticalScaleValue = (pathPoints[1].Y - pathPoints[0].Y) / getDistance(this.pathPoints[0], this.pathPoints[1]);
-                    while(beginningDisplacements.Count > 0)
+                    while (beginningDisplacements.Count > 0)
                     {
                         currentDisplacement = beginningDisplacements.Dequeue();
                         currentPoint.x = (ushort)(pathPoints[0].X + currentDisplacement * horizontaleScaleValue);
@@ -345,7 +454,7 @@ namespace Path
                         currentPoint.i = (byte)(this.pathColor.A);
                         points.Add(currentPoint);
                     }
-                    while(endingDisplacements.Count > 0)
+                    while (endingDisplacements.Count > 0)
                     {
                         currentDisplacement = endingDisplacements.Pop();
                         currentPoint.x = (ushort)(pathPoints[1].X - currentDisplacement * horizontaleScaleValue);
@@ -367,25 +476,25 @@ namespace Path
             {
                 pathPoints.Reverse();
             }
-            public List<LinePoint> GenKeyPoints(bool middle = false)
+            public List<KeyLinePoint> GenKeyPoints(bool middle = false)
             {
-                List<LinePoint> KeyPoints = new List<LinePoint>();
+                List<KeyLinePoint> KeyPoints = new List<KeyLinePoint>();
 
                 for (int i = 0; i < PathPoints.Count - 1; i++)
                 {
-                    KeyPoints.Add(new LinePoint(ListIndex, i, pathPoints[i], false));
+                    KeyPoints.Add(new KeyLinePoint(ListIndex, i, pathPoints[i], false));
                     if (middle)
                     {
-                        KeyPoints.Add(new LinePoint(ListIndex, i, new Point(
-                                Convert.ToInt32((pathPoints[i].X + pathPoints[i+1].X) / 2),
-                                Convert.ToInt32((pathPoints[i].Y + pathPoints[i+1].Y) / 2))
+                        KeyPoints.Add(new KeyLinePoint(ListIndex, i, new Point(
+                                Convert.ToInt32((pathPoints[i].X + pathPoints[i + 1].X) / 2),
+                                Convert.ToInt32((pathPoints[i].Y + pathPoints[i + 1].Y) / 2))
                                 , true));
                     }
                 }
-                
-                KeyPoints.Add(new LinePoint(ListIndex, PathPoints.Count-1, pathPoints.Last(), false));
+
+                KeyPoints.Add(new KeyLinePoint(ListIndex, PathPoints.Count - 1, pathPoints.Last(), false));
                 return KeyPoints;
-            }   
+            }
             /*So basically this function generates keypoints, keypoints are any points with details that we might want to adjust
              * This selection tool should work well until there are a lot of points to select*/
             public int getValueXWayBetweenTwoPoints(int value1, int value2, float multiplier)
@@ -413,8 +522,8 @@ namespace Path
                 time = Time;
                 pathColor = PathColor;
                 pathPoints = new List<Point>();
-                pathPoints.Add(new Point(Point1x,Point1y));
-                pathPoints.Add(new Point(Point2x,Point2y));
+                pathPoints.Add(new Point(Point1x, Point1y));
+                pathPoints.Add(new Point(Point2x, Point2y));
                 listIndex = ListIndex;
             }   //Easy Constructor
             public PathLineFrame()  //Json Constructor
@@ -474,7 +583,7 @@ namespace Path
                 listIndex = frame.ListIndex;
                 pathColor = frame.PathColor;
                 pathPoints = new List<Point>();
-                foreach(Point point in frame.PathPoints)
+                foreach (Point point in frame.PathPoints)
                 {
                     pathPoints.Add(point);
                 }
@@ -499,23 +608,21 @@ namespace Path
             int dynamicPathIndex;
             public int DynamicPathIndex
             {
-                get { return dynamicPathIndex;}
+                get { return dynamicPathIndex; }
             }
 
             bool isHidden = false;
             public bool IsHidden
             {
-                get { return isHidden;}
-                set { isHidden = value;}
+                get { return isHidden; }
+                set { isHidden = value; }
             }
             public PathLineFrame GetFrameAt(int FrameTime)  //Literally a recursive algorithm. Didnt even make it on purpose.
             {
-                foreach(PathLineFrame frame in keyFrames)
+                List<PathLineFrame> touchingFrames = findTouchingFrames(FrameTime, keyFrames);
+                if (touchingFrames.Count == 1)
                 {
-                    if(frame.Time == FrameTime)
-                    {
-                        return frame;
-                    }
+                    return touchingFrames[0];
                 }
                 KeyFrames.Add(new PathLineFrame(GenFrameAt(FrameTime)));
                 this.SortKeyFramesByTime();
@@ -525,10 +632,10 @@ namespace Path
             {
                 if (startingOccurance)
                 {
-                    touchingPoints = new List<PathLineFrame> { new PathLineFrame(-1, Color.Black, new List<Point>(), -1) }; 
+                    touchingPoints = new List<PathLineFrame> { new PathLineFrame(-1, Color.Black, new List<Point>(), -1) };
                     //Added fake beginning abnd ending frames so theres always a frame above and below or the code would j break
                     touchingPoints.AddRange(keyFrames);
-                    touchingPoints.Add(new PathLineFrame((int) 0x7FFFFFFF, Color.Black, new List<Point>(), -1));
+                    touchingPoints.Add(new PathLineFrame((int)0x7FFFFFFF, Color.Black, new List<Point>(), -1));
                 }
                 int midFrameIndex = touchingPoints.Count() / 2;
                 if (touchingPoints[midFrameIndex].Time == timeOfFrame)  //If the mid frame matches the time
@@ -541,13 +648,13 @@ namespace Path
                     {
                         return new List<PathLineFrame> { touchingPoints[midFrameIndex], touchingPoints[midFrameIndex + 1] };
                     }
-                    return findTouchingFrames(timeOfFrame, touchingPoints.GetRange(midFrameIndex - 1 ,1 + touchingPoints.Count() - midFrameIndex), false);
+                    return findTouchingFrames(timeOfFrame, touchingPoints.GetRange(midFrameIndex - 1, 1 + touchingPoints.Count() - midFrameIndex), false);
                 }
                 else if (timeOfFrame < touchingPoints[midFrameIndex].Time)
                 {
                     return findTouchingFrames(timeOfFrame, touchingPoints.GetRange(0, midFrameIndex + 1), false);
                 }
-                else 
+                else
                 {
                     return new List<PathLineFrame>();
                 }
@@ -557,27 +664,9 @@ namespace Path
             {
                 PathLineFrame newFrame;
 
-                /*
-                for (int i = 0; i < keyFrames.Count; i++)       //DO A BINARY SEARCH HERE
-                {
-                    if (keyFrames[i].Time == FrameTime)          //Checks to see if the time lands on a keyframe - This is merely a performance thing
-                    {
-                        newFrame = new PathLineFrame(keyFrames[i]);
-                        return newFrame;
-                    }
-                    else if (keyFrames[i].Time < FrameTime)      //Finds the latest KeyFrame before the time
-                    {
-                        frameBeforeIndex = i;
-                    }
-                    else if (frameAfterIndex == -1)         //Finds the first keyframe after the time. Gonna be real theres bound to be a logic error here.
-                    {
-                        frameAfterIndex = i;
-                    }
-                }*/
-
                 List<PathLineFrame> touchingFrames = findTouchingFrames(FrameTime, new List<PathLineFrame>());  //This algorithm should be much more efficient :0
 
-                if(touchingFrames.Count == 1)
+                if (touchingFrames.Count == 1)
                 {
                     return touchingFrames[0];
                 }
@@ -594,15 +683,15 @@ namespace Path
                     return newFrame;
                 }
                 else
-                {                    
+                {
                     //SET ALL PROPERTIES TO PROPERTIES IN BETWEEN THEM BOTH
-                    float animationProgress = ((float) (FrameTime - touchingFrames[0].Time) / (float) (touchingFrames[1].Time - touchingFrames[0].Time)); //If you set each property to beforeFrame value plus (afterFrame - beforeFrame) * difference  -- This assumes a linear animation hence the constant progress as time moves forward.
+                    float animationProgress = ((float)(FrameTime - touchingFrames[0].Time) / (float)(touchingFrames[1].Time - touchingFrames[0].Time)); //If you set each property to beforeFrame value plus (afterFrame - beforeFrame) * difference  -- This assumes a linear animation hence the constant progress as time moves forward.
                     return new PathLineFrame(animationProgress, touchingFrames[0], touchingFrames[1]);
                 }
             }   //The majourity of the animation code IF THIS PROJECT DOESNT WORK IMMA CRY
             public PathLine(string Name, PathLineFrame KeyFrame, int DynamicPathIndex)
             { //For ListIndex just do Path
-                name = Name; 
+                name = Name;
                 keyFrames = new List<PathLineFrame>();
                 keyFrames.Add(KeyFrame);
                 dynamicPathIndex = DynamicPathIndex;
@@ -638,7 +727,7 @@ namespace Path
                     {
                         left.Add(list[i]);
                     }
-                    else if(list[i].Time > pivot.Time)
+                    else if (list[i].Time > pivot.Time)
                     {
                         right.Add(list[i]);
                     }
@@ -646,7 +735,7 @@ namespace Path
                 List<PathLineFrame> leftSorted = QuicksortByTime(left);
                 List<PathLineFrame> rightSorted = QuicksortByTime(right);
                 list.Clear();
-                for(int i = 0; i < leftSorted.Count; i++)
+                for (int i = 0; i < leftSorted.Count; i++)
                 {
                     list.Add(leftSorted[i]);
                 }
@@ -658,64 +747,16 @@ namespace Path
                 return list;
             }
         }
-        class LinePoint
-        {
-            int shapeListIndex;
-            public int ShapeListIndex
-            {
-                get { return shapeListIndex; }
-                set { shapeListIndex = value; }
-            }
-            int pathPointsListIndex;
-            public int PathPointsListIndex
-            {
-                get { return pathPointsListIndex; }
-                set { pathPointsListIndex = value; }
-            }
-            Point location;
-            public Point Location
-            {
-                get { return location; }
-                set { location = value; }
-            }
-            bool isMiddle;
-            public bool IsMiddle
-            {
-                get { return isMiddle; }
-            }
-            bool isStart;
-            public bool IsStart
-            {
-                get { return isStart; }
-            }
-            public LinePoint(LinePoint newLinePoint)
-            {
-                this.shapeListIndex = newLinePoint.ShapeListIndex;
-                this.location = new Point(newLinePoint.Location.X, newLinePoint.Location.Y);
-                this.isMiddle = newLinePoint.IsMiddle;
-                this.pathPointsListIndex = newLinePoint.PathPointsListIndex;
-                this.isStart = newLinePoint.IsStart;
-            }
-            public LinePoint(int ShapeListIndex, int PathPointsListIndex, Point Location, bool IsMiddle, bool IsStart = false)
-            {
-                this.shapeListIndex = ShapeListIndex;
-                this.location = Location;
-                this.isMiddle = IsMiddle;
-                this.pathPointsListIndex = PathPointsListIndex;
-                this.isStart = IsStart;
-            }
-
-        }
 
         //THE GRAPHICS PANEL
         private void PreviewGraphics_Paint(object sender, PaintEventArgs e)
         {
             //Gen framePath (useful for lazer as well.)
-            if(framePathTime != mainTime)
+            if (framePathTime != mainTime)
             {
                 framePathTime = mainTime;
                 framePath = new List<PathLineFrame>();
-                for(int i = 0; i < project.dynamicPath.Count(); i++)
+                for (int i = 0; i < project.dynamicPath.Count(); i++)
                 {
                     PathLineFrame newFrame = project.dynamicPath[i].GenFrameAt(framePathTime);
                     newFrame.ListIndex = framePath.Count;
@@ -726,7 +767,7 @@ namespace Path
 
             laserTraversalPath = genShapeLaserPath(framePath);  //Literally generates the laser Path
             laserPoints.Clear();
-            foreach(PathLineFrame laserLine in laserTraversalPath)
+            foreach (PathLineFrame laserLine in laserTraversalPath)
             {
                 if (laserPathToolStripMenuItem.Checked)
                 {
@@ -749,27 +790,27 @@ namespace Path
             {
                 foreach (HeliosPoint point in laserPoints)
                 {
-                    e.Graphics.FillCircle(new SolidBrush(Color.Pink), ConvertToHeliosCoords(new Point(point.x,point.y), true), 2);
+                    e.Graphics.FillCircle(new SolidBrush(Color.Pink), ConvertToHeliosCoords(new Point(point.x, point.y), true), 2);
                 }
             }
             //Draw lines, dots and selection bits.
             Pen linePen;
             double closestPointDistance = 1000000;
-            
+
             for (int i = 0; i < framePath.Count(); i++) //Goes through all the lines
             {
                 //This bit draws all the points out, and the lines if needed, and also shows the points..
                 linePen = new Pen(framePath[i].PathColor);
-                for(int j = 0; j < framePath[i].PathPoints.Count() - 1; j++)    //REMEMBER TO UNCOMMENT THIS
+                for (int j = 0; j < framePath[i].PathPoints.Count() - 1; j++)    //REMEMBER TO UNCOMMENT THIS
                 {
                     if (previewShapesToolStripMenuItem.Checked)
                     {
                         e.Graphics.DrawLine(linePen, ConvertToHeliosCoords(framePath[i].PathPoints[j], true), ConvertToHeliosCoords(framePath[i].PathPoints[j + 1], true));
                     }
                 }
-                
+
                 //Im pretty sure this is the function that provides closest points.
-                List<LinePoint> keyPoints = new List<LinePoint>();
+                List<KeyLinePoint> keyPoints = new List<KeyLinePoint>();
                 keyPoints = framePath[i].GenKeyPoints(OptionsSelectModeButton.Checked);
                 for (int j = 0; j < keyPoints.Count(); j++)
                 {
@@ -780,7 +821,7 @@ namespace Path
                         e.Graphics.FillCircle(new SolidBrush(Color.LightGray), pointLocationGraphics.X, pointLocationGraphics.Y, 4);
                         e.Graphics.FillCircle(new SolidBrush(Color.DarkGray), pointLocationGraphics.X, pointLocationGraphics.Y, 3);
                     }
-                    if(getDistance(pointLocation,mouseLastLocation) < closestPointDistance) //Finds closest point
+                    if (getDistance(pointLocation, mouseLastLocation) < closestPointDistance) //Finds closest point
                     {
                         closestPoint = keyPoints[j].Location;
                         closestPoints.Clear();
@@ -788,7 +829,7 @@ namespace Path
                         InformationClosestPointData.Text = closestPoint.ToString();
                         closestPointDistance = getDistance(pointLocation, mouseLastLocation);
                     }
-                    else if(getDistance(pointLocation, mouseLastLocation) == closestPointDistance)  //Adds all lines to the closest point, pretty nifty if you ask me :)
+                    else if (getDistance(pointLocation, mouseLastLocation) == closestPointDistance)  //Adds all lines to the closest point, pretty nifty if you ask me :)
                     {
                         closestPoints.Add(keyPoints[j]);
                     }
@@ -822,7 +863,7 @@ namespace Path
             if (OptionsDrawLineMode.Checked)
             {
                 project.dynamicPath.Add(new PathLine("(" + ConvertToHeliosCoords(e.Location).X + "," + ConvertToHeliosCoords(e.Location).Y + ")", new PathLineFrame(mainTime, DrawerColorDialog.Color, new List<Point>(), project.dynamicPath.Count), project.dynamicPath.Count));
-                selectedLineDynamicIndex = project.dynamicPath.Count-1;
+                selectedLineDynamicIndex = project.dynamicPath.Count - 1;
                 if (OptionsSnapToPoint.Checked)
                 {
                     project.dynamicPath[selectedLineDynamicIndex].GetFrameAt(mainTime).AddPoint(ConvertToHeliosCoords(closestPoints[0].Location));
@@ -849,9 +890,9 @@ namespace Path
                 else
                 {
                     selectedLineDynamicIndex = closestPoints[0].ShapeListIndex;
-                    closestPointsFrozen = new List<LinePoint>(closestPoints);
+                    closestPointsFrozen = new List<KeyLinePoint>(closestPoints);
                 }
-                
+
             }
             mouseDown = true;
             framePathTime = -1;
@@ -873,9 +914,9 @@ namespace Path
                         GetSelectedFrameWrite().PathPoints[1] = ConvertToHeliosCoords(e.Location);
                     }
                 }
-                else if(OptionsSelectModeButton.Checked)
+                else if (OptionsSelectModeButton.Checked)
                 {
-                    foreach(var point in closestPointsFrozen)
+                    foreach (var point in closestPointsFrozen)
                     {
                         if (OptionsSnapToPoint.Checked)
                         {
@@ -899,7 +940,7 @@ namespace Path
             if (project.dynamicPath[selectedLineDynamicIndex].GetFrameAt(mainTime).PathPoints[0] == e.Location)
             {
                 project.dynamicPath[selectedLineDynamicIndex].KeyFrames.Remove(project.dynamicPath[selectedLineDynamicIndex].GetFrameAt(mainTime));
-                if(project.dynamicPath[selectedLineDynamicIndex].KeyFrames.Count == 0)
+                if (project.dynamicPath[selectedLineDynamicIndex].KeyFrames.Count == 0)
                 {
                     project.dynamicPath.RemoveAt(selectedLineDynamicIndex);
                 }
@@ -919,7 +960,7 @@ namespace Path
         {
             int maxHorizontalSpace = splitContainer1.Panel1.Width - PreviewGraphics.Margin.Horizontal;  //300 for the rhs panels
             int maxVerticalSpace = splitContainer1.Panel1.Height - (splitContainer1.Panel1.Height / 5) - PreviewGraphics.Margin.Vertical - TimeLinePanel.Margin.Vertical;   //150 for the bottom panel
-            if(maxHorizontalSpace < maxVerticalSpace)
+            if (maxHorizontalSpace < maxVerticalSpace)
             {
                 maxVerticalSpace = maxHorizontalSpace;
             }
@@ -927,11 +968,11 @@ namespace Path
             {
                 maxHorizontalSpace = maxVerticalSpace;  //The actual max size is the smallest of the two.
             }
-            PreviewGraphics.Size = new Size(maxHorizontalSpace - PreviewGraphics.Margin.Horizontal, maxVerticalSpace - 2*PreviewGraphics.Margin.Vertical);
+            PreviewGraphics.Size = new Size(maxHorizontalSpace - PreviewGraphics.Margin.Horizontal, maxVerticalSpace - 2 * PreviewGraphics.Margin.Vertical);
             TimeLinePanel.Size = new Size(splitContainer1.Panel1.Width - TimeLinePanel.Margin.Horizontal, splitContainer1.Panel1.Height - maxVerticalSpace);
-            TimeLinePanel.Location = new Point(TimeLinePanel.Margin.Left,splitContainer1.Panel1.Height - (TimeLinePanel.Height + TimeLinePanel.Margin.Bottom)); 
+            TimeLinePanel.Location = new Point(TimeLinePanel.Margin.Left, splitContainer1.Panel1.Height - (TimeLinePanel.Height + TimeLinePanel.Margin.Bottom));
         }
-        
+
         private void OptionsDrawLineMode_CheckedChanged(object sender, EventArgs e)
         {
             OptionsSelectModeButton.Checked = !OptionsDrawLineMode.Checked;
@@ -978,7 +1019,7 @@ namespace Path
             {
                 if (TimeLineFramesInput.Text != "")
                 {
-                    mainTime = Convert.ToInt32(TimeLineFramesInput.Text)*project.fps;
+                    mainTime = Convert.ToInt32(TimeLineFramesInput.Text) * project.fps;
                 }
             }
             catch (Exception ex)
@@ -1002,58 +1043,77 @@ namespace Path
             UpdateLineProperties();
             PreviewGraphics.Invalidate();
         }
+
         void UpdateLineProperties()
         {
-            if (!currentlyPlaying)
+            // If currently playing, dont bother to update line properties
+            if (currentlyPlaying)
             {
-                timelineGUI.Invalidate();
-                //Select PathLineFrame
-                if (project.dynamicPath.Count != 0)
-                {
-                    //Make sure all indexes are correct
-                    if (selectedLineDynamicIndex > project.dynamicPath.Count)
-                    {
-                        selectedLineDynamicIndex = 0;
-                        selectedPointDynamicIndex = 0;
-                    }
-                    selectedFrameReadOnly = project.dynamicPath[selectedLineDynamicIndex].GenFrameAt(mainTime); //Self updating
-                    if (selectedPointDynamicIndex > selectedFrameReadOnly.PathPoints.Count)
-                    {
-                        selectedPointDynamicIndex = 0;
-                    }
-                    //selectedLineDynamicIndex = needs to be selected via the GUI or maybe a button at some point.
-                    selectedFrameReadOnly = project.dynamicPath[selectedLineDynamicIndex].GenFrameAt(mainTime); //Self updating
-                                                                                                                //selectedPointDynamicIndex = must be changed via a specific function
-                                                                                                                //Add to the points textbox
-                    PathLinePointsListBox.Items.Clear();
-                    for (int i = 0; i < selectedFrameReadOnly.PathPoints.Count; i++)
-                    {
-                        PathLinePointsListBox.Items.Add(selectedFrameReadOnly.PathPoints[i].ToString());
-                    }
-                    //PathLinePointsListBox.SelectedItem = selectedFrameReadOnly.PathPoints[selectedPointDynamicIndex].ToString();
-                    //Line properties title
-                    LinePropertiesTitle.Text = "Line Properties: " + project.dynamicPath[selectedLineDynamicIndex].Name;
-                    LinePropertiesPathIndexData.Text = selectedLineDynamicIndex.ToString();
-
-                    //Update the colors and coordinates
-                    if (selectedPointDynamicIndex != -1)
-                    {
-                        Point tempPoint = project.dynamicPath[selectedLineDynamicIndex].GenFrameAt(mainTime).PathPoints[selectedPointDynamicIndex];
-                        LinePropertiesXCoordinate.Value = tempPoint.X;
-                        LinePropertiesYCoordinate.Value = tempPoint.Y;
-                    }
-
-                    //Add the keyframes to the keyframe textbox
-                    LinePropertiesKeyFramesTextBox.Items.Clear();
-                    for (int i = 0; i < project.dynamicPath[selectedLineDynamicIndex].KeyFrames.Count; i++)
-                    {
-                        LinePropertiesKeyFramesTextBox.Items.Add(project.dynamicPath[selectedLineDynamicIndex].KeyFrames[i].Time);
-                    }
-                    //LinePropertiesKeyFramesTextBox.SelectedItem = mainTime;
-                    LinePropertiesChangeColor.BackColor = project.dynamicPath[selectedLineDynamicIndex].GenFrameAt(mainTime).PathColor;
-                }
+                return;
             }
+
+            // Invalidate timeline GUI
+            timelineGUI.Invalidate();
+
+            // If dynamic path has no points dont run this code.
+            if (project.dynamicPath.Count == 0)
+            {
+                return;
+            }
+
+            // Ensure selected dynamic line index is within bounds
+            if (selectedLineDynamicIndex > project.dynamicPath.Count)
+            {
+                // If out of bounds, reset to 0
+                selectedLineDynamicIndex = 0;
+                selectedPointDynamicIndex = 0;
+            }
+
+            // Set selected frame to frame generated by selected dynamic line at current mainTime
+            // This frame is self-updating
+            selectedFrameReadOnly = project.dynamicPath[selectedLineDynamicIndex].GenFrameAt(mainTime);
+
+            //Ensures the item is within the selected index by changing it to the closest allowed value.
+            selectedPointDynamicIndex = Math.Clamp(selectedPointDynamicIndex, 0, selectedFrameReadOnly.PathPoints.Count - 1);
+
+            // Clear items in PathLinePointsListBox and add each point in selected frame
+            PathLinePointsListBox.BeginUpdate();    //Ag
+            PathLinePointsListBox.Items.Clear();
+            foreach (var pathPoint in selectedFrameReadOnly.PathPoints)
+            {
+                PathLinePointsListBox.Items.Add(pathPoint.ToString());
+            }
+            PathLinePointsListBox.EndUpdate();
+
+            // Set LinePropertiesTitle label to display name of selected dynamic line
+            LinePropertiesTitle.Text = "Line Properties: " + project.dynamicPath[selectedLineDynamicIndex].Name;
+
+            // Set LinePropertiesPathIndexData label to display index of selected dynamic line
+            LinePropertiesPathIndexData.Text = selectedLineDynamicIndex.ToString();
+
+            // If there is a selected point, set X and Y value of LinePropertiesXCoordinate and LinePropertiesYCoordinate
+            if (selectedPointDynamicIndex != -1)
+            {
+                Point tempPoint = selectedFrameReadOnly.PathPoints[selectedPointDynamicIndex];
+                tempIntermediateFramePoint.X = tempPoint.X; //I don't know if there is a better way to do this it feels a bit tedious.
+                LinePropertiesXCoordinate.Value = tempPoint.X;
+                tempIntermediateFramePoint = tempPoint;
+                LinePropertiesYCoordinate.Value = tempPoint.Y;
+            }
+
+            // Clear items in LinePropertiesKeyFramesTextBox and add each keyframe time in selected dynamic line
+            LinePropertiesKeyFramesTextBox.BeginUpdate();   //This line and endupdate allow the list to update without flickering.
+            LinePropertiesKeyFramesTextBox.Items.Clear();
+            foreach (var keyFrame in project.dynamicPath[selectedLineDynamicIndex].KeyFrames)
+            {
+                LinePropertiesKeyFramesTextBox.Items.Add(keyFrame.Time);
+            }
+            LinePropertiesKeyFramesTextBox.EndUpdate();
+
+            // Set color of LinePropertiesChangeColor label to color of selected dynamic line at current mainTime
+            LinePropertiesChangeColor.ForeColor = selectedFrameReadOnly.PathColor;
         }
+
         PathLineFrame GetSelectedFrameWrite()
         {
             return project.dynamicPath[selectedLineDynamicIndex].GetFrameAt(mainTime);
@@ -1096,7 +1156,7 @@ namespace Path
             {
                 this.PixelsPerSecond = pixelsPerSecond;
                 this.PixelsPerShape = pixelsPerShape;
-                if(secondsFont != null)
+                if (secondsFont != null)
                 {
                     this.SecondsFont = secondsFont;
                 }
@@ -1115,35 +1175,45 @@ namespace Path
 
         private void timeline_GUI_updater(object sender, PaintEventArgs e)
         {
-            timelineGUI.Size = new Size(Convert.ToInt32((float)project.maxtimeSeconds*currentTimelineSettings.PixelsPerSecond + 2*currentTimelineSettings.LeftMargin)
-                ,Convert.ToInt32(currentTimelineSettings.TopMargin*2 + currentTimelineSettings.PixelsPerShape*(project.dynamicPath.Count)) + 10);
+            timelineGUI.Size = new Size(Convert.ToInt32((float)project.maxtimeSeconds * currentTimelineSettings.PixelsPerSecond + 2 * currentTimelineSettings.LeftMargin),
+                Convert.ToInt32(currentTimelineSettings.TopMargin * 2 + currentTimelineSettings.PixelsPerShape * (project.dynamicPath.Count)) + 10);
             int seconds = 0;
             Pen thinWhitePen = new Pen(Color.White);
             float currentTimeX = currentTimelineSettings.LeftMargin + (mainTime + project.fps) * (currentTimelineSettings.PixelsPerSecond / project.fps);
             e.Graphics.DrawLine(thinWhitePen, new PointF(currentTimeX, currentTimelineSettings.PixelsPerShape), new PointF(currentTimeX, timelineGUI.Size.Height));
+
+            // Draw seconds markers
             for (float horizontalPixelsUsed = currentTimelineSettings.LeftMargin; horizontalPixelsUsed < timelineGUI.Size.Width; horizontalPixelsUsed += currentTimelineSettings.PixelsPerSecond)
             {
-                e.Graphics.DrawString((seconds-1).ToString(), currentTimelineSettings.SecondsFont, new SolidBrush(Color.White), new PointF(horizontalPixelsUsed - ((int)((currentTimelineSettings.SecondsFont.Size * seconds.ToString().Count()) / 2)),currentTimelineSettings.TopMargin + timelineGUIHugger.VerticalScroll.Value));
+                e.Graphics.DrawString((seconds - 1).ToString(), currentTimelineSettings.SecondsFont, new SolidBrush(Color.White),
+                    new PointF(horizontalPixelsUsed - ((int)((currentTimelineSettings.SecondsFont.Size * seconds.ToString().Count()) / 2)),
+                        currentTimelineSettings.TopMargin + timelineGUIHugger.VerticalScroll.Value));
                 seconds++;
             }
-            int shapeNumber = 1; //Skip the first zero for aesthetics.
+
+            // Draw shape number markers
+            int shapeNumber = 1;
             for (float verticalPixelsUsed = currentTimelineSettings.TopMargin + currentTimelineSettings.PixelsPerShape; verticalPixelsUsed < timelineGUI.Size.Height; verticalPixelsUsed += currentTimelineSettings.PixelsPerShape)
             {
-                e.Graphics.DrawString(shapeNumber.ToString(), currentTimelineSettings.SecondsFont, new SolidBrush(Color.White), new PointF(currentTimelineSettings.LeftMargin + timelineGUIHugger.HorizontalScroll.Value - ((int)((currentTimelineSettings.SecondsFont.Size * shapeNumber.ToString().Count()) / 2)), verticalPixelsUsed));
+                e.Graphics.DrawString(shapeNumber.ToString(), currentTimelineSettings.SecondsFont, new SolidBrush(Color.White),
+                    new PointF(currentTimelineSettings.LeftMargin + timelineGUIHugger.HorizontalScroll.Value - ((int)((currentTimelineSettings.SecondsFont.Size * shapeNumber.ToString().Count()) / 2)),
+                        verticalPixelsUsed));
                 shapeNumber++;
             }
+
+            // Draw keyframes for each dynamic path
             int dynamicPathTempIndex = 0;
             TimelineDots.Clear();
-            for(float verticalSpaceUsed = currentTimelineSettings.TopMargin; verticalSpaceUsed < Convert.ToInt32(currentTimelineSettings.TopMargin * 2 + currentTimelineSettings.PixelsPerShape * (project.dynamicPath.Count)); verticalSpaceUsed += currentTimelineSettings.PixelsPerShape)
+            for (float verticalSpaceUsed = currentTimelineSettings.TopMargin; verticalSpaceUsed < Convert.ToInt32(currentTimelineSettings.TopMargin * 2 + currentTimelineSettings.PixelsPerShape * (project.dynamicPath.Count)); verticalSpaceUsed += currentTimelineSettings.PixelsPerShape)
             {
                 if (project.dynamicPath.Count != 0 && project.dynamicPath.Count > dynamicPathTempIndex)
                 {
                     foreach (PathLineFrame frame in project.dynamicPath[dynamicPathTempIndex].KeyFrames)
                     {
-                        TimelineDots.Add(new LinePoint(dynamicPathTempIndex, frame.Time, new Point((int)currentTimelineSettings.getFloatXOfFrameTime(frame.Time, project.fps), (int)(
-                            currentTimelineSettings.TopMargin + (dynamicPathTempIndex + 1) * currentTimelineSettings.PixelsPerShape)), false));
+                        TimelineDots.Add(new TimeLinePoint(dynamicPathTempIndex, frame.Time, new Point((int)currentTimelineSettings.getFloatXOfFrameTime(frame.Time, project.fps), (int)(
+                            currentTimelineSettings.TopMargin + (dynamicPathTempIndex + 1) * currentTimelineSettings.PixelsPerShape))));
 
-                        e.Graphics.FillCircle(new SolidBrush(Color.LightGray), (int)currentTimelineSettings.getFloatXOfFrameTime(frame.Time,project.fps), (int)(
+                        e.Graphics.FillCircle(new SolidBrush(Color.LightGray), (int)currentTimelineSettings.getFloatXOfFrameTime(frame.Time, project.fps), (int)(
                             currentTimelineSettings.TopMargin + (dynamicPathTempIndex + 1) * currentTimelineSettings.PixelsPerShape), 4);
 
                         e.Graphics.FillCircle(new SolidBrush(Color.DarkGray), (int)currentTimelineSettings.getFloatXOfFrameTime(frame.Time, project.fps), (int)(
@@ -1152,6 +1222,8 @@ namespace Path
                     dynamicPathTempIndex++;
                 }
             }
+
+            // Draw closest point marker if it's actually close
             if (timelineClosestPoint != null)
             {
                 if (getDistance(timelineClosestPoint.Location, timelineMouseLastLocation) < 5)
@@ -1163,7 +1235,7 @@ namespace Path
 
         private void timelineGUI_MouseMove(object sender, MouseEventArgs e)
         {
-            if(e.Button == MouseButtons.Left)
+            if (e.Button == MouseButtons.Left)
             {
                 int newTimeFrame = (int)((e.Location.X - currentTimelineSettings.LeftMargin - currentTimelineSettings.PixelsPerSecond
                     ) / (currentTimelineSettings.PixelsPerSecond / project.fps));
@@ -1173,7 +1245,7 @@ namespace Path
                 }
             }
             double closestPointDistance = 100000;
-            for(int j = 0; j < TimelineDots.Count(); j++)
+            for (int j = 0; j < TimelineDots.Count(); j++)
             {
                 Point pointLocation = TimelineDots[j].Location;
                 if (getDistance(pointLocation, e.Location) < closestPointDistance) //Finds closest point
@@ -1193,7 +1265,7 @@ namespace Path
                 if (getDistance(timelineClosestPoint.Location, timelineMouseLastLocation) < 5)
                 {
                     selectedLineDynamicIndex = timelineClosestPoint.ShapeListIndex;
-                    ChangeTime(timelineClosestPoint.PathPointsListIndex);
+                    ChangeTime(timelineClosestPoint.FrameTime);
                 }
             }
         }
@@ -1201,13 +1273,35 @@ namespace Path
         private void saveToolStripMenuItem_Click(object sender, EventArgs e)
         {
             saveFileDialog1.ShowDialog();
+            project.fileHash = "";
+            // Calculate the MD5 hash of the project object
+            project.fileHash = GetHash(project);
             JsonSerialization.WriteToJsonFile<PathProject>(saveFileDialog1.FileName, project);
         }
 
+        public string GetHash<T>(T currentObject)
+        {
+            // Calculate the MD5 hash of the project object MADE THIS MYSELF THE STACK OVERFLOW DIDNT WORK SO PROUD
+            // Convert the object to a byte array
+            byte[] data = Encoding.UTF8.GetBytes(Newtonsoft.Json.JsonConvert.SerializeObject(currentObject)); // Convert object to a byte array
+
+            // Generate the MD5 hash
+            MD5 md5 = MD5.Create();
+            byte[] hash = md5.ComputeHash(data);
+            string hashString = BitConverter.ToString(hash);
+            return Convert.ToBase64String(hash);
+        }
         private void openToolStripMenuItem_Click(object sender, EventArgs e)
         {
             openFileDialog1.ShowDialog();
             project = JsonSerialization.ReadFromJsonFile<PathProject>(openFileDialog1.FileName);
+            String projectsFileHash = project.fileHash;
+            project.fileHash = "";
+            if (GetHash(project) != projectsFileHash)
+            {
+                MessageBox.Show("File modified outside of software or corrupted." +
+                    " Be careful when using the file as it may be dangerous or damage device. ", "Warning");
+            }
             selectedLineDynamicIndex = 0;
             selectedPointDynamicIndex = 0;
             ChangeTime(0);
@@ -1238,7 +1332,7 @@ namespace Path
                 }
                 else
                 {
-                    Thread.Sleep(100); 
+                    Thread.Sleep(100);
                 }
             }
         }
@@ -1250,7 +1344,15 @@ namespace Path
 
         private void linePropertiesXOrYCoordinate_ValueChanged(object sender, EventArgs e)
         {
-            if(GetSelectedFrameWrite().PathPoints.Count > (selectedPointDynamicIndex))
+            if(tempIntermediateFramePoint.X == -1 || tempIntermediateFramePoint.Y == -1)
+            {
+                return;
+            }
+            if(tempIntermediateFramePoint.X == LinePropertiesXCoordinate.Value && tempIntermediateFramePoint.Y == LinePropertiesYCoordinate.Value)
+            {
+                return; //If this was set to show the value of a midway frame, dont generate a new keypoint, only if user wanted new keyframe.
+            }
+            if (GetSelectedFrameWrite().PathPoints.Count > (selectedPointDynamicIndex))
             {
                 GetSelectedFrameWrite().PathPoints[selectedPointDynamicIndex] = new Point(Convert.ToInt32(LinePropertiesXCoordinate.Value), Convert.ToInt32(LinePropertiesYCoordinate.Value));
                 this.PreviewGraphics.Invalidate();
@@ -1260,7 +1362,7 @@ namespace Path
 
         private void deleteShape_Click(object sender, EventArgs e)
         {
-            if(selectedLineDynamicIndex != -1)
+            if (selectedLineDynamicIndex != -1)
             {
                 project.dynamicPath.RemoveAt(selectedLineDynamicIndex);
                 ChangeTime(mainTime);
@@ -1273,7 +1375,7 @@ namespace Path
 
         private void Form1_KeyPress(object sender, KeyPressEventArgs e)
         {
-            if(e.KeyChar == ' ')
+            if (e.KeyChar == ' ')
             {
 
                 currentLaserSettings.showLaser = false;
@@ -1284,7 +1386,7 @@ namespace Path
                 blackFrame[0].g = (byte)(0x00);
                 blackFrame[0].b = (byte)(0x00);
                 blackFrame[0].i = (byte)(0x00);
-                helios.writeFrame(0,currentLaserSettings.kpps,1,blackFrame, 1);
+                helios.writeFrame(0, currentLaserSettings.kpps, 1, blackFrame, 1);
                 OptionsToggleProject.Checked = false;
             }
             if (e.KeyChar == 'p')
@@ -1318,10 +1420,10 @@ namespace Path
         private void LinePropertiesChangeColor_Click(object sender, EventArgs e)
         {
             LinePropertiesColorDialog.ShowDialog(this);
-            project.dynamicPath[selectedLineDynamicIndex].GetFrameAt(mainTime).PathColor = LinePropertiesColorDialog.Color;
+            GetSelectedFrameWrite().PathColor = LinePropertiesColorDialog.Color;
         }
 
-        private void sToolStripMenuItem_Click(object sender, EventArgs e)
+        private void ToolStripMenuItem_Click(object sender, EventArgs e)
         {
             Settings settingsWindow = new Settings();
             settingsWindow.Show();
@@ -1350,7 +1452,7 @@ namespace Path
                 mainTime = Convert.ToInt32(preciseTime);
                 timelineGUI.Invalidate();
                 PreviewGraphics.Invalidate();
-                if(mainTime > project.maxtimeSeconds * project.fps)
+                if (mainTime > project.maxtimeSeconds * project.fps)
                 {
                     selectedPointDynamicIndex = -1;
                     mainTime = Convert.ToInt32(0);
@@ -1383,8 +1485,10 @@ namespace Path
                 backgroundWorker2.RunWorkerAsync();
             }
         }
+
+
     }
-    #region NOT MY CODE USED FOR SAVING FILES IN A HUMAN READABLE FORMAT
+    #region NOT MY CODE USED FOR SAVING FILES IN A HUMAN READABLE FORMAT & serialising files. I do understand it but because I had so much help I wont take credit.
     /// <summary>
     /// Functions for performing common Json Serialization operations.
     /// <para>Requires the Newtonsoft.Json assembly (Json.Net package in NuGet Gallery) to be referenced in your project.</para>
@@ -1416,7 +1520,7 @@ namespace Path
                     writer.Write(contentsToWriteToFile);
                 }
                 catch
-                { 
+                {
 
                 }
             }
@@ -1449,7 +1553,9 @@ namespace Path
                     reader.Close();
             }
         }
+
     }
+
     #endregion
     public static class GraphicsExtensions      //This code (the graphics extensions) was someoene elses but worked really well so i am keeping it
     {
